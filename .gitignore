@@ -1,20 +1,9 @@
-# ── Site data — unique per site, never overwritten by template syncs ──
-projects.json
-site.json
-site.json.bak
-
 # Credentials
 _internal/
 
-# Media — managed per site
-images/
-gallery/
-thumbs/
-downloads/
 
 # Memory / AI context
 CLAUDE.md
-claude.md
 memory/
 
 # System
