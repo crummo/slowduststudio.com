@@ -1971,7 +1971,7 @@
     <div class="field" id="f-gallery-field" style="display:none">
       <label>Gallery Images <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(one path per line — shown on the project detail page)</span></label>
       <textarea id="f-gallery" rows="5" placeholder="gallery/work/project-01.jpg&#10;gallery/work/project-02.jpg&#10;…" style="font-family:var(--font-mono,monospace);font-size:12px;line-height:1.6;resize:vertical" oninput="markDirty()"></textarea>
-      <div class="field-hint" style="margin-top:4px">Used when the category type is <strong>Scroll</strong>. Upload images via Files → Gallery, then paste the paths here.</div>
+      <div class="field-hint" style="margin-top:4px">Used when the category type is <strong>Gallery</strong>. Upload images via Files → Gallery, then paste the paths here.</div>
     </div>
 
     <div class="field" style="margin-top:4px">
@@ -2664,7 +2664,7 @@ function buildAdminCategoryPanes() {
     pane.id = 'pane-' + cat.id;
     pane.style.display = 'none';
 
-    if (cat.type === 'gallery') {
+    if (cat.type === 'carousel') {
       pane.innerHTML = `
         <div class="toolbar">
           <span class="toolbar-label" id="count-${cat.id}"></span>
@@ -2732,7 +2732,7 @@ function renderAll() {
 
 function renderCategory(cat) {
   const catDef = siteConfig.categories.find(c => c.id === cat);
-  if (catDef?.type === 'gallery') { renderGalleryCategory(cat); return; }
+  if (catDef?.type === 'carousel') { renderGalleryCategory(cat); return; }
 
   const items = projects.filter(p => p.category === cat);
   const list  = document.getElementById('list-' + cat);
@@ -3449,7 +3449,7 @@ function onDrop(e) {
   if (dragSrcIdx === null || dragSrcIdx === targetIdx) return;
 
   const item = projects.splice(dragSrcIdx, 1)[0];
-  const insertAt = dragSrcIdx < targetIdx ? targetIdx : targetIdx;
+  const insertAt = dragSrcIdx < targetIdx ? targetIdx - 1 : targetIdx;
   projects.splice(insertAt, 0, item);
 
   markDirty();
@@ -3680,7 +3680,7 @@ async function confirmDelete() {
   projects.splice(deletingIdx, 1);
   renderAll();
   closeDelete();
-closeModal();;
+  closeModal();
   await saveToGitHub();
 }
 
@@ -3748,7 +3748,7 @@ function openEditCategory(idx) {
   document.getElementById('modal-cat-title').textContent = 'Edit Category';
   document.getElementById('cat-label').value = cat.label;
   document.getElementById('cat-id').value = cat.id;
-  document.getElementById('cat-type').value   = ['gallery','scroll'].includes(cat.type) ? cat.type : 'lightbox';
+  document.getElementById('cat-type').value   = ['gallery','scroll','carousel'].includes(cat.type) ? cat.type : 'lightbox';
   document.getElementById('cat-layout').value = ['grid','editorial'].includes(cat.layout) ? cat.layout : 'masonry';
   document.getElementById('cat-id-field').style.display = 'none'; // ID is set on create only
   document.getElementById('cat-delete-btn').style.display = '';
@@ -3761,7 +3761,7 @@ function openEditCategory(idx) {
 function updateProjectGalleryFieldVisibility() {
   const catId = document.getElementById('f-category')?.value;
   const catDef = (siteConfig.categories || []).find(c => c.id === catId);
-  const show = catDef?.type === 'scroll';
+  const show = catDef?.type === 'scroll' || catDef?.type === 'gallery';
   const field = document.getElementById('f-gallery-field');
   if (field) field.style.display = show ? '' : 'none';
 }
@@ -3771,8 +3771,8 @@ function updateCatHints() {
   const layout = document.getElementById('cat-layout')?.value;
   const typeHints = {
     lightbox: 'Overlay viewer — best for video projects or single images',
-    gallery:  'Full-screen inline viewer with prev/next — best for photo series',
-    scroll:   'Scrolling image grid — each project opens a dedicated detail page'
+    gallery:  'Scrolling image grid — each project opens a dedicated detail page',
+    carousel: 'Full-screen inline viewer with prev/next — best for photo series'
   };
   const layoutHints = {
     masonry:   'Natural proportions — each image displays at its own aspect ratio',
@@ -4337,7 +4337,7 @@ function initFileManagerTab() {
   fmSelected = new Set();
   const savedFMTab = localStorage.getItem(K_FM_TAB) || 'thumbs';
   fmCurrentTab = ['logos','thumbs','images','gallery'].includes(savedFMTab) ? savedFMTab : 'thumbs';
-  fmGalleryCat = (siteConfig.categories.find(c => c.type === 'gallery') || {}).id || null;
+  fmGalleryCat = (siteConfig.categories.find(c => c.type === 'carousel') || {}).id || null;
   updateFMDeleteBtn();
   document.getElementById('fm-unused-only').checked = false;
   buildFMGallerySubtabs();
@@ -4474,7 +4474,7 @@ function buildFMGallerySubtabs() {
   const row = document.getElementById('fm-gallery-subtabs');
   if (!row) return;
   row.innerHTML = '';
-  const galCats = siteConfig.categories.filter(c => c.type === 'gallery');
+  const galCats = siteConfig.categories.filter(c => c.type === 'carousel');
   galCats.forEach(c => {
     const btn = document.createElement('button');
     btn.className = 'fm-subtab-btn' + (c.id === fmGalleryCat ? ' active' : '');
@@ -5766,7 +5766,7 @@ function openPreview() {
 function previewPage(page) {
   try {
     flushSettingsForms();
-    const pk = document.getElementById('pk-input')?.value?.trim() || '';
+    const pk = Date.now();
     let base;
     if (page === 'about')        base = 'index.html?preview=1&pk=' + pk + '#about';
     else if (page === 'contact') base = 'index.html?preview=1&pk=' + pk + '#contact';
