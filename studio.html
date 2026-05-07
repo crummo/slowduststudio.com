@@ -2143,6 +2143,22 @@
       <div class="field-hint" style="margin-top:4px">YouTube or Vimeo URL</div>
     </div>
 
+    <!-- Photo — shown for image items only (relink) -->
+    <div class="field" id="ge-photo-field" style="display:none">
+      <label>Photo <span class="label-aside">(file path)</span></label>
+      <div class="field-clearable">
+        <input type="text" id="ge-photo-url" placeholder="gallery/category/filename.webp" oninput="updateGePhotoPreview();markDirty()" />
+        <button class="field-clear-btn" type="button" onclick="clearField('ge-photo-url');updateGePhotoPreview()" title="Clear">×</button>
+      </div>
+      <div id="ge-photo-preview-wrap" style="margin-top:8px;display:none">
+        <img id="ge-photo-preview" alt="" style="width:100%;max-height:160px;object-fit:contain;border-radius:2px;border:1px solid var(--fg-dimmer)" onerror="this.style.opacity='0.3'" />
+      </div>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <label class="btn btn-ghost btn-sm" style="cursor:pointer;flex:1;justify-content:center">Upload new image…<input type="file" id="ge-photo-file" accept="image/*" class="file-input-hidden" onchange="handleGePhotoInput(this)" /></label>
+      </div>
+      <div class="field-hint" style="margin-top:4px">Relink to a different file — useful when the original was deleted from the repo.</div>
+    </div>
+
     <!-- Hover preview (any project type) — accepts MP4 or animated WebP/GIF -->
     <div class="field">
       <label>Hover Preview <span style="font-weight:normal;text-transform:none;letter-spacing:0;color:var(--fg-dim);font-size:11px">(optional)</span></label>
@@ -3185,8 +3201,11 @@ function openGalleryEdit(globalIdx) {
 
   document.getElementById('ge-modal-title').textContent = isVid ? 'Edit Video' : (p.url ? p.url.split('/').pop() : 'Edit Image');
   document.getElementById('ge-video-field').style.display = isVid ? '' : 'none';
+  document.getElementById('ge-photo-field').style.display = isVid ? 'none' : '';
   document.getElementById('ge-thumb-field').style.display = isVid ? '' : 'none';
   document.getElementById('ge-video-url').value  = isVid ? (p.url || '') : '';
+  document.getElementById('ge-photo-url').value  = isVid ? '' : (p.url || '');
+  updateGePhotoPreview();
   document.getElementById('ge-hover-preview').value = p.hoverPreview || '';
   document.getElementById('ge-title').value      = p.title  || '';
   document.getElementById('ge-client').value     = p.client || '';
@@ -3223,6 +3242,14 @@ async function saveGalleryEdit() {
   if (isVideoUrl(p.url) || document.getElementById('ge-video-field').style.display !== 'none') {
     const newUrl = document.getElementById('ge-video-url').value.trim();
     if (newUrl) p.url = newUrl;
+  } else {
+    // Image item — relink path if changed
+    const newPhoto = document.getElementById('ge-photo-url').value.trim();
+    if (newPhoto && newPhoto !== p.url) {
+      const oldUrl = p.url;
+      p.url = newPhoto;
+      if (p.thumbnail && p.thumbnail === oldUrl) p.thumbnail = newPhoto;
+    }
   }
   p.title       = document.getElementById('ge-title').value.trim();
   p.client      = document.getElementById('ge-client').value.trim();
@@ -6213,6 +6240,49 @@ async function handleStillFileInput(input) {
 function isImageUrl(url) {
   if (!url) return false;
   return /\.(jpg|jpeg|png|gif|webp|avif|svg)(\?|#|$)/i.test(url);
+}
+
+// ─── GALLERY EDIT — PHOTO (RELINK) ───────────────────────────────────────────
+function updateGePhotoPreview() {
+  const val  = document.getElementById('ge-photo-url').value.trim();
+  const wrap = document.getElementById('ge-photo-preview-wrap');
+  const img  = document.getElementById('ge-photo-preview');
+  if (!wrap || !img) return;
+  if (val) {
+    img.style.opacity = '1';
+    img.src = val;
+    wrap.style.display = '';
+  } else {
+    wrap.style.display = 'none';
+    img.removeAttribute('src');
+  }
+}
+
+async function handleGePhotoInput(input) {
+  const file = input.files[0];
+  if (!file) return;
+  input.value = '';
+  if (editingGalleryIdx === null) return;
+  const p = projects[editingGalleryIdx];
+  const catId = p.category || 'gallery';
+  const safeName = sanitizeName(file.name);
+  const filePath = 'gallery/' + catId + '/' + safeName;
+  const blobUrl  = URL.createObjectURL(file);
+  const ok = await uploadToGitHub(file, filePath);
+  if (!ok) { URL.revokeObjectURL(blobUrl); return; }
+  document.getElementById('ge-photo-url').value = filePath;
+  // Preview from blob (path-based src may 404 until Pages redeploys)
+  const wrap = document.getElementById('ge-photo-preview-wrap');
+  const img  = document.getElementById('ge-photo-preview');
+  if (wrap && img) {
+    img.onload  = () => URL.revokeObjectURL(blobUrl);
+    img.onerror = () => URL.revokeObjectURL(blobUrl);
+    img.style.opacity = '1';
+    img.src = blobUrl;
+    wrap.style.display = '';
+  }
+  markDirty();
+  showToast('"' + file.name + '" uploaded — relinked.', 'success');
 }
 
 // ─── GALLERY EDIT — THUMBNAIL ────────────────────────────────────────────────
