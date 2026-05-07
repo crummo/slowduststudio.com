@@ -1845,6 +1845,50 @@
         .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
 
+    /* ── RICH-TEXT SANITIZER ──
+       Allowlist sanitizer for fields that intentionally render as HTML
+       (home.body, about.bio, about.bio2). Any tag not on the allow list
+       is dropped (its text content is kept). All attributes are stripped
+       except a validated href on <a>, which also gets rel/target hardening. */
+    const _XRICH_TAGS = new Set(['A','B','BLOCKQUOTE','BR','EM','I','LI','OL','P','SPAN','STRONG','U','UL']);
+    const _XRICH_HREF = /^(?:https?:|mailto:|tel:|#|\/|\.)/i;
+    function xRich(html) {
+      if (html == null || html === '') return '';
+      const doc = new DOMParser().parseFromString(String(html), 'text/html');
+      function clean(node) {
+        const frag = document.createDocumentFragment();
+        for (const child of [...node.childNodes]) {
+          if (child.nodeType === 3) {                       // text
+            frag.appendChild(document.createTextNode(child.nodeValue));
+          } else if (child.nodeType === 1) {                // element
+            const tag = child.tagName;
+            const inner = clean(child);
+            if (_XRICH_TAGS.has(tag)) {
+              const el = document.createElement(tag);
+              if (tag === 'A') {
+                const href = child.getAttribute('href') || '';
+                if (_XRICH_HREF.test(href)) {
+                  el.setAttribute('href', href);
+                  el.setAttribute('rel', 'noopener noreferrer');
+                  if (/^https?:/i.test(href)) el.setAttribute('target', '_blank');
+                }
+              }
+              el.appendChild(inner);
+              frag.appendChild(el);
+            } else {
+              // Drop the wrapper, keep its (already-sanitized) contents.
+              frag.appendChild(inner);
+            }
+          }
+          // Comments and other node types are silently dropped.
+        }
+        return frag;
+      }
+      const wrap = document.createElement('div');
+      wrap.appendChild(clean(doc.body));
+      return wrap.innerHTML;
+    }
+
     /* ── INIT ── */
     async function init() {
       try {
@@ -2758,7 +2802,7 @@
           <div class="home-content">
             ${h.headline ? `<div class="home-headline">${x(h.headline)}</div>` : ''}
             ${h.subhead  ? `<div class="home-subhead">${x(h.subhead)}</div>`   : ''}
-            ${h.body     ? `<div class="home-body">${h.body}</div>`            : ''}
+            ${h.body     ? `<div class="home-body">${xRich(h.body)}</div>`     : ''}
             ${ctasHtml   ? `<div class="home-ctas">${ctasHtml}</div>`          : ''}
           </div>
         </div>`;
@@ -2846,8 +2890,8 @@
         <div class="about-layout placement-${x(a.photoPlacement || 'above')}">
           ${photoHtml}
           <div class="about-content">
-            ${a.bio  ? `<div class="about-bio">${a.bio}</div>`   : ''}
-            ${a.bio2 ? `<div class="about-bio2">${a.bio2}</div>` : ''}
+            ${a.bio  ? `<div class="about-bio">${xRich(a.bio)}</div>`   : ''}
+            ${a.bio2 ? `<div class="about-bio2">${xRich(a.bio2)}</div>` : ''}
             ${a.contactEmail && a.showEmail !== false ? `<div class="about-contact-line">Reach me at <a href="mailto:${x(a.contactEmail)}">${x(a.contactEmail)}</a></div>` : ''}
             ${resumeLink}
           </div>
