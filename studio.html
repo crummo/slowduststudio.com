@@ -127,14 +127,19 @@
     .pw-wrap { position: relative; }
     .pw-wrap input { padding-right: 44px; }
     .pw-toggle {
-      position: absolute; right: 12px; top: 50%;
+      position: absolute; right: 10px; top: 50%;
       transform: translateY(-50%);
       background: none; border: none;
       color: var(--fg-dim); cursor: pointer;
-      font-size: 13px; padding: 4px;
+      padding: 4px; line-height: 0;
+      display: flex; align-items: center; justify-content: center;
       transition: color 0.2s;
     }
     .pw-toggle:hover { color: var(--fg-mid); }
+    .pw-toggle svg { width: 16px; height: 16px; display: block; }
+    .pw-toggle .icon-eye-off { display: none; }
+    .pw-toggle.revealed .icon-eye { display: none; }
+    .pw-toggle.revealed .icon-eye-off { display: block; }
 
     /* ── DIRTY SAVE BUTTON ── */
     #save-btn.dirty {
@@ -475,6 +480,17 @@
     .social-field-row { display: flex; align-items: center; gap: 8px; }
     .social-field-platform { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--fg-dim); width: 72px; flex-shrink: 0; }
 
+    /* ── PROJECT FILTER ── */
+    .project-filter-input {
+      background: var(--bg2); border: 1px solid var(--fg-dimmer);
+      border-radius: 3px; padding: 6px 10px;
+      color: var(--fg); font-family: var(--font-sans); font-size: 11px;
+      width: 180px; outline: none;
+      transition: border-color 0.2s var(--ease), width 0.2s var(--ease);
+    }
+    .project-filter-input::placeholder { color: var(--fg-dim); }
+    .project-filter-input:focus { border-color: var(--fg-dim); width: 240px; }
+
     /* ── PROJECT LIST ── */
     .project-list { display: flex; flex-direction: column; gap: 6px; }
 
@@ -684,6 +700,54 @@
       background: var(--bg2);
     }
 
+    /* ── SEGMENTED CONTROL ── */
+    .segmented {
+      display: inline-flex; gap: 0;
+      border: 1px solid var(--fg-dimmer);
+      border-radius: 3px; overflow: hidden;
+      width: fit-content;
+    }
+    .segmented.full { width: 100%; }
+    .segmented.full button { flex: 1; }
+    .segmented button {
+      background: none; border: none;
+      border-left: 1px solid var(--fg-dimmer);
+      cursor: pointer;
+      font-family: var(--font-sans);
+      font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+      padding: 6px 16px;
+      color: var(--fg-dim);
+      transition: background 0.15s, color 0.15s;
+    }
+    .segmented button:first-child { border-left: none; }
+    .segmented button:hover { color: var(--fg-mid); }
+    .segmented button.active {
+      background: var(--fg-dimmer); color: var(--fg);
+    }
+
+    /* ── MODAL INTERNAL TABS ── */
+    .modal-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--fg-dimmer);
+      margin: -8px 0 24px;
+    }
+    .modal-tab-btn {
+      background: none; border: none; outline: none;
+      border-bottom: 2px solid transparent;
+      color: var(--fg-dim);
+      cursor: pointer;
+      font-family: var(--font-sans);
+      font-size: 10px; font-weight: 400;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      padding: 8px 18px;
+      margin-bottom: -1px;
+      transition: color 0.2s var(--ease), border-color 0.2s var(--ease);
+    }
+    .modal-tab-btn:hover { color: var(--fg-mid); }
+    .modal-tab-btn.active { color: var(--fg); border-bottom-color: var(--accent); }
+    .modal-tab-pane { display: none; }
+    .modal-tab-pane.active { display: block; }
+
     .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 
     /* ── THUMB PREVIEW + FILE LIST ── */
@@ -881,7 +945,8 @@
       margin-bottom: 10px;
     }
     .fm-count { font-size: 10px; color: var(--fg-dim); letter-spacing: 0.1em; text-transform: uppercase; }
-    #pane-files { padding: 4px 44px; max-width: 1000px; }
+    #pane-files,
+    #pane-categories { padding: 4px 44px; max-width: 1000px; }
     .fm-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(116px, 1fr));
@@ -962,19 +1027,25 @@
         <input type="text" id="setup-owner" value="crummo" />
       </div>
       <div class="field">
-        <label>Branch</label>
-        <input type="text" id="setup-branch" value="main" />
+        <label>Repository</label>
+        <input type="text" id="setup-repo" value="folio-template" />
       </div>
     </div>
-    <div class="field">
-      <label>Repository</label>
-      <input type="text" id="setup-repo" value="folio-template" />
+    <div style="margin-bottom:20px">
+      <button class="add-link" id="setup-branch-toggle" type="button" data-closed="+ Advanced" data-open="− Advanced" onclick="toggleDisclosure('setup-branch')">+ Advanced</button>
+      <div id="setup-branch-body" style="display:none;margin-top:8px">
+        <div class="field" style="margin-bottom:0">
+          <label>Branch</label>
+          <input type="text" id="setup-branch" value="main" />
+          <div class="field-hint">Defaults to <code style="color:var(--accent)">main</code>. Only change if your repo uses a different default branch.</div>
+        </div>
+      </div>
     </div>
     <div class="field">
       <label>GitHub Personal Access Token</label>
       <div class="pw-wrap">
         <input type="password" id="setup-token" placeholder="github_pat_…" />
-        <button class="pw-toggle" type="button" onclick="togglePw('setup-token')" title="Show/hide">●</button>
+        <button class="pw-toggle" type="button" onclick="togglePw('setup-token')" title="Show/hide" aria-label="Show token"><svg class="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><svg class="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.5 10.5 0 0 1 12 19c-6.5 0-10-7-10-7a18.5 18.5 0 0 1 4.06-5.19"/><path d="M9.9 4.24A9.5 9.5 0 0 1 12 4c6.5 0 10 7 10 7a18.5 18.5 0 0 1-2.16 3.19"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="2" y1="2" x2="22" y2="22"/></svg></button>
       </div>
       <div class="field-hint">
         Create at <a href="https://github.com/settings/tokens?type=beta" target="_blank">github.com/settings/tokens</a>.
@@ -986,14 +1057,14 @@
       <label>Admin Password</label>
       <div class="pw-wrap">
         <input type="password" id="setup-pw" placeholder="Choose a password" />
-        <button class="pw-toggle" type="button" onclick="togglePw('setup-pw')" title="Show/hide">●</button>
+        <button class="pw-toggle" type="button" onclick="togglePw('setup-pw')" title="Show/hide" aria-label="Show password"><svg class="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><svg class="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.5 10.5 0 0 1 12 19c-6.5 0-10-7-10-7a18.5 18.5 0 0 1 4.06-5.19"/><path d="M9.9 4.24A9.5 9.5 0 0 1 12 4c6.5 0 10 7 10 7a18.5 18.5 0 0 1-2.16 3.19"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="2" y1="2" x2="22" y2="22"/></svg></button>
       </div>
     </div>
     <div class="field">
       <label>Confirm Password</label>
       <div class="pw-wrap">
         <input type="password" id="setup-pw2" placeholder="Confirm password" onkeydown="if(event.key==='Enter')doSetup()" />
-        <button class="pw-toggle" type="button" onclick="togglePw('setup-pw2')" title="Show/hide">●</button>
+        <button class="pw-toggle" type="button" onclick="togglePw('setup-pw2')" title="Show/hide" aria-label="Show password"><svg class="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><svg class="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.5 10.5 0 0 1 12 19c-6.5 0-10-7-10-7a18.5 18.5 0 0 1 4.06-5.19"/><path d="M9.9 4.24A9.5 9.5 0 0 1 12 4c6.5 0 10 7 10 7a18.5 18.5 0 0 1-2.16 3.19"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="2" y1="2" x2="22" y2="22"/></svg></button>
       </div>
     </div>
 
@@ -1012,7 +1083,7 @@
       <div class="pw-wrap">
         <input type="password" id="login-pw" placeholder="Enter your password"
                onkeydown="if(event.key==='Enter')doLogin()" />
-        <button class="pw-toggle" type="button" onclick="togglePw('login-pw')" title="Show/hide">●</button>
+        <button class="pw-toggle" type="button" onclick="togglePw('login-pw')" title="Show/hide" aria-label="Show password"><svg class="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><svg class="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.5 10.5 0 0 1 12 19c-6.5 0-10-7-10-7a18.5 18.5 0 0 1 4.06-5.19"/><path d="M9.9 4.24A9.5 9.5 0 0 1 12 4c6.5 0 10 7 10 7a18.5 18.5 0 0 1-2.16 3.19"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="2" y1="2" x2="22" y2="22"/></svg></button>
       </div>
     </div>
     <button class="btn btn-primary" style="width:100%" onclick="doLogin()">Unlock</button>
@@ -1032,8 +1103,7 @@
       <button class="btn btn-primary btn-sm" id="save-btn" onclick="saveToGitHub()" style="display:none">Save</button>
       <button class="btn btn-ghost btn-sm" onclick="openLiveSite()">Live Site ↗</button>
       <button class="btn btn-ghost btn-sm" onclick="openPreview()">Preview Site ↗</button>
-      <button class="btn btn-ghost btn-sm" onclick="openActions()" title="GitHub Actions">Actions ↗</button>
-      <button class="btn btn-ghost btn-sm" onclick="lock()">Lock</button>
+      <button class="btn btn-ghost btn-sm" onclick="lock()">Sign out</button>
     </div>
   </nav>
 
@@ -1047,6 +1117,7 @@
       </div>
       <button class="tab-scroll-btn right" id="tab-scroll-right" onclick="scrollTabs(1)" title="Scroll right">›</button>
       <button class="tab" id="tab-site" onclick="switchTab('site')">Site Settings</button>
+      <button class="tab" id="tab-categories" onclick="switchTab('categories')">Categories</button>
       <button class="tab" id="tab-files" onclick="switchTab('files')">Files</button>
     </div>
 
@@ -1058,12 +1129,11 @@
 
       <!-- Sub-tabs -->
       <div class="settings-tabs">
-        <button class="settings-tab-btn active" onclick="switchSettingsTab('general')">General</button>
-        <button class="settings-tab-btn" onclick="switchSettingsTab('appearance')">Appearance</button>
-        <button class="settings-tab-btn" onclick="switchSettingsTab('categories')">Categories</button>
-        <button class="settings-tab-btn" onclick="switchSettingsTab('about')">About</button>
-        <button class="settings-tab-btn" onclick="switchSettingsTab('pages')">Pages</button>
-        <button class="settings-tab-btn" onclick="switchSettingsTab('advanced')">Advanced</button>
+        <button class="settings-tab-btn active" data-stab="general"       onclick="switchSettingsTab('general')">General</button>
+        <button class="settings-tab-btn"        data-stab="appearance"    onclick="switchSettingsTab('appearance')">Appearance</button>
+        <button class="settings-tab-btn"        data-stab="about"         onclick="switchSettingsTab('about')">About</button>
+        <button class="settings-tab-btn"        data-stab="pages"         onclick="switchSettingsTab('pages')">Pages</button>
+        <button class="settings-tab-btn"        data-stab="special-pages" onclick="switchSettingsTab('special-pages')">Special Pages</button>
       </div>
 
       <!-- ── GENERAL TAB ── -->
@@ -1192,10 +1262,11 @@
           <div class="settings-section-title">Layout</div>
           <div class="field">
             <label>Nav Position</label>
-            <select id="site-nav-style" onchange="markDirty()" style="margin-top:6px;width:100%">
-              <option value="top">Top — horizontal bar</option>
-              <option value="left">Left — vertical sidebar</option>
-            </select>
+            <div class="segmented full" data-for="site-nav-style" style="margin-top:6px">
+              <button type="button" data-value="top">Top — horizontal bar</button>
+              <button type="button" data-value="left">Left — vertical sidebar</button>
+            </div>
+            <input type="hidden" id="site-nav-style" />
           </div>
         </div>
 
@@ -1229,23 +1300,6 @@
             </label>
             <div class="field-hint" style="margin-top:4px">Each thumbnail in the mobile list keeps its original proportions instead of being cropped to 16:9. Magazine-feed style.</div>
           </div>
-        </div>
-      </div>
-
-      <!-- ── SECTIONS TAB ── -->
-      <div class="settings-tab-pane" id="stab-categories">
-        <div class="settings-section">
-          <div class="settings-section-title">Categories</div>
-          <p class="about-hint">
-            Drag to reorder. The <strong>Label</strong> is what visitors see in the nav.
-            The <strong>ID</strong> (slug) identifies existing projects — don't change it if projects already use it.
-          </p>
-          <div class="toolbar" style="margin-bottom:12px">
-            <span></span>
-            <button class="btn btn-ghost btn-sm" onclick="openAddCategory()">+ Add Category</button>
-          </div>
-          <div id="cat-list"></div>
-          <p class="field-hint" style="margin-top:12px">Changes here take effect after saving.</p>
         </div>
       </div>
 
@@ -1292,17 +1346,25 @@
             <div id="about-photo-style-field" style="display:none;margin-top:10px">
               <button class="add-link" id="fine-tune-toggle" data-closed="+ Fine-tune" data-open="− Fine-tune" onclick="toggleDisclosure('fine-tune')">+ Fine-tune</button>
               <div id="fine-tune-body" style="display:none;margin-top:8px">
-                <div style="display:flex;gap:8px;margin-bottom:6px">
-                  <select id="about-photo-shape" onchange="updateAboutPhotoUI();markDirty()" style="flex:1">
-                    <option value="natural">Original</option>
-                    <option value="circle">Circle</option>
-                    <option value="square">Square</option>
-                  </select>
-                  <select id="about-photo-placement" onchange="updateAboutPhotoUI();markDirty()" style="flex:1">
-                    <option value="above">Above</option>
-                    <option value="left">Left</option>
-                    <option value="right">Right</option>
-                  </select>
+                <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:6px">
+                  <div>
+                    <div style="font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-mid);margin-bottom:4px">Shape</div>
+                    <div class="segmented full" data-for="about-photo-shape">
+                      <button type="button" data-value="natural">Original</button>
+                      <button type="button" data-value="circle">Circle</button>
+                      <button type="button" data-value="square">Square</button>
+                    </div>
+                    <input type="hidden" id="about-photo-shape" onchange="updateAboutPhotoUI()" />
+                  </div>
+                  <div>
+                    <div style="font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-mid);margin-bottom:4px">Placement</div>
+                    <div class="segmented full" data-for="about-photo-placement">
+                      <button type="button" data-value="above">Above</button>
+                      <button type="button" data-value="left">Left</button>
+                      <button type="button" data-value="right">Right</button>
+                    </div>
+                    <input type="hidden" id="about-photo-placement" onchange="updateAboutPhotoUI()" />
+                  </div>
                 </div>
                 <div class="field-hint" id="about-photo-hint" style="margin-bottom:6px">Circle crop, positioned above the bio</div>
                 <div id="about-photo-fullwidth-field" style="display:none;margin-bottom:8px">
@@ -1338,7 +1400,7 @@
             <div class="field-hint" style="margin-top:4px">Accepts basic HTML: <code style="color:var(--accent)">&lt;strong&gt;</code>, <code style="color:var(--accent)">&lt;em&gt;</code>, <code style="color:var(--accent)">&lt;a href="…"&gt;</code></div>
           </div>
           <div style="margin-bottom:16px">
-            <button class="add-link" id="bio2-toggle" data-closed="+ Add second paragraph" data-open="− Second paragraph" onclick="toggleDisclosure('bio2')">+ Add second paragraph</button>
+            <button class="add-link" id="bio2-toggle" data-closed="+ Second paragraph" data-open="− Second paragraph" onclick="toggleDisclosure('bio2')">+ Second paragraph</button>
             <div id="bio2-body" style="display:none;margin-top:8px">
               <div class="field" style="margin-bottom:0">
                 <label>Secondary paragraph</label>
@@ -1541,15 +1603,20 @@
             <div class="field-hint" style="margin-top:4px;text-align:center">Full-bleed background · overlay added automatically</div>
             <div class="thumb-file-list" id="home-bg-file-list"></div>
           </div>
-          <div class="field" style="margin-top:12px">
-            <label>Slideshow <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(optional — replaces single image above)</span></label>
-            <textarea id="home-slides" rows="4" placeholder="images/slide-1.jpg&#10;images/slide-2.jpg&#10;https://…" oninput="markDirty()" style="margin-top:6px;font-size:11px;font-family:monospace"></textarea>
-            <div class="field-hint" style="margin-top:4px">One image URL per line · crossfades automatically every 5 s · click the image to advance</div>
-          </div>
-          <div class="field" style="margin-top:12px">
-            <label>Video <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(mp4 — plays silently, loops)</span></label>
-            <input type="text" id="home-bg-video" placeholder="videos/reel.mp4 or https://…" oninput="markDirty()" style="margin-top:6px" />
-            <div class="field-hint" style="margin-top:4px">If both image and video are set, the video plays over the image as a fallback.</div>
+          <div style="margin-top:14px">
+            <button class="add-link" id="home-bg-extras-toggle" type="button" data-closed="+ Slideshow or video" data-open="− Slideshow or video" onclick="toggleDisclosure('home-bg-extras')">+ Slideshow or video</button>
+            <div id="home-bg-extras-body" style="display:none;margin-top:8px">
+              <div class="field">
+                <label>Slideshow <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(optional — replaces single image above)</span></label>
+                <textarea id="home-slides" rows="4" placeholder="images/slide-1.jpg&#10;images/slide-2.jpg&#10;https://…" oninput="markDirty()" style="margin-top:6px;font-size:11px;font-family:monospace"></textarea>
+                <div class="field-hint" style="margin-top:4px">One image URL per line · crossfades automatically every 5 s · click the image to advance</div>
+              </div>
+              <div class="field" style="margin-top:12px">
+                <label>Video <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(mp4 — plays silently, loops)</span></label>
+                <input type="text" id="home-bg-video" placeholder="videos/reel.mp4 or https://…" oninput="markDirty()" style="margin-top:6px" />
+                <div class="field-hint" style="margin-top:4px">If both image and video are set, the video plays over the image as a fallback.</div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -1573,8 +1640,8 @@
         </div>
       </div>
 
-      <!-- ── ADVANCED TAB ── -->
-      <div class="settings-tab-pane" id="stab-advanced">
+      <!-- ── SPECIAL PAGES TAB ── -->
+      <div class="settings-tab-pane" id="stab-special-pages">
 
         <div class="settings-section">
           <div class="settings-section-title" style="display:flex;align-items:center;justify-content:space-between">
@@ -1833,16 +1900,145 @@
   </div>
 </div>
 
+<!-- ═══════════════ CATEGORIES TAB PANE ═══════════════ -->
+<div id="pane-categories" style="display:none">
+  <div class="settings-section">
+    <div class="settings-section-title">Categories</div>
+    <p class="about-hint">
+      Drag to reorder. The <strong>Label</strong> is what visitors see in the nav.
+      The <strong>ID</strong> (slug) identifies existing projects — don't change it if projects already use it.
+    </p>
+    <div class="toolbar" style="margin-bottom:12px">
+      <span></span>
+      <button class="btn btn-ghost btn-sm" onclick="openAddCategory()">+ Add Category</button>
+    </div>
+    <div id="cat-list"></div>
+    <p class="field-hint" style="margin-top:12px">Changes here take effect after saving.</p>
+  </div>
+</div>
+
 <!-- ═══════════════ ADD / EDIT MODAL ═══════════════ -->
 <div class="modal-backdrop hidden" id="modal-edit">
   <div class="modal">
     <div class="modal-title" id="modal-title">Add Project</div>
 
-    <div class="field-row">
+    <div class="modal-tabs">
+      <button class="modal-tab-btn active" data-mtab="basics"     onclick="switchModalTab('basics')">Basics</button>
+      <button class="modal-tab-btn"        data-mtab="media"      onclick="switchModalTab('media')">Media</button>
+      <button class="modal-tab-btn"        data-mtab="details"    onclick="switchModalTab('details')">Details</button>
+      <button class="modal-tab-btn"        data-mtab="appearance" onclick="switchModalTab('appearance')">Appearance</button>
+    </div>
+
+    <!-- ── BASICS TAB ── -->
+    <div class="modal-tab-pane active" id="mtab-basics">
       <div class="field">
         <label>Category</label>
         <select id="f-category" onchange="updateProjectGalleryFieldVisibility()"></select>
       </div>
+      <div class="field">
+        <label>Title</label>
+        <div class="field-clearable">
+          <input type="text" id="f-title" placeholder="Project title" />
+          <button class="field-clear-btn" type="button" onclick="clearField('f-title')" title="Clear">×</button>
+        </div>
+      </div>
+      <div class="field">
+        <label>Client <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(optional — shown in gold above title)</span></label>
+        <div class="field-clearable">
+          <input type="text" id="f-client" placeholder="e.g. Amazon Web Services" />
+          <button class="field-clear-btn" type="button" onclick="clearField('f-client')" title="Clear">×</button>
+        </div>
+      </div>
+      <div class="field" style="margin-top:4px">
+        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;text-transform:none;letter-spacing:0;font-size:13px;font-weight:300;margin-bottom:0">
+          <input type="checkbox" id="f-published" checked />
+          Published
+        </label>
+        <div class="field-hint" style="margin-top:6px">Uncheck to hide this project without deleting it.</div>
+      </div>
+    </div>
+
+    <!-- ── MEDIA TAB ── -->
+    <div class="modal-tab-pane" id="mtab-media">
+      <!-- Media type toggle -->
+      <div class="field">
+        <label>Media</label>
+        <div style="display:flex;gap:0;border:1px solid var(--fg-dimmer);border-radius:3px;overflow:hidden;width:fit-content">
+          <button type="button" id="f-type-video" onclick="setProjectMediaType('video')"
+            style="background:none;border:none;cursor:pointer;font-family:var(--font-sans);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;padding:6px 16px;transition:background 0.15s,color 0.15s;color:var(--fg-dim)">
+            ▶ Video
+          </button>
+          <button type="button" id="f-type-still" onclick="setProjectMediaType('still')"
+            style="background:none;border:none;border-left:1px solid var(--fg-dimmer);cursor:pointer;font-family:var(--font-sans);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;padding:6px 16px;transition:background 0.15s,color 0.15s;color:var(--fg-dim)">
+            ▣ Still
+          </button>
+        </div>
+      </div>
+      <!-- Video URL — shown when type = video -->
+      <div class="field" id="f-video-field">
+        <label>Video URL <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(YouTube, Vimeo, etc.)</span></label>
+        <div class="field-clearable">
+          <input type="url" id="f-url" placeholder="https://youtu.be/…" />
+          <button class="field-clear-btn" type="button" onclick="clearField('f-url')" title="Clear">×</button>
+        </div>
+      </div>
+      <!-- Still image — shown when type = still -->
+      <div class="field" id="f-still-field" style="display:none">
+        <label>Image <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(shown full-size in lightbox)</span></label>
+        <div class="field-clearable">
+          <input type="text" id="f-still-url" placeholder="gallery/motion/filename.webp" oninput="syncStillUrl()" />
+          <button class="field-clear-btn" type="button" onclick="clearField('f-still-url');syncStillUrl()" title="Clear">×</button>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <label class="btn btn-ghost btn-sm" style="cursor:pointer;flex:1;justify-content:center">Upload image…
+            <input type="file" id="f-still-file" accept="image/*" class="file-input-hidden" onchange="handleStillFileInput(this)" />
+          </label>
+        </div>
+        <div id="f-still-preview-wrap" style="margin-top:8px;display:none">
+          <img id="f-still-preview" alt="" style="width:100%;max-height:160px;object-fit:contain;border-radius:2px;border:1px solid var(--fg-dimmer)" />
+        </div>
+        <div class="field-hint" style="margin-top:4px">Uploads to gallery/{category}/ · use Thumbnail below for a separate grid preview</div>
+      </div>
+
+      <div class="field">
+        <label>Thumbnail <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(images live in /thumbs/)</span></label>
+        <div class="field-clearable">
+          <input type="text" id="f-thumbnail" placeholder="filename.jpeg" oninput="updateThumbPreview()" />
+          <button class="field-clear-btn" type="button" onclick="clearField('f-thumbnail');updateThumbPreview()" title="Clear">×</button>
+        </div>
+        <div id="thumb-drop-zone">
+          <img id="thumb-preview" alt="thumbnail preview" />
+          <div class="thumb-empty-state" id="thumb-empty-state">
+            <div class="thumb-empty-icon">⬜</div>
+            <div class="thumb-empty-label">Drop image here to upload</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;justify-content:center;margin-top:8px">
+          <label class="btn btn-ghost btn-sm" style="cursor:pointer">Browse local files…<input type="file" id="thumb-file-input" accept="image/*" class="file-input-hidden" onchange="handleFileInput(this,'thumb')" /></label>
+          <button class="btn btn-ghost btn-sm" type="button" onclick="toggleThumbList()">Browse uploaded ↓</button>
+        </div>
+        <label style="display:flex;align-items:center;gap:6px;margin-top:8px;cursor:pointer;font-size:10px;color:var(--fg-dim);letter-spacing:0.1em;text-transform:uppercase">
+          <input type="checkbox" id="thumb-optimize" checked />
+          Optimize (WebP)
+        </label>
+        <div class="field-hint" style="margin-top:4px">Re-encodes to WebP and resizes to longest edge ≤ 1200 px on upload. Turn off to keep the original file.</div>
+        <div class="thumb-file-list" id="thumb-file-list"></div>
+      </div>
+      <div class="field">
+        <label>Alt Text <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(optional — defaults to project title)</span></label>
+        <input type="text" id="f-alt" placeholder="e.g. Amazon Web Services brand film" />
+        <div class="field-hint" style="margin-top:4px">Describes the thumbnail for screen readers and search engines</div>
+      </div>
+
+      <div class="field" id="f-gallery-field" style="display:none">
+        <label>Gallery Images <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(one path per line — shown on the project detail page)</span></label>
+        <textarea id="f-gallery" rows="5" placeholder="gallery/work/project-01.jpg&#10;gallery/work/project-02.jpg&#10;…" style="font-family:var(--font-mono,monospace);font-size:12px;line-height:1.6;resize:vertical" oninput="markDirty()"></textarea>
+        <div class="field-hint" style="margin-top:4px">Used when the category type is <strong>Gallery</strong>. Upload images via Files → Gallery, then paste the paths here.</div>
+      </div>
+    </div>
+
+    <!-- ── DETAILS TAB ── -->
+    <div class="modal-tab-pane" id="mtab-details">
       <div class="field">
         <label>Overlay Text</label>
         <select id="f-overlay" onchange="updateOverlayHint()">
@@ -1854,146 +2050,42 @@
         </select>
         <div class="field-hint" id="overlay-hint" style="margin-top:4px">Standard overlay with play icon</div>
       </div>
-    </div>
-
-    <div class="field">
-      <label>Title</label>
-      <div class="field-clearable">
-        <input type="text" id="f-title" placeholder="Project title" />
-        <button class="field-clear-btn" type="button" onclick="clearField('f-title')" title="Clear">×</button>
-      </div>
-    </div>
-    <div class="field">
-      <label>Client <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(optional — shown in gold above title)</span></label>
-      <div class="field-clearable">
-        <input type="text" id="f-client" placeholder="e.g. Amazon Web Services" />
-        <button class="field-clear-btn" type="button" onclick="clearField('f-client')" title="Clear">×</button>
-      </div>
-    </div>
-    <!-- Media type toggle -->
-    <div class="field">
-      <label>Media</label>
-      <div style="display:flex;gap:0;border:1px solid var(--fg-dimmer);border-radius:3px;overflow:hidden;width:fit-content">
-        <button type="button" id="f-type-video" onclick="setProjectMediaType('video')"
-          style="background:none;border:none;cursor:pointer;font-family:var(--font-sans);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;padding:6px 16px;transition:background 0.15s,color 0.15s;color:var(--fg-dim)">
-          ▶ Video
-        </button>
-        <button type="button" id="f-type-still" onclick="setProjectMediaType('still')"
-          style="background:none;border:none;border-left:1px solid var(--fg-dimmer);cursor:pointer;font-family:var(--font-sans);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;padding:6px 16px;transition:background 0.15s,color 0.15s;color:var(--fg-dim)">
-          ▣ Still
-        </button>
-        <button type="button" id="f-type-none" onclick="setProjectMediaType('none')"
-          style="background:none;border:none;border-left:1px solid var(--fg-dimmer);cursor:pointer;font-family:var(--font-sans);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;padding:6px 16px;transition:background 0.15s,color 0.15s;color:var(--fg-dim)">
-          None
-        </button>
-      </div>
-    </div>
-    <!-- Video URL — shown when type = video -->
-    <div class="field" id="f-video-field">
-      <label>Video URL <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(YouTube, Vimeo, etc.)</span></label>
-      <div class="field-clearable">
-        <input type="url" id="f-url" placeholder="https://youtu.be/…" />
-        <button class="field-clear-btn" type="button" onclick="clearField('f-url')" title="Clear">×</button>
-      </div>
-    </div>
-    <!-- Still image — shown when type = still -->
-    <div class="field" id="f-still-field" style="display:none">
-      <label>Image <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(shown full-size in lightbox)</span></label>
-      <div class="field-clearable">
-        <input type="text" id="f-still-url" placeholder="gallery/motion/filename.webp" oninput="syncStillUrl()" />
-        <button class="field-clear-btn" type="button" onclick="clearField('f-still-url');syncStillUrl()" title="Clear">×</button>
-      </div>
-      <div style="display:flex;gap:8px;margin-top:8px">
-        <label class="btn btn-ghost btn-sm" style="cursor:pointer;flex:1;justify-content:center">Upload image…
-          <input type="file" id="f-still-file" accept="image/*" class="file-input-hidden" onchange="handleStillFileInput(this)" />
-        </label>
-      </div>
-      <div id="f-still-preview-wrap" style="margin-top:8px;display:none">
-        <img id="f-still-preview" alt="" style="width:100%;max-height:160px;object-fit:contain;border-radius:2px;border:1px solid var(--fg-dimmer)" />
-      </div>
-      <div class="field-hint" style="margin-top:4px">Uploads to gallery/{category}/ · use Thumbnail below for a separate grid preview</div>
-    </div>
-    <div style="margin-bottom:16px">
-      <button class="add-link" id="award-toggle" data-closed="+ Add award" data-open="− Award" onclick="toggleDisclosure('award')">+ Add award</button>
-      <div id="award-body" style="display:none;margin-top:8px">
-        <div class="field" style="margin-bottom:0">
-          <label>Award <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(shown in lightbox and on grid)</span></label>
-          <div class="field-clearable">
-            <input type="text" id="f-award" placeholder="e.g. Telly Award 2023" />
-            <button class="field-clear-btn" type="button" onclick="clearField('f-award')" title="Clear">×</button>
+      <div style="margin-bottom:16px">
+        <button class="add-link" id="award-toggle" data-closed="+ Award" data-open="− Award" onclick="toggleDisclosure('award')">+ Award</button>
+        <div id="award-body" style="display:none;margin-top:8px">
+          <div class="field" style="margin-bottom:0">
+            <label>Award <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(shown in lightbox and on grid)</span></label>
+            <div class="field-clearable">
+              <input type="text" id="f-award" placeholder="e.g. Telly Award 2023" />
+              <button class="field-clear-btn" type="button" onclick="clearField('f-award')" title="Clear">×</button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    <div style="margin-bottom:16px">
-      <button class="add-link" id="description-toggle" data-closed="+ Add description" data-open="− Description" onclick="toggleDisclosure('description')">+ Add description</button>
-      <div id="description-body" style="display:none;margin-top:8px">
-        <div class="field" style="margin-bottom:0">
-          <label>Description <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(shown in lightbox)</span></label>
-          <textarea id="f-description" rows="3" maxlength="500" placeholder="Brief description, credits, or context…" oninput="updateDescCounter()"></textarea>
-          <div style="display:flex;justify-content:flex-end;margin-top:3px">
-            <span id="f-description-counter" style="font-size:9px;color:var(--fg-dim)">0 / 500</span>
+      <div style="margin-bottom:16px">
+        <button class="add-link" id="description-toggle" data-closed="+ Description" data-open="− Description" onclick="toggleDisclosure('description')">+ Description</button>
+        <div id="description-body" style="display:none;margin-top:8px">
+          <div class="field" style="margin-bottom:0">
+            <label>Description <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(shown in lightbox)</span></label>
+            <textarea id="f-description" rows="3" maxlength="500" placeholder="Brief description, credits, or context…" oninput="updateDescCounter()"></textarea>
+            <div style="display:flex;justify-content:flex-end;margin-top:3px">
+              <span id="f-description-counter" style="font-size:9px;color:var(--fg-dim)">0 / 500</span>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="field">
-      <label>Thumbnail <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(images live in /thumbs/)</span></label>
-      <div class="field-clearable">
-        <input type="text" id="f-thumbnail" placeholder="filename.jpeg" oninput="updateThumbPreview()" />
-        <button class="field-clear-btn" type="button" onclick="clearField('f-thumbnail');updateThumbPreview()" title="Clear">×</button>
+    <!-- ── APPEARANCE TAB ── -->
+    <div class="modal-tab-pane" id="mtab-appearance">
+      <div class="field">
+        <label>Aspect Ratio <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">— auto-detected from thumbnail</span></label>
+        <input type="number" id="f-aspect" min="0.1" max="5" step="0.01" placeholder="1.78 (16:9 default)" style="width:160px" oninput="markDirty()" />
+        <div class="field-hint" style="margin-top:4px">Width ÷ height. e.g. 1.78 = 16:9, 1.33 = 4:3, 1.0 = square, 0.67 = 2:3 portrait. Auto-filled when thumbnail loads.</div>
       </div>
-      <div id="thumb-drop-zone">
-        <img id="thumb-preview" alt="thumbnail preview" />
-        <div class="thumb-empty-state" id="thumb-empty-state">
-          <div class="thumb-empty-icon">⬜</div>
-          <div class="thumb-empty-label">Drop image here to upload</div>
-        </div>
-      </div>
-      <div style="display:flex;gap:8px;align-items:center;justify-content:center;margin-top:8px">
-        <label class="btn btn-ghost btn-sm" style="cursor:pointer">Browse local files…<input type="file" id="thumb-file-input" accept="image/*" class="file-input-hidden" onchange="handleFileInput(this,'thumb')" /></label>
-        <button class="btn btn-ghost btn-sm" type="button" onclick="toggleThumbList()">Browse uploaded ↓</button>
-      </div>
-      <label style="display:flex;align-items:center;gap:6px;margin-top:8px;cursor:pointer;font-size:10px;color:var(--fg-dim);letter-spacing:0.1em;text-transform:uppercase">
-        <input type="checkbox" id="thumb-optimize" checked />
-        Optimize (WebP)
-      </label>
-      <div class="field-hint" style="margin-top:4px">Re-encodes to WebP and resizes to longest edge ≤ 1200 px on upload. Turn off to keep the original file.</div>
-      <div class="thumb-file-list" id="thumb-file-list"></div>
-    </div>
-    <div class="field">
-      <label>Alt Text <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(optional — defaults to project title)</span></label>
-      <input type="text" id="f-alt" placeholder="e.g. Amazon Web Services brand film" />
-      <div class="field-hint" style="margin-top:4px">Describes the thumbnail for screen readers and search engines</div>
-    </div>
-
-    <div class="field" id="f-gallery-field" style="display:none">
-      <label>Gallery Images <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(one path per line — shown on the project detail page)</span></label>
-      <textarea id="f-gallery" rows="5" placeholder="gallery/work/project-01.jpg&#10;gallery/work/project-02.jpg&#10;…" style="font-family:var(--font-mono,monospace);font-size:12px;line-height:1.6;resize:vertical" oninput="markDirty()"></textarea>
-      <div class="field-hint" style="margin-top:4px">Used when the category type is <strong>Gallery</strong>. Upload images via Files → Gallery, then paste the paths here.</div>
-    </div>
-
-    <div class="field" style="margin-top:4px">
-      <label style="display:flex;align-items:center;gap:10px;cursor:pointer;text-transform:none;letter-spacing:0;font-size:13px;font-weight:300;margin-bottom:0">
-        <input type="checkbox" id="f-published" checked />
-        Published
-      </label>
-      <div class="field-hint" style="margin-top:6px">Uncheck to hide this project without deleting it.</div>
-    </div>
-
-    <div style="margin-bottom:16px">
-      <button class="add-link" id="appearance-toggle" data-closed="+ Appearance" data-open="− Appearance" onclick="toggleDisclosure('appearance')">+ Appearance</button>
-      <div id="appearance-body" style="display:none;margin-top:8px">
-        <div class="field" style="margin-bottom:12px">
-          <label>Aspect Ratio <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">— auto-detected from thumbnail</span></label>
-          <input type="number" id="f-aspect" min="0.1" max="5" step="0.01" placeholder="1.78 (16:9 default)" style="width:160px" oninput="markDirty()" />
-          <div class="field-hint" style="margin-top:4px">Width ÷ height. e.g. 1.78 = 16:9, 1.33 = 4:3, 1.0 = square, 0.67 = 2:3 portrait. Auto-filled when thumbnail loads.</div>
-        </div>
-        <div class="field" style="margin-bottom:0">
-          <label>Vignette Opacity <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(0–100%) — darkens the background behind text</span></label>
-          <input type="number" id="f-vignette" min="0" max="100" step="5" placeholder="30" />
-        </div>
+      <div class="field" style="margin-bottom:0">
+        <label>Vignette Opacity <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(0–100%) — darkens the background behind text</span></label>
+        <input type="number" id="f-vignette" min="0" max="100" step="5" placeholder="30" />
       </div>
     </div>
 
@@ -2065,7 +2157,7 @@
 
     <!-- Award -->
     <div style="margin-bottom:16px">
-      <button class="add-link" id="ge-award-toggle" data-closed="+ Add award" data-open="− Award" onclick="toggleDisclosure('ge-award')">+ Add award</button>
+      <button class="add-link" id="ge-award-toggle" data-closed="+ Award" data-open="− Award" onclick="toggleDisclosure('ge-award')">+ Award</button>
       <div id="ge-award-body" style="display:none;margin-top:8px">
         <div class="field" style="margin-bottom:0">
           <label>Award</label>
@@ -2079,7 +2171,7 @@
 
     <!-- Description -->
     <div style="margin-bottom:16px">
-      <button class="add-link" id="ge-description-toggle" data-closed="+ Add description" data-open="− Description" onclick="toggleDisclosure('ge-description')">+ Add description</button>
+      <button class="add-link" id="ge-description-toggle" data-closed="+ Description" data-open="− Description" onclick="toggleDisclosure('ge-description')">+ Description</button>
       <div id="ge-description-body" style="display:none;margin-top:8px">
         <div class="field" style="margin-bottom:0">
           <label>Description</label>
@@ -2270,16 +2362,15 @@
 <div class="toast" id="toast"></div>
 
 <script>
-// --- Place this in the <script> section of admin.html ---
 function togglePw(id) {
   const input = document.getElementById(id);
+  if (!input) return;
   const btn = input.nextElementSibling;
-  if (input.type === 'password') {
-    input.type = 'text';
-    btn.textContent = '○'; // Changes the dot to a circle when visible
-  } else {
-    input.type = 'password';
-    btn.textContent = '●'; // Changes back to a dot when hidden
+  const wasHidden = input.type === 'password';
+  input.type = wasHidden ? 'text' : 'password';
+  if (btn && btn.classList.contains('pw-toggle')) {
+    btn.classList.toggle('revealed', wasHidden);
+    btn.setAttribute('aria-label', wasHidden ? 'Hide' : 'Show');
   }
 }
 const DEFAULT_FAVICON = "data:image/svg+xml,%3Csvg viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='%23c9a96e' stroke-width='1.5' stroke-linejoin='round'%3E%3Cpolygon points='16,2 28,9 16,16 4,9'/%3E%3Cpolygon points='28,9 28,23 16,30 16,16'/%3E%3Cpolygon points='4,9 16,16 16,30 4,23'/%3E%3C/svg%3E";
@@ -2420,11 +2511,6 @@ function resetSetup() {
   location.reload();
 }
 
-function togglePw(id) {
-  const el = document.getElementById(id);
-  el.type = el.type === 'password' ? 'text' : 'password';
-}
-
 // ─── APP INIT ────────────────────────────────────────────────────────────────
 async function showApp(restoreTab = false) {
   document.getElementById('screen-setup').classList.add('hidden');
@@ -2434,6 +2520,7 @@ async function showApp(restoreTab = false) {
   await loadAll(restoreTab);
   loadThumbFiles(); // non-blocking
   initThumbDropZone();
+  initSegmentedControls();
   // Background token permission check
   const token = localStorage.getItem(K_TOKEN);
   const owner = localStorage.getItem(K_OWNER);
@@ -2612,7 +2699,7 @@ function buildAdminUI(restoreTab = false) {
   if (restoreTab) {
     // Browser reload — restore last active tab
     const saved = localStorage.getItem(K_TAB);
-    const valid = [...siteConfig.categories.map(c => c.id), 'site'];
+    const valid = [...siteConfig.categories.map(c => c.id), 'site', 'categories'];
     const tab   = saved && valid.includes(saved) ? saved : (siteConfig.categories[0]?.id || 'site');
     switchTab(tab);
     if (tab === 'site') switchSettingsTab(localStorage.getItem(K_STAB) || 'general');
@@ -2713,7 +2800,8 @@ function buildAdminCategoryPanes() {
       pane.innerHTML = `
         <div class="toolbar">
           <span class="toolbar-label" id="count-${cat.id}"></span>
-          <div style="display:flex;gap:8px">
+          <div style="display:flex;gap:8px;align-items:center">
+            <input type="text" placeholder="Filter projects…" class="project-filter-input" id="filter-${cat.id}" oninput="filterProjects('${cat.id}', this.value)" />
             <button class="btn btn-ghost btn-sm" onclick="openAdd('${cat.id}')">+ Add Project</button>
             <button class="btn btn-ghost btn-sm" onclick="previewCategory('${cat.id}')">Preview ↗</button>
           </div>
@@ -2754,6 +2842,7 @@ function renderCategory(cat) {
     card.className = 'project-card' + (p.published === false ? ' unpublished' : '');
     card.draggable = true;
     card.dataset.idx = globalIdx;
+    card.dataset.searchTerms = ((p.title || '') + ' ' + (p.client || '') + ' ' + (p.award || '')).toLowerCase();
 
     card.innerHTML = `
       <div class="drag-handle" title="Drag to reorder">
@@ -2814,6 +2903,41 @@ function renderCategory(cat) {
       }
     }
   });
+
+  // Re-apply any active filter so cards stay hidden through re-renders
+  const filterEl = document.getElementById('filter-' + cat);
+  if (filterEl && filterEl.value) filterProjects(cat, filterEl.value);
+}
+
+function filterProjects(catId, query) {
+  const list = document.getElementById('list-' + catId);
+  if (!list) return;
+  const q = (query || '').trim().toLowerCase();
+  const cards = list.querySelectorAll('.project-card');
+  let visible = 0;
+  cards.forEach(card => {
+    const matches = !q || (card.dataset.searchTerms || '').includes(q);
+    card.style.display = matches ? '' : 'none';
+    if (matches) visible++;
+  });
+  // Show / clear a "no matches" hint
+  let emptyHint = list.querySelector('.filter-empty');
+  if (cards.length > 0 && visible === 0) {
+    if (!emptyHint) {
+      emptyHint = document.createElement('div');
+      emptyHint.className = 'empty filter-empty';
+      emptyHint.textContent = 'No projects match.';
+      list.appendChild(emptyHint);
+    }
+  } else if (emptyHint) {
+    emptyHint.remove();
+  }
+  // Update count to reflect filter
+  const count = document.getElementById('count-' + catId);
+  if (count) {
+    if (q) count.textContent = `${visible} of ${cards.length} project${cards.length !== 1 ? 's' : ''}`;
+    else   count.textContent = `${cards.length} project${cards.length !== 1 ? 's' : ''}`;
+  }
 }
 
 // ─── GALLERY CATEGORY RENDER ─────────────────────────────────────────────────
@@ -3463,7 +3587,7 @@ function onDragEnd() {
 
 // ─── TABS ────────────────────────────────────────────────────────────────────
 function switchTabDirect(tabId) {
-  const allTabIds = [...siteConfig.categories.map(c => c.id), 'site', 'files'];
+  const allTabIds = [...siteConfig.categories.map(c => c.id), 'site', 'categories', 'files'];
   allTabIds.forEach(id => {
     const tab  = document.getElementById('tab-'  + id);
     const pane = document.getElementById('pane-' + id);
@@ -3474,6 +3598,7 @@ function switchTabDirect(tabId) {
   localStorage.setItem(K_TAB, tabId);
   if (tabId !== 'site') localStorage.removeItem(K_STAB);
   if (tabId === 'files') initFileManagerTab();
+  if (tabId === 'categories') renderCategoryList();
   // Scroll active tab into view in the scroll container
   const activeTab = document.getElementById('tab-' + tabId);
   if (activeTab) activeTab.scrollIntoView({ block: 'nearest', inline: 'nearest' });
@@ -3483,6 +3608,49 @@ function switchTabDirect(tabId) {
 function switchTab(tabId) {
   if (isDirty) { guardDirty(() => switchTabDirect(tabId)); return; }
   switchTabDirect(tabId);
+}
+
+function switchModalTab(tab) {
+  document.querySelectorAll('#modal-edit .modal-tab-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.mtab === tab);
+  });
+  document.querySelectorAll('#modal-edit .modal-tab-pane').forEach(pane => {
+    pane.classList.toggle('active', pane.id === 'mtab-' + tab);
+  });
+}
+
+// ─── SEGMENTED CONTROLS ──────────────────────────────────────────────────────
+// Markup pattern:
+//   <div class="segmented" data-for="my-input">
+//     <button type="button" data-value="a">A</button>
+//     <button type="button" data-value="b">B</button>
+//   </div>
+//   <input type="hidden" id="my-input" />
+// Use setSegmentedValue('my-input', 'a') from populate code.
+function initSegmentedControls() {
+  document.querySelectorAll('.segmented[data-for]').forEach(seg => {
+    const name  = seg.dataset.for;
+    const input = document.getElementById(name);
+    seg.querySelectorAll('button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (input && input.value === btn.dataset.value) return;
+        setSegmentedValue(name, btn.dataset.value);
+        if (input) {
+          input.dispatchEvent(new Event('change', { bubbles: true }));
+          input.dispatchEvent(new Event('input',  { bubbles: true }));
+        }
+        markDirty();
+      });
+    });
+  });
+}
+function setSegmentedValue(name, value) {
+  const input = document.getElementById(name);
+  const seg   = document.querySelector(`.segmented[data-for="${name}"]`);
+  if (input) input.value = value;
+  if (seg) seg.querySelectorAll('button').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.value === value);
+  });
 }
 
 // ─── ADD / EDIT ──────────────────────────────────────────────────────────────
@@ -3538,7 +3706,7 @@ function clearModalForm() {
   ['f-title','f-client','f-url','f-still-url','f-award','f-description','f-thumbnail','f-vignette','f-aspect','f-alt','f-gallery'].forEach(id => {
     document.getElementById(id).value = '';
   });
-  ['award','description','appearance'].forEach(closeDisclosure);
+  ['award','description'].forEach(closeDisclosure);
   document.getElementById('f-overlay').value = '';
   updateOverlayHint();
   document.getElementById('f-published').checked = true;
@@ -3561,6 +3729,7 @@ function openAdd(cat) {
   setProjectMediaType('video');
   populateCategoryDropdown(cat);
   updateProjectGalleryFieldVisibility();
+  switchModalTab('basics');
   document.getElementById('modal-edit').classList.remove('hidden');
   document.getElementById('f-title').focus();
 }
@@ -3587,12 +3756,11 @@ function openEdit(globalIdx) {
   updateProjectGalleryFieldVisibility();
   if (p.award)                   openDisclosure('award');
   if (p.description)             openDisclosure('description');
-  if (p.vignette !== undefined || p.aspect !== undefined) openDisclosure('appearance');
   document.getElementById('f-published').checked = p.published !== false;
   updateOverlayHint();
   updateThumbPreview();
-  // Detect media type and set toggle
-  const mediaType = isVideoUrl(p.url) ? 'video' : isImageUrl(p.url) ? 'still' : 'none';
+  // Detect media type and set toggle (legacy 'none' projects fall back to video)
+  const mediaType = isImageUrl(p.url) ? 'still' : 'video';
   setProjectMediaType(mediaType);
   if (mediaType === 'still') {
     document.getElementById('f-still-url').value = p.url || '';
@@ -3601,6 +3769,7 @@ function openEdit(globalIdx) {
     if (wrap && img && p.url) { img.src = p.url; wrap.style.display = ''; }
   }
   document.getElementById('edit-delete-zone').style.display = '';
+  switchModalTab('basics');
   document.getElementById('modal-edit').classList.remove('hidden');
   document.getElementById('f-title').focus();
 }
@@ -3802,8 +3971,7 @@ function deleteCategoryFromModal() {
       buildAdminCategoryPanes();
       renderAll();
       renderCategoryList();
-      switchTabDirect('site');
-      switchSettingsTab('categories');
+      switchTabDirect('categories');
       showToast('Section deleted.', 'success');
       saveToGitHub();
     }
@@ -3899,8 +4067,8 @@ function populateAboutEditor() {
   const a = siteConfig.about || {};
   document.getElementById('about-show-input').checked       = a.show !== false; // checked = visible (default on)
   document.getElementById('about-photo-input').value        = a.photo || '';
-  document.getElementById('about-photo-shape').value     = a.photoShape     || 'natural';
-  document.getElementById('about-photo-placement').value = a.photoPlacement || 'above';
+  setSegmentedValue('about-photo-shape',     a.photoShape     || 'natural');
+  setSegmentedValue('about-photo-placement', a.photoPlacement || 'above');
   // backward compat: parse old "X% Y%" string if new fields missing
   const legacyPos = a.photoPosition || '';
   const defX = a.photoX !== undefined ? a.photoX : (legacyPos ? parseFloat(legacyPos) : 50);
@@ -3966,12 +4134,10 @@ function updateAboutPhotoPreview(silent = false) {
     prev.src = val || '';
   }
 
-  // Reset style selects when photo is cleared
+  // Reset style controls when photo is cleared
   if (!val) {
-    const shapeEl = document.getElementById('about-photo-shape');
-    const placementEl = document.getElementById('about-photo-placement');
-    if (shapeEl) shapeEl.value = 'natural';
-    if (placementEl) placementEl.value = 'above';
+    setSegmentedValue('about-photo-shape', 'natural');
+    setSegmentedValue('about-photo-placement', 'above');
   }
 
   const show = !!val;
@@ -5723,18 +5889,6 @@ function openLiveSite() {
   window.open('./', '_blank');
 }
 
-function openActions() {
-  // Build from the configured owner/repo so the studio is portable across
-  // sites without hardcoding URLs.
-  const owner = localStorage.getItem(K_OWNER) || '';
-  const repo  = localStorage.getItem(K_REPO)  || '';
-  if (!owner || !repo) {
-    alert('Set your GitHub owner and repository in Settings → Connection first.');
-    return;
-  }
-  window.open(`https://github.com/${owner}/${repo}/actions`, '_blank');
-}
-
 function openPreview() {
   try {
     flushSettingsForms();
@@ -5971,9 +6125,11 @@ function esc(s) {
 let _currentProjectMediaType = 'video';
 
 function setProjectMediaType(type) {
+  // Defensive: legacy 'none' projects (no URL) default to video on edit.
+  if (type !== 'video' && type !== 'still') type = 'video';
   _currentProjectMediaType = type;
   // Toggle button styles
-  ['video','still','none'].forEach(t => {
+  ['video','still'].forEach(t => {
     const btn = document.getElementById('f-type-' + t);
     if (!btn) return;
     btn.style.background = t === type ? 'var(--fg-dimmer)' : 'none';
@@ -5984,11 +6140,6 @@ function setProjectMediaType(type) {
   const sf = document.getElementById('f-still-field');
   if (vf) vf.style.display = type === 'video' ? '' : 'none';
   if (sf) sf.style.display = type === 'still' ? '' : 'none';
-  // When switching away from still, clear the still URL
-  if (type !== 'still') {
-    const su = document.getElementById('f-still-url');
-    if (su && !isImageUrl(su.value)) { /* keep if it's already an image url in f-url */ }
-  }
 }
 
 function syncStillUrl() {
@@ -6182,7 +6333,7 @@ function populateGeneralSettings() {
   const an = siteConfig.analytics || {};
   document.getElementById('site-analytics-provider').value = an.provider || '';
   document.getElementById('site-analytics-id').value       = an.id       || '';
-  document.getElementById('site-nav-style').value = siteConfig.navStyle || 'top';
+  setSegmentedValue('site-nav-style', siteConfig.navStyle || 'top');
   const themeMode = siteConfig.themeMode || 'auto';
   document.getElementById('site-theme-mode').value = themeMode;
   document.getElementById('site-allow-theme-toggle').checked = !!siteConfig.allowThemeToggle;
@@ -6213,6 +6364,8 @@ function populateGeneralSettings() {
   document.getElementById('home-bg').value            = hp.bg        || '';
   document.getElementById('home-bg-video').value      = hp.bgVideo   || '';
   document.getElementById('home-slides').value        = Array.isArray(hp.slides) ? hp.slides.join('\n') : '';
+  // Auto-open the slideshow/video disclosure if either has a value
+  if (hp.bgVideo || (Array.isArray(hp.slides) && hp.slides.length)) openDisclosure('home-bg-extras');
   document.getElementById('home-text-layout').value   = hp.textLayout || 'centered';
   document.getElementById('home-reveal-delay').value  = (hp.revealDelay ?? 0);
   document.getElementById('home-show-ctas').checked   = hp.showCtas !== false;
@@ -6449,11 +6602,19 @@ async function patchIndexOgTags() {
 }
 
 function switchSettingsTab(tab) {
-  // Map removed tabs to their new home
-  const tabMap = { sections: 'categories', contact: 'advanced', splash: 'advanced', '404': 'advanced' };
+  // Map removed/renamed tabs to their current home
+  const tabMap = {
+    sections: 'categories',
+    contact:  'special-pages',
+    splash:   'special-pages',
+    '404':    'special-pages',
+    advanced: 'special-pages',
+  };
   tab = tabMap[tab] || tab;
+  // 'categories' was promoted to a top-level tab — bounce out of settings
+  if (tab === 'categories') { switchTab('categories'); return; }
   document.querySelectorAll('#pane-site .settings-tab-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.textContent.trim().toLowerCase() === tab);
+    btn.classList.toggle('active', btn.dataset.stab === tab);
   });
   document.querySelectorAll('#pane-site .settings-tab-pane').forEach(pane => {
     pane.classList.toggle('active', pane.id === 'stab-' + tab);
