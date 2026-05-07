@@ -47,6 +47,35 @@
     }
     .theme-toggle:hover { color: var(--fg); }
 
+    /* ── UTILITY CLASSES ── */
+
+    /* small parenthetical hint inside a <label>, e.g. "(optional)" */
+    .label-aside {
+      color: var(--fg-dim); font-size: 9px;
+      text-transform: none; letter-spacing: 0;
+      font-weight: 400;
+    }
+
+    /* checkbox + text label on a single row (12px, cursor:pointer) */
+    .checkbox-row {
+      display: flex; align-items: center; gap: 8px;
+      cursor: pointer; text-transform: none; letter-spacing: 0;
+      font-size: 12px;
+    }
+
+    /* settings-section-title with a right-aligned action button */
+    .section-title-actions {
+      display: flex; align-items: center; justify-content: space-between;
+    }
+
+    /* quiet "Preview ↗"-style text link rendered as a button */
+    .text-link-btn {
+      background: none; border: none; cursor: pointer;
+      font-size: 11px; color: var(--fg-dim); padding: 0;
+      text-transform: none; letter-spacing: 0; font-weight: 400;
+    }
+    .text-link-btn:hover { color: var(--fg-mid); }
+
     html {
       background: var(--bg);
       color: var(--fg);
@@ -1149,21 +1178,21 @@
             <div class="field-hint">Shown in the nav bar on the public site and admin panel.</div>
           </div>
           <div class="field">
-            <label>Title / Role <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(shown next to your name in the nav)</span></label>
+            <label>Title / Role <span class="label-aside">(shown next to your name in the nav)</span></label>
             <div class="field-clearable">
               <input type="text" id="site-title-input" placeholder="e.g. Editor, Photographer, Director" oninput="markDirty()" />
               <button class="field-clear-btn" type="button" onclick="clearField('site-title-input')" title="Clear">×</button>
             </div>
           </div>
           <div class="field">
-            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;letter-spacing:0;font-size:12px">
+            <label class="checkbox-row">
               <input type="checkbox" id="site-nav-show-ig" onchange="markDirty()" />
               Show Instagram icon in nav
             </label>
             <div class="field-hint" style="margin-top:4px">Adds a small Instagram icon to the right of the nav links. Pulls the URL from About → Instagram.</div>
           </div>
           <div class="field">
-            <label>Landscape Drawer Style <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(home page on phone in landscape)</span></label>
+            <label>Landscape Drawer Style <span class="label-aside">(home page on phone in landscape)</span></label>
             <select id="site-nav-landscape-drawer-style" style="width:100%" onchange="markDirty()">
               <option value="top">Top — folds down from edge (default)</option>
               <option value="side">Side — slides in from the right</option>
@@ -1171,7 +1200,7 @@
             <div class="field-hint" style="margin-top:4px">Only affects the immersive home page when viewed on a phone in landscape orientation.</div>
           </div>
           <div class="field">
-            <label>Brand Logo <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(optional — replaces text name in the nav)</span></label>
+            <label>Brand Logo <span class="label-aside">(optional — replaces text name in the nav)</span></label>
             <div class="field-clearable">
               <input type="text" id="site-brand-logo" placeholder="https://… or images/logo.png" oninput="updateBrandLogoPreview();markDirty()" />
               <button class="field-clear-btn" type="button" onclick="clearField('site-brand-logo');updateBrandLogoPreview()" title="Clear">×</button>
@@ -1273,28 +1302,28 @@
         <div class="settings-section">
           <div class="settings-section-title">Texture &amp; Detail</div>
           <div class="field">
-            <label>Film Grain <span id="site-film-grain-pct" style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0;font-weight:400"></span></label>
+            <label>Film Grain <span id="site-film-grain-pct" class="label-aside"></span></label>
             <input type="range" id="site-film-grain" min="0" max="100" step="1" value="28"
               style="width:100%;accent-color:var(--accent)"
               oninput="document.getElementById('site-film-grain-pct').textContent='— '+this.value+'%';document.documentElement.style.setProperty('--film-grain-opacity', this.value/500);markDirty()" />
             <div class="field-hint" style="margin-top:4px">Subtle texture overlay on the public site. 0 = off.</div>
           </div>
           <div class="field" style="margin-top:12px">
-            <label>Thumbnail Filter <span id="site-thumb-filter-pct" style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0;font-weight:400"></span></label>
+            <label>Thumbnail Filter <span id="site-thumb-filter-pct" class="label-aside"></span></label>
             <input type="range" id="site-thumb-filter" min="0" max="100" step="1" value="0"
               style="width:100%;accent-color:var(--accent)"
               oninput="updateThumbFilter(this.value);markDirty()" />
             <div class="field-hint" style="margin-top:4px">Desaturates and dims thumbnails at rest. 0 = natural, 100 = cinematic.</div>
           </div>
           <div class="field" style="margin-top:12px">
-            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;letter-spacing:0;font-size:12px">
+            <label class="checkbox-row">
               <input type="checkbox" id="site-zoom-lock" onchange="markDirty()" />
               Lock zoom on mobile
             </label>
             <div class="field-hint" style="margin-top:4px">Prevents pinch-to-zoom on phones and tablets. Off by default — visitors can zoom in to inspect detail.</div>
           </div>
           <div class="field" style="margin-top:12px">
-            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;letter-spacing:0;font-size:12px">
+            <label class="checkbox-row">
               <input type="checkbox" id="site-mobile-thumbs-native" onchange="markDirty()" />
               Native aspect ratio for mobile thumbnails
             </label>
@@ -1306,11 +1335,11 @@
       <!-- ── ABOUT TAB ── -->
       <div class="settings-tab-pane" id="stab-about">
         <div class="settings-section about-editor">
-          <div class="settings-section-title" style="display:flex;align-items:center;justify-content:space-between">
+          <div class="settings-section-title section-title-actions">
             About Page
             <div style="display:flex;align-items:center;gap:12px">
-              <button type="button" onclick="previewPage('about')" style="background:none;border:none;cursor:pointer;font-size:11px;color:var(--fg-dim);padding:0;text-transform:none;letter-spacing:0;font-weight:400">Preview ↗</button>
-              <label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;letter-spacing:0;font-size:12px;font-weight:300;margin:0">
+              <button type="button" onclick="previewPage('about')" class="text-link-btn">Preview ↗</button>
+              <label class="checkbox-row" style="margin:0">
                 <input type="checkbox" id="about-show-input" onchange="markDirty()" />
                 <span style="color:var(--fg-dim)">Show About page</span>
               </label>
@@ -1320,7 +1349,7 @@
           <!-- Photo -->
           <div class="about-subsection-title">Photo</div>
           <div class="field">
-            <label>Photo <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(optional — URL or relative path)</span></label>
+            <label>Photo <span class="label-aside">(optional — URL or relative path)</span></label>
             <div class="field-clearable">
               <input type="text" id="about-photo-input" placeholder="e.g. images/headshot.jpg or https://…" oninput="updateAboutPhotoPreview();markDirty()" />
               <button class="field-clear-btn" type="button" onclick="clearField('about-photo-input')" title="Clear">×</button>
@@ -1368,7 +1397,7 @@
                 </div>
                 <div class="field-hint" id="about-photo-hint" style="margin-bottom:6px">Circle crop, positioned above the bio</div>
                 <div id="about-photo-fullwidth-field" style="display:none;margin-bottom:8px">
-                  <label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;letter-spacing:0;font-size:12px;font-weight:300;margin:0">
+                  <label class="checkbox-row" style="margin:0">
                     <input type="checkbox" id="about-photo-fullwidth" onchange="markDirty()" />
                     Full width
                   </label>
@@ -1387,7 +1416,7 @@
             <div class="thumb-file-list" id="about-photo-file-list"></div>
           </div>
           <div class="field">
-            <label>Photo Alt Text <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(optional — defaults to your name)</span></label>
+            <label>Photo Alt Text <span class="label-aside">(optional — defaults to your name)</span></label>
             <input type="text" id="about-photo-alt" placeholder="e.g. Cameron Rumford, film editor" oninput="markDirty()" />
             <div class="field-hint" style="margin-top:4px">Describes your photo for screen readers and search engines</div>
           </div>
@@ -1414,7 +1443,7 @@
           <div class="field">
             <label>Email</label>
             <input type="email" id="about-email-input" placeholder="you@example.com" oninput="markDirty()" />
-            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;letter-spacing:0;font-size:12px;margin-top:8px">
+            <label class="checkbox-row" style="margin-top:8px">
               <input type="checkbox" id="about-show-email" onchange="markDirty()" />
               Show email on About page
             </label>
@@ -1424,7 +1453,7 @@
             <button class="add-link" id="cv-toggle" data-closed="+ CV / Resume" data-open="− CV / Resume" onclick="toggleDisclosure('cv')">+ CV / Resume</button>
             <div id="cv-body" style="display:none;margin-top:8px">
               <div class="field" style="margin-bottom:0">
-                <label>CV / Resume <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(optional — URL or relative path)</span></label>
+                <label>CV / Resume <span class="label-aside">(optional — URL or relative path)</span></label>
                 <div class="field-clearable">
                   <input type="text" id="about-resume-input" placeholder="files/resume.pdf or https://…" oninput="markDirty()" />
                   <button class="field-clear-btn" type="button" onclick="clearField('about-resume-input')" title="Clear">×</button>
@@ -1533,12 +1562,12 @@
       <!-- ── PAGES TAB ── -->
       <div class="settings-tab-pane" id="stab-pages">
         <div class="settings-section">
-          <div class="settings-section-title" style="display:flex;align-items:center;justify-content:space-between">
+          <div class="settings-section-title section-title-actions">
             Home Page
-            <button type="button" onclick="previewPage('home')" style="background:none;border:none;cursor:pointer;font-size:11px;color:var(--fg-dim);padding:0;text-transform:none;letter-spacing:0;font-weight:400">Preview ↗</button>
+            <button type="button" onclick="previewPage('home')" class="text-link-btn">Preview ↗</button>
           </div>
           <div class="field">
-            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;letter-spacing:0;font-size:12px">
+            <label class="checkbox-row">
               <input type="checkbox" id="home-enabled" onchange="markDirty()" />
               Enable home page
             </label>
@@ -1549,11 +1578,11 @@
             <input type="text" id="home-headline" placeholder="e.g. We make things look good." oninput="markDirty()" style="margin-top:6px" />
           </div>
           <div class="field" style="margin-top:12px">
-            <label>Subhead <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(displayed in uppercase above or below headline)</span></label>
+            <label>Subhead <span class="label-aside">(displayed in uppercase above or below headline)</span></label>
             <input type="text" id="home-subhead" placeholder="e.g. Post-production / Los Angeles" oninput="markDirty()" style="margin-top:6px" />
           </div>
           <div class="field" style="margin-top:12px">
-            <label>Body Copy <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(optional — keep it short)</span></label>
+            <label>Body Copy <span class="label-aside">(optional — keep it short)</span></label>
             <textarea id="home-body" rows="3" placeholder="A sentence or two about who you are…" oninput="markDirty()" style="margin-top:6px"></textarea>
           </div>
         </div>
@@ -1571,12 +1600,12 @@
             <div class="field-hint" style="margin-top:4px">Caption modes pin the text to a corner like a wall card. Gallery mode hides all text and CTAs so the photo speaks for itself. Caption modes fall back to centered on small screens.</div>
           </div>
           <div class="field" style="margin-top:12px">
-            <label>Reveal Delay <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(seconds)</span></label>
+            <label>Reveal Delay <span class="label-aside">(seconds)</span></label>
             <input type="number" id="home-reveal-delay" min="0" max="10" step="0.1" placeholder="0" oninput="markDirty()" style="margin-top:6px;width:120px" />
             <div class="field-hint" style="margin-top:4px">Lets the photograph land first, then fades in the text. Try <em>1.5</em> for a slow, intentional feel. <em>0</em> = instant.</div>
           </div>
           <div class="field" style="margin-top:12px">
-            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;letter-spacing:0;font-size:12px">
+            <label class="checkbox-row">
               <input type="checkbox" id="home-show-ctas" onchange="markDirty()" />
               Show CTA buttons on home
             </label>
@@ -1607,12 +1636,12 @@
             <button class="add-link" id="home-bg-extras-toggle" type="button" data-closed="+ Slideshow or video" data-open="− Slideshow or video" onclick="toggleDisclosure('home-bg-extras')">+ Slideshow or video</button>
             <div id="home-bg-extras-body" style="display:none;margin-top:8px">
               <div class="field">
-                <label>Slideshow <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(optional — replaces single image above)</span></label>
+                <label>Slideshow <span class="label-aside">(optional — replaces single image above)</span></label>
                 <textarea id="home-slides" rows="4" placeholder="images/slide-1.jpg&#10;images/slide-2.jpg&#10;https://…" oninput="markDirty()" style="margin-top:6px;font-size:11px;font-family:monospace"></textarea>
                 <div class="field-hint" style="margin-top:4px">One image URL per line · crossfades automatically every 5 s · click the image to advance</div>
               </div>
               <div class="field" style="margin-top:12px">
-                <label>Video <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(mp4 — plays silently, loops)</span></label>
+                <label>Video <span class="label-aside">(mp4 — plays silently, loops)</span></label>
                 <input type="text" id="home-bg-video" placeholder="videos/reel.mp4 or https://…" oninput="markDirty()" style="margin-top:6px" />
                 <div class="field-hint" style="margin-top:4px">If both image and video are set, the video plays over the image as a fallback.</div>
               </div>
@@ -1631,7 +1660,7 @@
             <div class="field-hint" style="margin-top:4px">Highlighted in accent color. Target can be a category ID (e.g. <em>work</em>), <em>about</em>, <em>contact</em>, or a full URL.</div>
           </div>
           <div class="field" style="margin-top:12px">
-            <label>Secondary Button <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(optional)</span></label>
+            <label>Secondary Button <span class="label-aside">(optional)</span></label>
             <div style="display:flex;gap:8px;margin-top:6px">
               <input type="text" id="home-cta2-label" placeholder="Label" oninput="markDirty()" style="flex:1" />
               <input type="text" id="home-cta2-target" placeholder="Category ID, about, or URL" oninput="markDirty()" style="flex:1.5" />
@@ -1644,9 +1673,9 @@
       <div class="settings-tab-pane" id="stab-special-pages">
 
         <div class="settings-section">
-          <div class="settings-section-title" style="display:flex;align-items:center;justify-content:space-between">
+          <div class="settings-section-title section-title-actions">
             Contact
-            <button type="button" onclick="previewPage('contact')" style="background:none;border:none;cursor:pointer;font-size:11px;color:var(--fg-dim);padding:0;text-transform:none;letter-spacing:0;font-weight:400">Preview ↗</button>
+            <button type="button" onclick="previewPage('contact')" class="text-link-btn">Preview ↗</button>
           </div>
           <div class="field">
             <label>Mode</label>
@@ -1682,7 +1711,7 @@
               <div class="field-hint" style="margin-top:4px">Optional photo shown beside the contact card (side-by-side on desktop, stacked on mobile). Use a different image from About if you want — behind-the-scenes, environmental, etc.</div>
             </div>
             <div class="field">
-              <label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;letter-spacing:0;font-size:12px">
+              <label class="checkbox-row">
                 <input type="checkbox" id="contact-show-email-in-drawer" onchange="markDirty()" />
                 Show email under Contact in mobile menu
               </label>
@@ -1711,11 +1740,11 @@
         </div>
 
         <div class="settings-section">
-          <div class="settings-section-title" style="display:flex;align-items:center;justify-content:space-between">
+          <div class="settings-section-title section-title-actions">
             Splash Screen
             <div style="display:flex;align-items:center;gap:12px">
-              <button type="button" onclick="previewPage('splash')" style="background:none;border:none;cursor:pointer;font-size:11px;color:var(--fg-dim);padding:0;text-transform:none;letter-spacing:0;font-weight:400">Preview ↗</button>
-              <label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;letter-spacing:0;font-size:12px;font-weight:300;margin:0">
+              <button type="button" onclick="previewPage('splash')" class="text-link-btn">Preview ↗</button>
+              <label class="checkbox-row" style="margin:0">
                 <span style="color:var(--fg-dim)">Enable</span>
                 <input type="checkbox" id="splash-enabled" onchange="updateSplashFieldsVisibility();markDirty()" />
               </label>
@@ -1723,7 +1752,7 @@
           </div>
           <div id="splash-fields" style="display:none">
             <div class="field">
-              <label>Video <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(URL or relative path)</span></label>
+              <label>Video <span class="label-aside">(URL or relative path)</span></label>
               <div class="field-clearable">
                 <input type="text" id="splash-video" placeholder="videos/reel.mp4 or https://…" oninput="markDirty()" />
                 <button class="field-clear-btn" type="button" onclick="clearField('splash-video')" title="Clear">×</button>
@@ -1750,7 +1779,7 @@
         <div class="settings-section">
           <div class="settings-section-title">SEO &amp; Sharing</div>
           <div class="field">
-            <label>Favicon <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(optional)</span></label>
+            <label>Favicon <span class="label-aside">(optional)</span></label>
             <div class="field-clearable">
               <input type="text" id="site-favicon-input" placeholder="favicon.png or https://…" oninput="updateFaviconPreview();markDirty()" />
               <button class="field-clear-btn" type="button" onclick="clearField('site-favicon-input');updateFaviconPreview()" title="Clear">×</button>
@@ -1778,7 +1807,7 @@
             <div class="field-hint" style="margin-top:3px">Browsers cache favicons aggressively — after uploading a new one, you may need to hard-refresh (⌘⇧R on Mac, Ctrl+Shift+R on Windows) to see the update in the tab.</div>
           </div>
           <div class="field">
-            <label>Social Preview Image <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(shown when sharing your link)</span></label>
+            <label>Social Preview Image <span class="label-aside">(shown when sharing your link)</span></label>
             <div class="field-clearable">
               <input type="text" id="site-og-input" placeholder="filename.jpg or https://…" oninput="updateOgPreview();markDirty()" />
               <button class="field-clear-btn" type="button" onclick="clearField('site-og-input');updateOgPreview()" title="Clear">×</button>
@@ -1795,21 +1824,21 @@
             <div class="field-hint">Recommended: 1200×630px · saved to <code style="color:var(--accent)">/images/</code> · set your site URL below for correct preview links</div>
           </div>
           <div class="field">
-            <label>Site URL <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(optional — used for social preview links)</span></label>
+            <label>Site URL <span class="label-aside">(optional — used for social preview links)</span></label>
             <div class="field-clearable">
               <input type="url" id="site-website-input" placeholder="https://yoursite.com" oninput="markDirty()" />
               <button class="field-clear-btn" type="button" onclick="clearField('site-website-input')" title="Clear">×</button>
             </div>
           </div>
           <div class="field">
-            <label>Meta Description <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(shown in search results and social previews)</span></label>
+            <label>Meta Description <span class="label-aside">(shown in search results and social previews)</span></label>
             <textarea id="site-meta-desc" rows="3" maxlength="160" placeholder="Brief description of your work — 120–160 characters recommended" oninput="markDirty();updateMetaDescCounter()"></textarea>
             <div style="display:flex;justify-content:flex-end;margin-top:3px">
               <span id="site-meta-desc-counter" style="font-size:9px;color:var(--fg-dim)">0 / 160</span>
             </div>
           </div>
           <div class="field">
-            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;letter-spacing:0;font-size:12px">
+            <label class="checkbox-row">
               <input type="checkbox" id="site-allow-indexing" onchange="markDirty()" style="margin:0" />
               Allow search engines to index this site
             </label>
@@ -1835,9 +1864,9 @@
         </div>
 
         <div class="settings-section">
-          <div class="settings-section-title" style="display:flex;align-items:center;justify-content:space-between">
+          <div class="settings-section-title section-title-actions">
             404 Page
-            <button type="button" onclick="previewPage('404')" style="background:none;border:none;cursor:pointer;font-size:11px;color:var(--fg-dim);padding:0;text-transform:none;letter-spacing:0;font-weight:400">Preview ↗</button>
+            <button type="button" onclick="previewPage('404')" class="text-link-btn">Preview ↗</button>
           </div>
           <div class="field">
             <label>Heading</label>
@@ -1943,7 +1972,7 @@
         </div>
       </div>
       <div class="field">
-        <label>Client <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(optional — shown in gold above title)</span></label>
+        <label>Client <span class="label-aside">(optional — shown in gold above title)</span></label>
         <div class="field-clearable">
           <input type="text" id="f-client" placeholder="e.g. Amazon Web Services" />
           <button class="field-clear-btn" type="button" onclick="clearField('f-client')" title="Clear">×</button>
@@ -1976,7 +2005,7 @@
       </div>
       <!-- Video URL — shown when type = video -->
       <div class="field" id="f-video-field">
-        <label>Video URL <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(YouTube, Vimeo, etc.)</span></label>
+        <label>Video URL <span class="label-aside">(YouTube, Vimeo, etc.)</span></label>
         <div class="field-clearable">
           <input type="url" id="f-url" placeholder="https://youtu.be/…" />
           <button class="field-clear-btn" type="button" onclick="clearField('f-url')" title="Clear">×</button>
@@ -1984,7 +2013,7 @@
       </div>
       <!-- Still image — shown when type = still -->
       <div class="field" id="f-still-field" style="display:none">
-        <label>Image <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(shown full-size in lightbox)</span></label>
+        <label>Image <span class="label-aside">(shown full-size in lightbox)</span></label>
         <div class="field-clearable">
           <input type="text" id="f-still-url" placeholder="gallery/motion/filename.webp" oninput="syncStillUrl()" />
           <button class="field-clear-btn" type="button" onclick="clearField('f-still-url');syncStillUrl()" title="Clear">×</button>
@@ -2001,7 +2030,7 @@
       </div>
 
       <div class="field">
-        <label>Thumbnail <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(images live in /thumbs/)</span></label>
+        <label>Thumbnail <span class="label-aside">(images live in /thumbs/)</span></label>
         <div class="field-clearable">
           <input type="text" id="f-thumbnail" placeholder="filename.jpeg" oninput="updateThumbPreview()" />
           <button class="field-clear-btn" type="button" onclick="clearField('f-thumbnail');updateThumbPreview()" title="Clear">×</button>
@@ -2025,13 +2054,13 @@
         <div class="thumb-file-list" id="thumb-file-list"></div>
       </div>
       <div class="field">
-        <label>Alt Text <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(optional — defaults to project title)</span></label>
+        <label>Alt Text <span class="label-aside">(optional — defaults to project title)</span></label>
         <input type="text" id="f-alt" placeholder="e.g. Amazon Web Services brand film" />
         <div class="field-hint" style="margin-top:4px">Describes the thumbnail for screen readers and search engines</div>
       </div>
 
       <div class="field" id="f-gallery-field" style="display:none">
-        <label>Gallery Images <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(one path per line — shown on the project detail page)</span></label>
+        <label>Gallery Images <span class="label-aside">(one path per line — shown on the project detail page)</span></label>
         <textarea id="f-gallery" rows="5" placeholder="gallery/work/project-01.jpg&#10;gallery/work/project-02.jpg&#10;…" style="font-family:var(--font-mono,monospace);font-size:12px;line-height:1.6;resize:vertical" oninput="markDirty()"></textarea>
         <div class="field-hint" style="margin-top:4px">Used when the category type is <strong>Gallery</strong>. Upload images via Files → Gallery, then paste the paths here.</div>
       </div>
@@ -2054,7 +2083,7 @@
         <button class="add-link" id="award-toggle" data-closed="+ Award" data-open="− Award" onclick="toggleDisclosure('award')">+ Award</button>
         <div id="award-body" style="display:none;margin-top:8px">
           <div class="field" style="margin-bottom:0">
-            <label>Award <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(shown in lightbox and on grid)</span></label>
+            <label>Award <span class="label-aside">(shown in lightbox and on grid)</span></label>
             <div class="field-clearable">
               <input type="text" id="f-award" placeholder="e.g. Telly Award 2023" />
               <button class="field-clear-btn" type="button" onclick="clearField('f-award')" title="Clear">×</button>
@@ -2066,7 +2095,7 @@
         <button class="add-link" id="description-toggle" data-closed="+ Description" data-open="− Description" onclick="toggleDisclosure('description')">+ Description</button>
         <div id="description-body" style="display:none;margin-top:8px">
           <div class="field" style="margin-bottom:0">
-            <label>Description <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(shown in lightbox)</span></label>
+            <label>Description <span class="label-aside">(shown in lightbox)</span></label>
             <textarea id="f-description" rows="3" maxlength="500" placeholder="Brief description, credits, or context…" oninput="updateDescCounter()"></textarea>
             <div style="display:flex;justify-content:flex-end;margin-top:3px">
               <span id="f-description-counter" style="font-size:9px;color:var(--fg-dim)">0 / 500</span>
@@ -2079,12 +2108,12 @@
     <!-- ── APPEARANCE TAB ── -->
     <div class="modal-tab-pane" id="mtab-appearance">
       <div class="field">
-        <label>Aspect Ratio <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">— auto-detected from thumbnail</span></label>
+        <label>Aspect Ratio <span class="label-aside">— auto-detected from thumbnail</span></label>
         <input type="number" id="f-aspect" min="0.1" max="5" step="0.01" placeholder="1.78 (16:9 default)" style="width:160px" oninput="markDirty()" />
         <div class="field-hint" style="margin-top:4px">Width ÷ height. e.g. 1.78 = 16:9, 1.33 = 4:3, 1.0 = square, 0.67 = 2:3 portrait. Auto-filled when thumbnail loads.</div>
       </div>
       <div class="field" style="margin-bottom:0">
-        <label>Vignette Opacity <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(0–100%) — darkens the background behind text</span></label>
+        <label>Vignette Opacity <span class="label-aside">(0–100%) — darkens the background behind text</span></label>
         <input type="number" id="f-vignette" min="0" max="100" step="5" placeholder="30" />
       </div>
     </div>
@@ -2130,17 +2159,17 @@
     </div>
 
     <div class="field">
-      <label>Title <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(optional)</span></label>
+      <label>Title <span class="label-aside">(optional)</span></label>
       <input type="text" id="ge-title" placeholder="e.g. Editorial shoot, Spring 2024" />
     </div>
     <div class="field">
-      <label>Client <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(optional)</span></label>
+      <label>Client <span class="label-aside">(optional)</span></label>
       <input type="text" id="ge-client" placeholder="e.g. Nordstrom" />
     </div>
 
     <!-- Thumbnail — shown for video items only -->
     <div class="field" id="ge-thumb-field" style="display:none">
-      <label>Thumbnail <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(shown on grid)</span></label>
+      <label>Thumbnail <span class="label-aside">(shown on grid)</span></label>
       <div class="field-clearable">
         <input type="text" id="ge-thumbnail" placeholder="filename.jpg" oninput="updateGeThumbPreview()" />
         <button class="field-clear-btn" type="button" onclick="clearField('ge-thumbnail');updateGeThumbPreview()" title="Clear">×</button>
@@ -2207,11 +2236,11 @@
       <div class="field-hint" style="margin-top:4px">YouTube or Vimeo URL</div>
     </div>
     <div class="field">
-      <label>Title <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(optional)</span></label>
+      <label>Title <span class="label-aside">(optional)</span></label>
       <input type="text" id="gv-av-title" placeholder="e.g. Brand film" />
     </div>
     <div class="field">
-      <label>Client <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(optional)</span></label>
+      <label>Client <span class="label-aside">(optional)</span></label>
       <input type="text" id="gv-av-client" placeholder="e.g. Nike" />
     </div>
     <div class="modal-actions" style="border-top:1px solid var(--fg-dimmer);margin-top:16px;padding-top:12px">
@@ -2263,11 +2292,11 @@
   <div class="modal" style="max-width:420px">
     <div class="modal-title" id="modal-cat-title">Add Category</div>
     <div class="field">
-      <label>Label <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(shown in nav)</span></label>
+      <label>Label <span class="label-aside">(shown in nav)</span></label>
       <input type="text" id="cat-label" placeholder="e.g. Social" />
     </div>
     <div class="field" id="cat-id-field">
-      <label>ID / slug <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(used in projects.json — lowercase, no spaces)</span></label>
+      <label>ID / slug <span class="label-aside">(used in projects.json — lowercase, no spaces)</span></label>
       <input type="text" id="cat-id" placeholder="e.g. social" oninput="this.value=this.value.toLowerCase().replace(/[^a-z0-9-]/g,'')" />
       <div class="field-hint">Set once. Changing after adding projects will orphan them.</div>
     </div>
@@ -2328,7 +2357,7 @@
 
     <!-- Password row -->
     <div class="field" style="margin-bottom:6px">
-      <label>Password <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0;font-weight:300" id="share-modal-pass-status"></span></label>
+      <label>Password <span class="label-aside" id="share-modal-pass-status"></span></label>
       <div style="display:flex;gap:6px;align-items:center">
         <input id="share-modal-pass" type="password" placeholder="Leave blank to share without a password" style="flex:1" onkeydown="if(event.key==='Enter')shareModalSave()" />
         <button type="button" class="btn btn-ghost btn-sm" id="share-modal-reveal" onclick="shareModalToggleReveal()" style="flex-shrink:0;font-size:11px;padding:6px 10px">Show</button>
