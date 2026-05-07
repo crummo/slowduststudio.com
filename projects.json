@@ -3,8 +3,12 @@
     "id": 1,
     "category": "work",
     "title": "Maiden Lane",
-    "thumbnail": "gallery/maiden-lane/01.webp",
+    "client": "asdfasdfa",
+    "thumbnail": "thumbs/gallery/maiden-lane/01.webp",
     "url": "gallery/maiden-lane/01.webp",
+    "award": "",
+    "description": "",
+    "published": true,
     "gallery": [
       "gallery/maiden-lane/01.webp",
       "gallery/maiden-lane/02.webp",
@@ -19,9 +23,7 @@
       "gallery/maiden-lane/11.webp",
       "gallery/maiden-lane/12.webp",
       "gallery/maiden-lane/13.webp"
-    ],
-    "published": true,
-    "client": ""
+    ]
   },
   {
     "id": 2,
