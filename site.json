@@ -6,6 +6,13 @@
       "type": "gallery",
       "layout": "editorial",
       "published": true
+    },
+    {
+      "id": "test-videos",
+      "label": "Test Videos",
+      "type": "carousel",
+      "layout": "masonry",
+      "published": false
     }
   ],
   "about": {

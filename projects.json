@@ -116,5 +116,55 @@
       "gallery/fair-oaks-ave/27.webp"
     ],
     "published": true
+  },
+  {
+    "id": 1001,
+    "category": "test-videos",
+    "url": "https://youtu.be/jNQXAC9IVRw",
+    "title": "Me at the zoo",
+    "client": "Jawed Karim",
+    "published": true,
+    "overlay": "none",
+    "vignette": 0
+  },
+  {
+    "id": 1002,
+    "category": "test-videos",
+    "url": "https://youtu.be/aqz-KE-bpKQ",
+    "title": "Big Buck Bunny",
+    "client": "Blender Foundation",
+    "published": true,
+    "overlay": "none",
+    "vignette": 0
+  },
+  {
+    "id": 1003,
+    "category": "test-videos",
+    "url": "https://youtu.be/dQw4w9WgXcQ",
+    "title": "Never Gonna Give You Up",
+    "client": "Rick Astley",
+    "published": true,
+    "overlay": "none",
+    "vignette": 0
+  },
+  {
+    "id": 1004,
+    "category": "test-videos",
+    "url": "https://youtu.be/9bZkp7q19f0",
+    "title": "Gangnam Style",
+    "client": "PSY",
+    "published": true,
+    "overlay": "none",
+    "vignette": 0
+  },
+  {
+    "id": 1005,
+    "category": "test-videos",
+    "url": "https://youtu.be/kJQP7kiw5Fk",
+    "title": "Despacito",
+    "client": "Luis Fonsi",
+    "published": true,
+    "overlay": "none",
+    "vignette": 0
   }
 ]
