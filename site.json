@@ -10,7 +10,7 @@
     {
       "id": "test-videos",
       "label": "Test Videos",
-      "type": "carousel",
+      "type": "gallery",
       "layout": "masonry",
       "published": false
     }
@@ -88,8 +88,7 @@
         "target": "work",
         "style": "primary"
       }
-    ],
-    "overlayOpacity": 0
+    ]
   },
   "notFound": {
     "heading": "Off the floor plan.",
