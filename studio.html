@@ -589,6 +589,49 @@
     }
     .project-actions { display: flex; gap: 8px; flex-shrink: 0; }
 
+    /* ── PROJECT LIST · GRID VIEW (admin-only) ── */
+    .project-list.view-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 3px; padding: 4px 0 32px;
+    }
+    .project-list.view-grid .project-card {
+      display: block; position: relative;
+      aspect-ratio: 4/3;
+      padding: 0; margin: 0;
+      background: var(--bg3); cursor: pointer;
+      outline: 2px solid transparent; outline-offset: -2px;
+      transition: outline-color 0.15s, opacity 0.2s;
+      border-bottom: none;
+    }
+    .project-list.view-grid .project-card:hover { outline-color: var(--fg-dim); }
+    .project-list.view-grid .project-card.unpublished { opacity: 0.45; }
+    .project-list.view-grid .drag-handle { display: none; }
+    .project-list.view-grid .project-thumb-wrap {
+      width: 100%; height: 100%; margin: 0; flex: none;
+    }
+    .project-list.view-grid .project-thumb,
+    .project-list.view-grid .project-thumb-placeholder {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+    }
+    .project-list.view-grid .project-info {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      padding: 22px 8px 8px;
+      background: linear-gradient(transparent, rgba(0,0,0,0.7));
+      color: #ede8e0; pointer-events: none;
+      flex: none; min-width: 0;
+    }
+    .project-list.view-grid .project-client {
+      font-size: 9px; color: rgba(255,255,255,0.7); margin-bottom: 2px;
+    }
+    .project-list.view-grid .project-title {
+      font-size: 11px; color: #ede8e0;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .project-list.view-grid .project-meta { display: none; }
+    .project-list.view-grid .project-actions { display: none; }
+    .project-list.view-grid .project-thumb-source { display: none !important; }
+
     /* ── GALLERY ADMIN GRID ── */
     .gallery-admin-grid {
       display: grid;
@@ -2846,6 +2889,10 @@ function buildAdminCategoryPanes() {
         <div class="toolbar">
           <span class="toolbar-label" id="count-${cat.id}"></span>
           <div style="display:flex;gap:8px;align-items:center">
+            <div class="segmented" data-view-for="${cat.id}" title="Layout">
+              <button type="button" data-view="list" onclick="setCategoryView('${cat.id}','list')">List</button>
+              <button type="button" data-view="grid" onclick="setCategoryView('${cat.id}','grid')">Grid</button>
+            </div>
             <input type="text" placeholder="Filter projects…" class="project-filter-input" id="filter-${cat.id}" oninput="filterProjects('${cat.id}', this.value)" />
             <button class="btn btn-ghost btn-sm" onclick="openAdd('${cat.id}')">+ Add Project</button>
             <button class="btn btn-ghost btn-sm" onclick="previewCategory('${cat.id}')">Preview ↗</button>
@@ -2871,6 +2918,13 @@ function renderCategory(cat) {
   const list  = document.getElementById('list-' + cat);
   // Lightbox categories use a stacked list layout, not the photo grid
   if (list) { list.classList.remove('gallery-admin-grid'); list.classList.add('project-list'); }
+  // Apply persisted view mode (list | grid) and sync the toolbar segmented state
+  const viewMode = getCategoryView(cat);
+  if (list) list.classList.toggle('view-grid', viewMode === 'grid');
+  const seg = document.querySelector(`.segmented[data-view-for="${cat}"]`);
+  if (seg) seg.querySelectorAll('button').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.view === viewMode);
+  });
   const count = document.getElementById('count-' + cat);
 
   count.textContent = `${items.length} project${items.length !== 1 ? 's' : ''}`;
@@ -2924,6 +2978,13 @@ function renderCategory(cat) {
     card.addEventListener('dragleave', onDragLeave);
     card.addEventListener('drop',      onDrop);
     card.addEventListener('dragend',   onDragEnd);
+    // Grid view: clicking the tile opens the edit modal (action buttons are hidden)
+    if (viewMode === 'grid') {
+      card.addEventListener('click', e => {
+        if (e.target.closest('.project-actions')) return;
+        openEdit(globalIdx);
+      });
+    }
 
     list.appendChild(card);
 
@@ -2952,6 +3013,16 @@ function renderCategory(cat) {
   // Re-apply any active filter so cards stay hidden through re-renders
   const filterEl = document.getElementById('filter-' + cat);
   if (filterEl && filterEl.value) filterProjects(cat, filterEl.value);
+}
+
+// ─── PROJECT LIST · VIEW MODE (admin-only, per-category, persisted) ──────────
+function getCategoryView(catId) {
+  return localStorage.getItem('cr_admin_view_' + catId) === 'grid' ? 'grid' : 'list';
+}
+function setCategoryView(catId, mode) {
+  if (mode !== 'list' && mode !== 'grid') return;
+  localStorage.setItem('cr_admin_view_' + catId, mode);
+  renderCategory(catId);
 }
 
 function filterProjects(catId, query) {
