@@ -11,7 +11,7 @@
       "id": "test-videos",
       "label": "Test Videos",
       "type": "gallery",
-      "layout": "masonry",
+      "layout": "grid",
       "published": false
     }
   ],
