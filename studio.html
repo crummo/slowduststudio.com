@@ -3795,8 +3795,9 @@ function thumbDisplay(path) {
 function thumbStore(val) {
   const v = (val || '').trim();
   if (!v) return '';
-  // Preserve explicit folder prefix; plain filenames go into thumbs/
-  if (v.startsWith('thumbs/') || v.startsWith('images/')) return v;
+  // Preserve explicit folder prefixes and absolute / external URLs;
+  // plain filenames are treated as living in /thumbs/.
+  if (/^(thumbs\/|images\/|gallery\/|https?:\/\/|\/)/i.test(v)) return v;
   return 'thumbs/' + v;
 }
 
