@@ -9,6 +9,8 @@
     "award": "",
     "description": "",
     "published": true,
+    "overlay": "reveal",
+    "aspect": 1.5,
     "gallery": [
       "gallery/maiden-lane/01.webp",
       "gallery/maiden-lane/02.webp",
