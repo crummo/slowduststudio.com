@@ -4,7 +4,7 @@
       "id": "work",
       "label": "Work",
       "type": "gallery",
-      "layout": "editorial",
+      "layout": "captioned",
       "published": true
     },
     {

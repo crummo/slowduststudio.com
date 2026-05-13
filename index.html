@@ -259,62 +259,72 @@
     .gallery-grid.layout-grid .grid-item { aspect-ratio: 16/9; }
     .gallery-grid.layout-grid .grid-thumb { height: 100%; object-fit: cover; }
 
-    /* editorial layout: two-column gallery with a soft cream overlay on each
-       tile and a centered italic title — overlay fades out on hover to reveal
-       the photograph. Best for considered, smaller portfolios. */
-    .gallery-grid.layout-editorial {
+    /* Captioned layout: two-column gallery with title captioned over each
+       tile. Pairs by default with the Editorial overlay (cream scrim +
+       centered italic title), but the overlay is now a per-project choice
+       so any overlay style can live in this layout. */
+    .gallery-grid.layout-captioned {
       display: grid; grid-template-columns: repeat(2, 1fr);
       gap: 14px; padding: 28px;
       max-width: 1600px; margin: 0 auto;
     }
-    .gallery-grid.layout-editorial .grid-item {
+    .gallery-grid.layout-captioned .grid-item {
       position: relative; aspect-ratio: 4 / 3; overflow: hidden;
       cursor: pointer; background: var(--bg2);
       animation: gridIn 0.55s var(--ease) both;
     }
-    .gallery-grid.layout-editorial .grid-thumb,
-    .gallery-grid.layout-editorial .grid-thumb-video {
+    .gallery-grid.layout-captioned .grid-thumb,
+    .gallery-grid.layout-captioned .grid-thumb-video {
       position: absolute; inset: 0; width: 100%; height: 100%;
       object-fit: cover; display: block;
       transition: transform 0.9s var(--ease), filter 0.7s var(--ease);
       filter: var(--thumb-filter, none);
     }
-    .gallery-grid.layout-editorial .editorial-scrim {
+
+    /* Editorial overlay — cream scrim + centered italic title. A per-project
+       choice; works in any layout. The grid item carries a hover-rest-on
+       or hover-rest-off class that flips the fade direction. */
+    .editorial-scrim {
       position: absolute; inset: 0; z-index: 1;
       background: rgba(242, 239, 235, 0.86);
       transition: opacity 0.55s var(--ease);
     }
-    .gallery-grid.layout-editorial .editorial-label {
+    .editorial-label {
       position: absolute; inset: 0; z-index: 2;
       display: flex; align-items: center; justify-content: center;
       text-align: center; padding: 24px;
       transition: opacity 0.4s var(--ease);
       pointer-events: none;
     }
-    .gallery-grid.layout-editorial .editorial-label-title {
+    .editorial-label-title {
       font-family: var(--font-serif); font-style: italic;
       font-size: clamp(20px, 2.2vw, 26px); font-weight: 400;
       color: var(--fg); line-height: 1.25;
     }
-    .gallery-grid.layout-editorial .editorial-label-client {
+    .editorial-label-client {
       display: block; font-family: var(--font-sans);
       font-size: 9px; letter-spacing: 0.24em; text-transform: uppercase;
       color: var(--accent); margin-bottom: 10px; font-weight: 500;
     }
+    /* rest-off: overlay hidden at rest. Touch devices keep this state
+       since they can't hover; clean photo until tapped. */
+    .grid-item.hover-rest-off .editorial-scrim,
+    .grid-item.hover-rest-off .editorial-label { opacity: 0; }
+
     /* Hover effects only on real pointer devices — touch screens fire
        :hover on tap (and on touch-to-scroll), which was killing the
        matte every time the user touched a tile to scroll. */
     @media (hover: hover) {
-      .gallery-grid.layout-editorial .grid-item:hover .editorial-scrim,
-      .gallery-grid.layout-editorial .grid-item:hover .editorial-label {
-        opacity: 0;
-      }
-      .gallery-grid.layout-editorial .grid-item:hover .grid-thumb { transform: scale(1.03); }
+      .grid-item.hover-rest-on:hover .editorial-scrim,
+      .grid-item.hover-rest-on:hover .editorial-label { opacity: 0; }
+      .grid-item.hover-rest-off:hover .editorial-scrim,
+      .grid-item.hover-rest-off:hover .editorial-label { opacity: 1; }
+      .gallery-grid.layout-captioned .grid-item:hover .grid-thumb { transform: scale(1.03); }
     }
 
     @media (max-width: 479px) {
-      .gallery-grid.layout-editorial { grid-template-columns: 1fr; gap: 10px; padding: 18px; }
-      .gallery-grid.layout-editorial .editorial-label-title { font-size: 18px; }
+      .gallery-grid.layout-captioned { grid-template-columns: 1fr; gap: 10px; padding: 18px; }
+      .editorial-label-title { font-size: 18px; }
     }
 
     .grid-item {
@@ -371,11 +381,8 @@
     .grid-center.solo .grid-title { font-size: 10px; opacity: 0.55; }
     .grid-item:hover .grid-center.solo .grid-title { font-size: 15px; opacity: 1; transform: none; }
 
-    /* editorial — slightly favors title at rest; client more subdued on hover */
-    .grid-center.overlay-editorial .grid-title { font-size: 11px; }
-    .grid-center.overlay-editorial .grid-client { font-size: 7px; opacity: 0.75; }
-    .grid-item:hover .grid-center.overlay-editorial .grid-client { font-size: 8px; letter-spacing: 0.18em; opacity: 0.55; transform: translateY(-22px); }
-    .grid-item:hover .grid-center.overlay-editorial .grid-title  { font-size: 17px; opacity: 1; transform: translateY(36px); }
+    /* (Editorial overlay no longer uses grid-center markup — it renders
+       its own editorial-scrim / editorial-label structure defined above.) */
 
     /* centered — title only, single line, no play/client/award */
     .grid-center.overlay-centered .grid-client,
@@ -1552,11 +1559,11 @@
       .gallery-grid { display: block !important; }
       .mobile-list { display: none !important; }
 
-      /* Editorial layout: 3 columns instead of 2 in landscape, tighter
+      /* Captioned layout: 3 columns instead of 2 in landscape, tighter
          gap + reduced padding so the grid starts higher in the viewport
          and individual tiles read smaller (more fits on a 390px-tall
          viewport without scroll). */
-      .gallery-grid.layout-editorial {
+      .gallery-grid.layout-captioned {
         display: grid !important;
         grid-template-columns: repeat(2, 1fr);
         gap: 12px;
@@ -1564,27 +1571,27 @@
         max-width: 600px;
         margin: 0 auto;
       }
-      .gallery-grid.layout-editorial .grid-item {
+      .gallery-grid.layout-captioned .grid-item {
         aspect-ratio: 16 / 9;
       }
-      .gallery-grid.layout-editorial .editorial-label-title {
+      .gallery-grid.layout-captioned .editorial-label-title {
         font-size: clamp(14px, 1.8vw, 17px);
       }
-      .gallery-grid.layout-editorial .editorial-label-client {
+      .gallery-grid.layout-captioned .editorial-label-client {
         font-size: 8px; margin-bottom: 4px;
       }
-      .gallery-grid.layout-editorial .editorial-label {
+      .gallery-grid.layout-captioned .editorial-label {
         padding: 12px;
       }
       /* Class-based cycling reveal — JS toggles .is-exposed on one tile
          at a time, prefers in-frame tiles. Replaces the previous
          nth-child keyframe approach so the active tile follows scroll. */
-      .gallery-grid.layout-editorial .editorial-scrim,
-      .gallery-grid.layout-editorial .editorial-label {
+      .gallery-grid.layout-captioned .editorial-scrim,
+      .gallery-grid.layout-captioned .editorial-label {
         transition: opacity 0.3s ease-in-out;
       }
-      .gallery-grid.layout-editorial .grid-item.is-exposed .editorial-scrim,
-      .gallery-grid.layout-editorial .grid-item.is-exposed .editorial-label {
+      .gallery-grid.layout-captioned .grid-item.is-exposed .editorial-scrim,
+      .gallery-grid.layout-captioned .grid-item.is-exposed .editorial-label {
         opacity: 0;
       }
 
@@ -2216,7 +2223,7 @@
         sec.id = 'page-' + cat.id;
         sec.className = 'page';
         sec.innerHTML = [
-          `<div class="gallery-grid${cat.layout === 'grid' ? ' layout-grid' : cat.layout === 'editorial' ? ' layout-editorial' : ''}" id="grid-${x(cat.id)}"></div>`,
+          `<div class="gallery-grid${cat.layout === 'grid' ? ' layout-grid' : (cat.layout === 'captioned' || cat.layout === 'editorial') ? ' layout-captioned' : ''}" id="grid-${x(cat.id)}"></div>`,
           `<div class="mobile-list"  id="mlist-${x(cat.id)}"></div>`,
           isPreview ? `<div class="preview-tray" id="preview-tray-${x(cat.id)}" style="display:none"></div>` : ''
         ].join('');
@@ -2460,7 +2467,7 @@
       editorialCycleState.vis.clear();
       if (!matchMedia('(max-height: 600px) and (orientation: landscape)').matches) return;
       const grid = document.getElementById('grid-' + catId);
-      if (!grid || !grid.classList.contains('layout-editorial')) return;
+      if (!grid || !grid.classList.contains('layout-captioned')) return;
       const tiles = Array.from(grid.querySelectorAll('.grid-item'));
       if (!tiles.length) return;
       tiles.forEach(t => t.classList.remove('is-exposed'));
@@ -2504,9 +2511,19 @@
       grid.innerHTML = '';
       const catDef = siteConfig.categories.find(c => c.id === cat);
       const isScrollCat = catDef?.type === 'scroll' || catDef?.type === 'gallery';
-      const isEditorial = catDef?.layout === 'editorial';
+      // 'captioned' is the renamed layout; 'editorial' kept as legacy alias.
+      const isCaptioned = catDef?.layout === 'captioned' || catDef?.layout === 'editorial';
       items.forEach((p, i) => {
-        const overlayClass = isScrollCat ? 'cover' : (p.overlay || (p.opacity === 0 ? 'reveal' : 'default'));
+        // Captioned-layout projects without an overlay default to the
+        // Editorial cream-scrim treatment so existing sites look identical.
+        const baseOverlay = p.overlay || (isCaptioned ? 'editorial' : (p.opacity === 0 ? 'reveal' : 'default'));
+        const overlayClass = isScrollCat ? 'cover' : baseOverlay;
+        // Hover direction: explicit p.hoverState wins; otherwise infer from
+        // the overlay style (editorial → rest-on, reveal → rest-off, else rest-on).
+        const hoverState = p.hoverState
+          || (overlayClass === 'editorial' ? 'rest-on'
+              : overlayClass === 'reveal' ? 'rest-off'
+              : 'rest-on');
         const hideBtn = isPreview
           ? `<button class="preview-hide-btn" onclick="event.stopPropagation();previewHideProject(${p._gi},'${x(cat)}')" title="Hide">×</button>`
           : '';
@@ -2525,7 +2542,8 @@
         el.className = 'grid-item'
           + (overlayClass === 'none' ? ' overlay-none' : '')
           + (overlayClass === 'cover' ? ' overlay-cover-item' : '')
-          + (isScrollCat ? ' scroll-item' : '');
+          + (isScrollCat ? ' scroll-item' : '')
+          + ' hover-' + hoverState;
         el.onclick = catDef?.type === 'carousel' ? () => openGallery(cat, i)
                    : (catDef?.type === 'gallery' || catDef?.type === 'scroll') ? () => showProjectScrollPage(cat, i)
                    : () => openLb(cat, i);
@@ -2539,9 +2557,10 @@
               ? `<video class="grid-thumb-video" muted loop playsinline preload="none" data-hover-src="${x(p.hoverPreview)}"></video>`
               : `<img class="grid-thumb-video grid-thumb-preview-img" alt="" data-hover-src="${x(p.hoverPreview)}">`)
           : '';
-        if (isEditorial) {
-          // Editorial layout: cream overlay + centered italic title by default;
-          // the overlay fades on hover to reveal the photograph beneath.
+        if (overlayClass === 'editorial') {
+          // Editorial overlay: cream scrim + centered italic title. Hover
+          // direction is driven by the .hover-rest-on / .hover-rest-off class
+          // on .grid-item (set above from p.hoverState).
           el.innerHTML = `
             ${hideBtn}${draftBadge}
             ${thumbHtml}
@@ -2635,7 +2654,7 @@
     window.addEventListener('resize', () => {
       cancelAnimationFrame(_masonryRaf);
       _masonryRaf = requestAnimationFrame(() => {
-        document.querySelectorAll('.gallery-grid:not(.layout-grid):not(.layout-editorial)').forEach(layoutMasonry);
+        document.querySelectorAll('.gallery-grid:not(.layout-grid):not(.layout-captioned)').forEach(layoutMasonry);
         updateDrawerPadding();
       });
     });

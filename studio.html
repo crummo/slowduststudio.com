@@ -2122,6 +2122,15 @@
         </select>
         <div class="field-hint" id="overlay-hint" style="margin-top:4px">Standard overlay with play icon</div>
       </div>
+      <div class="field">
+        <label>Hover Behavior</label>
+        <div class="segmented full" data-for="f-hover-state" style="margin-top:6px">
+          <button type="button" data-value="rest-on">Hide on hover</button>
+          <button type="button" data-value="rest-off">Reveal on hover</button>
+        </div>
+        <input type="hidden" id="f-hover-state" />
+        <div class="field-hint" style="margin-top:4px">Hide on hover: overlay visible at rest, fades out on hover. Reveal on hover: overlay hidden at rest, fades in on hover.</div>
+      </div>
       <div style="margin-bottom:16px">
         <button class="add-link" id="award-toggle" data-closed="+ Award" data-open="− Award" onclick="toggleDisclosure('award')">+ Award</button>
         <div id="award-body" style="display:none;margin-top:8px">
@@ -2373,7 +2382,7 @@
       <select id="cat-layout" style="width:100%" onchange="updateCatHints()">
         <option value="masonry">Masonry</option>
         <option value="grid">Grid</option>
-        <option value="editorial">Editorial (two columns, captioned)</option>
+        <option value="captioned">Captioned (two columns)</option>
       </select>
       <div class="field-hint" id="cat-layout-hint" style="margin-top:4px">Natural proportions — each image displays at its own aspect ratio</div>
     </div>
@@ -3804,7 +3813,7 @@ function thumbStore(val) {
 function updateOverlayHint() {
   const hints = {
     '':          'Standard overlay with play icon',
-    'editorial': 'Slightly heavier weight on the lower text',
+    'editorial': 'Cream scrim with centered title — fades on hover',
     'centered':  'Single line, centered, no play icon',
     'reveal':    'Overlay hidden at rest, appears on hover',
     'none':      'Overlay hidden — consider setting vignette to 0.',
@@ -3836,6 +3845,7 @@ function clearModalForm() {
   });
   ['award','description'].forEach(closeDisclosure);
   document.getElementById('f-overlay').value = '';
+  setSegmentedValue('f-hover-state', 'rest-on');
   updateOverlayHint();
   document.getElementById('f-published').checked = true;
   document.getElementById('thumb-preview').style.display = 'none';
@@ -3885,6 +3895,13 @@ function openEdit(globalIdx) {
   if (p.award)                   openDisclosure('award');
   if (p.description)             openDisclosure('description');
   document.getElementById('f-published').checked = p.published !== false;
+  // Hover state: explicit p.hoverState wins; otherwise infer from overlay
+  // so the toggle reflects what the live site is doing today.
+  const inferredHover = p.hoverState
+    || (overlayVal === 'editorial' ? 'rest-on'
+        : overlayVal === 'reveal'   ? 'rest-off'
+        : 'rest-on');
+  setSegmentedValue('f-hover-state', inferredHover);
   updateOverlayHint();
   updateThumbPreview();
   // Detect media type and set toggle (legacy 'none' projects fall back to video)
@@ -3935,6 +3952,13 @@ async function saveProject() {
 
   if (overlay)            proj.overlay  = overlay;
   if (vignetteRaw !== '') proj.vignette = parseFloat(vignetteRaw) / 100;
+  // Only persist hoverState if it differs from the default the live site
+  // would infer from the overlay, so we don't bloat projects.json.
+  const hoverState = document.getElementById('f-hover-state').value;
+  const inferred = overlay === 'editorial' ? 'rest-on'
+                 : overlay === 'reveal'    ? 'rest-off'
+                 : 'rest-on';
+  if (hoverState && hoverState !== inferred) proj.hoverState = hoverState;
   const aspectRaw = document.getElementById('f-aspect').value;
   if (aspectRaw !== '')   proj.aspect   = parseFloat(aspectRaw);
   const galleryRaw = document.getElementById('f-gallery').value;
@@ -4046,7 +4070,9 @@ function openEditCategory(idx) {
   document.getElementById('cat-label').value = cat.label;
   document.getElementById('cat-id').value = cat.id;
   document.getElementById('cat-type').value   = ['gallery','scroll','carousel'].includes(cat.type) ? cat.type : 'lightbox';
-  document.getElementById('cat-layout').value = ['grid','editorial'].includes(cat.layout) ? cat.layout : 'masonry';
+  // Backward compat: legacy 'editorial' layout value is the same shape as the renamed 'captioned'
+  const _layout = cat.layout === 'editorial' ? 'captioned' : cat.layout;
+  document.getElementById('cat-layout').value = ['grid','captioned'].includes(_layout) ? _layout : 'masonry';
   document.getElementById('cat-id-field').style.display = 'none'; // ID is set on create only
   document.getElementById('cat-delete-btn').style.display = '';
   document.getElementById('cat-label').oninput = null;
@@ -4074,7 +4100,7 @@ function updateCatHints() {
   const layoutHints = {
     masonry:   'Natural proportions — each image displays at its own aspect ratio',
     grid:      'Uniform 16:9 grid — consistent crops, good for mixed content',
-    editorial: 'Two-column gallery with title captioned below each tile — for considered, smaller portfolios'
+    captioned: 'Two-column gallery with title captioned over each tile — defaults to the editorial cream-scrim overlay'
   };
   const th = document.getElementById('cat-type-hint');
   const lh = document.getElementById('cat-layout-hint');
