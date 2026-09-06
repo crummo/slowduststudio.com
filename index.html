@@ -52,7 +52,9 @@
       --accent:     #c9a96e;
       --font-serif: 'Playfair Display', Georgia, serif;
       --font-sans:  'DM Sans', sans-serif;
-      --nav-h:      60px;
+      --font-serif-scale: 1;
+      --font-sans-scale:  1;
+      --nav-h:      72px;
       --nav-w:      270px;
       --ease:       cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
@@ -92,8 +94,8 @@
       --gv-bg: #131110; --gv-fg: #ede8e0; --gv-fg-dim: #5a5248; --gv-fg-dimmer: #2a2623; --gv-bg2: #1c1917;
     }
 
-    html { background: var(--bg); color: var(--fg); font-family: var(--font-sans); font-weight: 300; -webkit-font-smoothing: antialiased; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; overscroll-behavior-y: none; }
-    body { min-height: 100vh; background: var(--bg); overscroll-behavior-y: none; }
+    html { background: var(--bg); color: var(--fg); font-family: var(--font-sans); font-weight: 300; -webkit-font-smoothing: antialiased; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; overscroll-behavior-y: none; touch-action: pan-y pinch-zoom; }
+    body { min-height: 100vh; background: var(--bg); overscroll-behavior-y: none; touch-action: pan-y pinch-zoom; }
 
     /* film grain */
     body::before {
@@ -119,7 +121,6 @@
       display: flex; align-items: center; justify-content: space-between;
       padding: env(safe-area-inset-top, 0px) 44px 0;
       background: var(--bg);
-      border-bottom: 1px solid var(--fg-dimmer);
       /* iOS Safari: force own compositing layer so scrolled page content
          doesn't end up rendered above the nav during scroll. */
       transform: translateZ(0);
@@ -127,14 +128,15 @@
       will-change: transform;
     }
 
-    .nav-brand { display: flex; align-items: baseline; gap: 14px; cursor: pointer; text-decoration: none; flex-shrink: 0; }
-    .nav-brand-name { font-family: var(--font-serif); font-size: 19px; font-weight: 500; letter-spacing: 0.02em; color: var(--fg); line-height: 1; }
+    .nav-brand { display: flex; align-items: center; gap: 14px; cursor: pointer; text-decoration: none; flex-shrink: 0; }
+    .nav-brand-logo { display: block; height: 56px; max-height: calc(var(--nav-h) + 6px); width: auto; object-fit: contain; margin: -10px 0 0 -16px; }
+    .nav-brand-name { font-family: var(--font-serif); font-size: calc(19px * var(--font-serif-scale, 1)); font-weight: 500; letter-spacing: 0.02em; color: var(--fg); line-height: 1; }
     .nav-brand-rule { width: 1px; height: 13px; background: var(--fg-dim); }
     .nav-brand-title { font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: #a89e90; font-weight: 300; }
 
     .nav-links { display: flex; gap: 32px; list-style: none; align-items: center; }
     .nav-links a {
-      text-decoration: none; font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+      text-decoration: none; font-size: calc(10px * var(--font-sans-scale, 1)); letter-spacing: 0.18em; text-transform: uppercase;
       color: var(--fg-dim); transition: color 0.25s var(--ease); font-weight: 400;
       cursor: pointer; position: relative; padding-bottom: 3px; white-space: nowrap;
     }
@@ -156,7 +158,7 @@
     .theme-toggle.hidden { display: none; }
 
     .nav-hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 4px; }
-    .nav-hamburger span { display: block; width: 22px; height: 1px; background: var(--fg-mid); transition: all 0.25s var(--ease); }
+    .nav-hamburger span { display: block; width: 22px; height: 1.5px; background: var(--fg-mid); transition: all 0.25s var(--ease); }
 
     .nav-drawer {
       position: fixed; top: calc(var(--nav-h) + env(safe-area-inset-top, 0px)); left: 0; right: 0;
@@ -179,14 +181,20 @@
        the email to copy it. */
     .nav-drawer .nav-drawer-contact { display: flex; flex-direction: column; gap: 3px; padding-top: 14px; padding-bottom: 14px; }
     .nav-drawer .nav-drawer-contact .nav-drawer-contact-email { font-size: 13px; letter-spacing: 0; text-transform: none; color: var(--accent); font-weight: 400; }
-    /* Drawer email line that follows a regular Contact link — small, indented,
-       lowercase. Reads as a sub-item beneath CONTACT. */
+    /* Drawer email line that follows a regular Contact link — small,
+       lowercase. Reads as a sub-item tucked under CONTACT. No border —
+       so the drawer ends naturally (matches behavior when there's no
+       email line at all). */
     .nav-drawer a.nav-drawer-contact-email-line {
       font-size: 12px; letter-spacing: 0; text-transform: none;
-      color: var(--accent); padding-top: 4px; padding-bottom: 14px;
-      border-bottom: 1px solid var(--fg-dimmer); border-left-width: 0;
-      margin-top: -10px;
+      color: var(--accent); padding-top: 0; padding-bottom: 6px;
+      border-bottom: none; border-left-width: 0;
+      margin-top: -6px;
     }
+    /* Hide the Contact link's border-bottom when it's directly followed
+       by the email-line — otherwise it'd render between the two and
+       break the visual grouping. */
+    .nav-drawer a:has(+ .nav-drawer-contact-email-line) { border-bottom: none; }
 
     /* ── LEFT NAV ── */
     body.nav-left nav {
@@ -213,11 +221,35 @@
 
     /* ── MAIN ── */
     main { padding-top: calc(var(--nav-h) + env(safe-area-inset-top, 0px)); }
-    .page { display: none; }
-    .page.visible { display: block; animation: pageIn 0.35s var(--ease) both; }
-    .page.leaving  { display: block; animation: pageOut 0.2s var(--ease) both; pointer-events: none; }
-    @keyframes pageIn  { from { opacity: 0; transform: translateY(8px); }  to { opacity: 1; transform: translateY(0); } }
-    @keyframes pageOut { from { opacity: 1; transform: translateY(0); }     to { opacity: 0; transform: translateY(-6px); } }
+    /* Page isolation rules — !important + explicit bg to prevent any
+       previously-active page section from leaking content through behind
+       the active page (was causing 'Home Office' descenders to peek
+       below the nav even on unrelated project pages). */
+    .page { display: none !important; }
+    .page.visible {
+      display: block !important;
+      animation: pageIn 0.35s var(--ease) both;
+      position: relative;
+      z-index: 1;
+      background: var(--bg);
+    }
+    .page.leaving {
+      display: block !important;
+      animation: pageOut 0.2s var(--ease) both;
+      pointer-events: none;
+      position: relative;
+      z-index: 0;
+      background: var(--bg);
+    }
+    /* The home page is full-bleed (its own slideshow bg covers the viewport),
+       so it shouldn't get a solid cream bg overriding the imagery. */
+    #page-home.visible, #page-home.leaving { background: transparent; }
+    /* Home page is a fullscreen slideshow — skip the translateY so the bg
+       image doesn't visibly shift up on entry (reads as a "punch in"). */
+    #page-home.visible { animation: pageInFade 0.35s var(--ease) both; }
+    @keyframes pageIn     { from { opacity: 0; }                              to { opacity: 1; } }
+    @keyframes pageInFade { from { opacity: 0; }                              to { opacity: 1; } }
+    @keyframes pageOut    { from { opacity: 1; }                              to { opacity: 0; } }
     @keyframes gvIn    { from { opacity: 0; }                               to { opacity: 1; } }
 
     /* ── GRID — DESKTOP ── */
@@ -226,6 +258,74 @@
     .gallery-grid.layout-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; }
     .gallery-grid.layout-grid .grid-item { aspect-ratio: 16/9; }
     .gallery-grid.layout-grid .grid-thumb { height: 100%; object-fit: cover; }
+
+    /* Captioned layout: two-column gallery with title captioned over each
+       tile. Pairs by default with the Editorial overlay (cream scrim +
+       centered italic title), but the overlay is now a per-project choice
+       so any overlay style can live in this layout. */
+    .gallery-grid.layout-captioned {
+      display: grid; grid-template-columns: repeat(2, 1fr);
+      gap: 14px; padding: 28px;
+      max-width: 1600px; margin: 0 auto;
+    }
+    .gallery-grid.layout-captioned .grid-item {
+      position: relative; aspect-ratio: 4 / 3; overflow: hidden;
+      cursor: pointer; background: var(--bg2);
+      animation: gridIn 0.55s var(--ease) both;
+    }
+    .gallery-grid.layout-captioned .grid-thumb,
+    .gallery-grid.layout-captioned .grid-thumb-video {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: cover; display: block;
+      transition: transform 0.9s var(--ease), filter 0.7s var(--ease);
+      filter: var(--thumb-filter, none);
+    }
+
+    /* Editorial overlay — cream scrim + centered italic title. A per-project
+       choice; works in any layout. The grid item carries a hover-rest-on
+       or hover-rest-off class that flips the fade direction. */
+    .editorial-scrim {
+      position: absolute; inset: 0; z-index: 1;
+      background: rgba(242, 239, 235, 0.86);
+      transition: opacity 0.55s var(--ease);
+    }
+    .editorial-label {
+      position: absolute; inset: 0; z-index: 2;
+      display: flex; align-items: center; justify-content: center;
+      text-align: center; padding: 24px;
+      transition: opacity 0.4s var(--ease);
+      pointer-events: none;
+    }
+    .editorial-label-title {
+      font-family: var(--font-serif); font-style: italic;
+      font-size: clamp(20px, 2.2vw, 26px); font-weight: 400;
+      color: var(--fg); line-height: 1.25;
+    }
+    .editorial-label-client {
+      display: block; font-family: var(--font-sans);
+      font-size: 9px; letter-spacing: 0.24em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 10px; font-weight: 500;
+    }
+    /* rest-off: overlay hidden at rest. Touch devices keep this state
+       since they can't hover; clean photo until tapped. */
+    .grid-item.hover-rest-off .editorial-scrim,
+    .grid-item.hover-rest-off .editorial-label { opacity: 0; }
+
+    /* Hover effects only on real pointer devices — touch screens fire
+       :hover on tap (and on touch-to-scroll), which was killing the
+       matte every time the user touched a tile to scroll. */
+    @media (hover: hover) {
+      .grid-item.hover-rest-on:hover .editorial-scrim,
+      .grid-item.hover-rest-on:hover .editorial-label { opacity: 0; }
+      .grid-item.hover-rest-off:hover .editorial-scrim,
+      .grid-item.hover-rest-off:hover .editorial-label { opacity: 1; }
+      .gallery-grid.layout-captioned .grid-item:hover .grid-thumb { transform: scale(1.03); }
+    }
+
+    @media (max-width: 479px) {
+      .gallery-grid.layout-captioned { grid-template-columns: 1fr; gap: 10px; padding: 18px; }
+      .editorial-label-title { font-size: 18px; }
+    }
 
     .grid-item {
       position: absolute; overflow: hidden; cursor: pointer;
@@ -281,11 +381,8 @@
     .grid-center.solo .grid-title { font-size: 10px; opacity: 0.55; }
     .grid-item:hover .grid-center.solo .grid-title { font-size: 15px; opacity: 1; transform: none; }
 
-    /* editorial — slightly favors title at rest; client more subdued on hover */
-    .grid-center.overlay-editorial .grid-title { font-size: 11px; }
-    .grid-center.overlay-editorial .grid-client { font-size: 7px; opacity: 0.75; }
-    .grid-item:hover .grid-center.overlay-editorial .grid-client { font-size: 8px; letter-spacing: 0.18em; opacity: 0.55; transform: translateY(-22px); }
-    .grid-item:hover .grid-center.overlay-editorial .grid-title  { font-size: 17px; opacity: 1; transform: translateY(36px); }
+    /* (Editorial overlay no longer uses grid-center markup — it renders
+       its own editorial-scrim / editorial-label structure defined above.) */
 
     /* centered — title only, single line, no play/client/award */
     .grid-center.overlay-centered .grid-client,
@@ -311,6 +408,34 @@
     .grid-item .grid-center.overlay-none,
     .grid-item:hover .grid-center.overlay-none { display: none; }
     .grid-item.overlay-none:hover .grid-thumb { filter: saturate(1) brightness(1) !important; }
+
+    /* label — title only, bottom-left, no play/client/award. */
+    .grid-center.overlay-label { align-items: flex-start; justify-content: flex-end; text-align: left; padding: 0 14px 12px; }
+    .grid-center.overlay-label .grid-client,
+    .grid-center.overlay-label .grid-play,
+    .grid-center.overlay-label .grid-award { display: none !important; }
+    .grid-center.overlay-label .grid-title {
+      font-family: var(--font-sans); font-size: 10px; font-style: normal;
+      letter-spacing: 0.16em; text-transform: uppercase; color: #ede8e0;
+      opacity: 0.8; transform: none !important;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
+      transition: opacity 0.3s var(--ease);
+    }
+    .grid-item:hover .grid-center.overlay-label .grid-title { opacity: 1; font-size: 10px !important; transform: none !important; }
+
+    /* cover — white wash over image, title centered, both clear on hover to reveal photo. */
+    .grid-item.overlay-cover-item .grid-scrim { background: rgba(242,239,235,0.84) !important; transition: opacity 0.4s var(--ease); }
+    .grid-item.overlay-cover-item:hover .grid-scrim { opacity: 0; }
+    .grid-item.overlay-cover-item:hover .grid-thumb { filter: var(--thumb-filter, none) !important; transform: none !important; }
+    .grid-center.overlay-cover { align-items: center; justify-content: center; text-align: center; padding: 16px; transition: opacity 0.4s var(--ease); }
+    .grid-center.overlay-cover .grid-client,
+    .grid-center.overlay-cover .grid-play,
+    .grid-center.overlay-cover .grid-award { display: none !important; }
+    .grid-center.overlay-cover .grid-title {
+      font-family: var(--font-serif); font-size: clamp(11px, 1.4vw, 15px); font-weight: 400; font-style: italic;
+      color: var(--fg); letter-spacing: 0.04em; transform: none !important; font-size: 13px !important;
+    }
+    .grid-item.overlay-cover-item:hover .grid-center.overlay-cover { opacity: 0; }
 
     /* ── MOBILE LIST ── */
     .mobile-list { display: none; }
@@ -435,8 +560,8 @@
     .about-layout.placement-above .about-photo-frame.shape-natural.photo-full-width { width: 100%; }
     .about-layout.placement-above .about-photo-frame.shape-natural.photo-full-width .about-photo-img { width: 100%; max-width: none; max-height: none; height: auto; }
     .about-content { flex: 1; }
-    .about-bio { font-family: var(--font-serif); font-size: 20px; font-weight: 400; line-height: 1.75; color: var(--fg); margin-bottom: 12px; }
-    .about-bio2 { font-family: var(--font-serif); font-size: 17px; font-weight: 400; line-height: 1.8; color: var(--fg-mid); margin-bottom: 36px; }
+    .about-bio { font-family: var(--font-serif); font-size: calc(20px * var(--font-serif-scale, 1)); font-weight: 400; line-height: 1.75; color: var(--fg); margin-bottom: 12px; }
+    .about-bio2 { font-family: var(--font-serif); font-size: calc(17px * var(--font-serif-scale, 1)); font-weight: 400; line-height: 1.8; color: var(--fg-mid); margin-bottom: 36px; }
     .about-contact-line { font-size: 12px; color: var(--fg-dim); font-style: italic; margin-bottom: 56px; }
     .about-contact-line a { color: var(--accent); text-decoration: none; transition: color 0.2s; }
     .about-contact-line a:hover { color: var(--fg); }
@@ -472,11 +597,61 @@
 
     /* ── CONTACT ── */
     .contact-wrap { max-width: 560px; margin: 0 auto; padding: 72px 44px 100px; }
+    .contact-intro { font-size: 14px; color: var(--fg-mid); line-height: 1.8; margin-bottom: 36px; }
     .contact-card { margin-bottom: 52px; }
     .contact-card-name { font-family: var(--font-serif); font-size: 22px; font-weight: 400; color: var(--fg); margin-bottom: 10px; }
     .contact-card-email { display: inline-block; font-size: 13px; color: var(--accent); text-decoration: none; letter-spacing: 0.04em; transition: opacity 0.2s; }
     .contact-card-email:hover { opacity: 0.7; }
     .contact-card-divider { height: 1px; background: var(--fg-dimmer); margin: 32px 0; }
+    .contact-card-social { margin-top: 20px; }
+
+    /* Card-only contact page: centered "calling card" treatment.
+       Page leads with a large italic "Contact" heading; the studio name is
+       not repeated since the nav already carries it. Vertically centered
+       on the viewport, narrow column, generous spacing. */
+    .contact-wrap.contact-centered {
+      max-width: 460px;
+      /* Subtract nav + footer (36px) + main's bottom padding so the page
+         fills exactly the viewport with no overflow scroll. */
+      min-height: calc(100vh - var(--nav-h) - 72px - env(safe-area-inset-top, 0px));
+      padding: 60px 44px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+    }
+    .contact-wrap.contact-centered .contact-heading {
+      font-family: var(--font-serif);
+      font-size: clamp(40px, 6vw, 64px);
+      font-style: italic; font-weight: 400;
+      color: var(--fg); line-height: 1.05;
+      margin: 0 0 32px;
+    }
+    .contact-wrap.contact-centered .contact-intro {
+      max-width: 360px; margin: 0 auto 36px; line-height: 1.7;
+    }
+    .contact-wrap.contact-centered .contact-card-email {
+      display: block; font-size: 14px; letter-spacing: 0.06em;
+    }
+    .contact-wrap.contact-centered .contact-card-social {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 10px; margin-top: 36px;
+    }
+    .contact-wrap.contact-centered .contact-card-social-link {
+      color: var(--fg-mid); opacity: 0.85;
+      transition: opacity 0.2s, color 0.2s;
+    }
+    .contact-wrap.contact-centered .contact-card-social-link:hover {
+      opacity: 1; color: var(--accent);
+    }
+    .contact-wrap.contact-centered .contact-card-ig-text {
+      display: inline-block;
+      font-size: 14px; letter-spacing: 0.06em;
+      color: var(--accent); text-decoration: none;
+      transition: opacity 0.2s;
+    }
+    .contact-wrap.contact-centered .contact-card-ig-text:hover { opacity: 0.7; }
+    .contact-card-social-link { display: inline-flex; color: var(--fg-dim); opacity: 0.5; transition: opacity 0.2s; text-decoration: none; }
+    .contact-card-social-link:hover { opacity: 1; }
     /* Optional photo on the contact page — side-by-side with the card on
        desktop, stacks above on mobile. */
     .contact-layout { display: flex; flex-direction: row; gap: 36px; align-items: flex-start; }
@@ -494,6 +669,258 @@
     .contact-submit:hover { border-color: var(--accent); color: var(--fg); }
     .contact-submit:disabled { opacity: 0.4; cursor: default; }
     .contact-result { margin-top: 18px; font-size: 13px; color: var(--fg-mid); min-height: 20px; }
+
+    /* ── HOME PAGE ── */
+    #page-home { padding: 0; margin-bottom: -36px; }
+    .home-wrap {
+      position: relative; width: 100%;
+      min-height: calc(100svh - var(--nav-h) - env(safe-area-inset-top, 0px));
+      display: flex; align-items: center; justify-content: center; overflow: hidden;
+    }
+    /* Fixed + 100vw so the slideshow bg fills the entire viewport including
+       under the scrollbar gutter — true full-bleed image. (`inset: 0` on a
+       fixed element fills the viewport *excluding* the scrollbar area, so
+       we use explicit 100vw/100vh to extend across the gutter.) */
+    .home-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100svh; z-index: 0; background: var(--bg2); overflow: hidden; }
+    .home-bg-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+    .home-slide { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 1.2s ease; pointer-events: none; }
+    .home-slide.active { opacity: 1; }
+    .home-bg-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+    .home-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100svh; z-index: 1; background: rgba(0,0,0,0.48); pointer-events: none; }
+    .home-content { position: relative; z-index: 2; max-width: 820px; padding: 80px 44px; text-align: center;
+      animation: homeContentReveal 0.7s var(--ease) both;
+      animation-delay: var(--home-reveal-delay, 0s);
+    }
+    @keyframes homeContentReveal { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ── HOME PAGE — TEXT LAYOUT MODES ── */
+    /* default: centered (no class) */
+    /* corner caption: bottom-left */
+    .home-wrap.layout-corner-bl { align-items: flex-end; justify-content: flex-start; }
+    .home-wrap.layout-corner-bl .home-content { text-align: left; padding: 44px 48px; max-width: 640px; }
+    /* corner caption: bottom-right */
+    .home-wrap.layout-corner-br { align-items: flex-end; justify-content: flex-end; }
+    .home-wrap.layout-corner-br .home-content { text-align: right; padding: 44px 48px; max-width: 640px; }
+    /* in caption modes, ctas align with the text edge */
+    .home-wrap.layout-corner-bl .home-ctas { justify-content: flex-start; }
+    .home-wrap.layout-corner-br .home-ctas { justify-content: flex-end; }
+    /* gallery mode: hide all text and ctas, let the photo speak */
+    .home-wrap.layout-hidden .home-content { display: none; }
+    /* corner caption scrim — soft radial gradient anchored at the caption
+       corner so the text always has a subtle tonal cushion, regardless of
+       whether the photo is light or dark. No hard edges, reads as natural
+       shadow rather than as a label background. */
+    .home-wrap.layout-corner-bl::before,
+    .home-wrap.layout-corner-br::before {
+      content: ''; position: fixed; inset: 0; z-index: 1; pointer-events: none;
+      animation: homeContentReveal 0.7s var(--ease) both;
+      animation-delay: var(--home-reveal-delay, 0s);
+    }
+    .home-wrap.layout-corner-bl::before {
+      background: radial-gradient(ellipse 55% 45% at 0% 100%,
+        rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.3) 25%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0) 75%);
+    }
+    .home-wrap.layout-corner-br::before {
+      background: radial-gradient(ellipse 55% 45% at 100% 100%,
+        rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.3) 25%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0) 75%);
+    }
+    @media (max-width: 768px) {
+      /* on small screens, caption modes drop back to centered for legibility */
+      .home-wrap.layout-corner-bl, .home-wrap.layout-corner-br { align-items: center; justify-content: center; }
+      .home-wrap.layout-corner-bl .home-content, .home-wrap.layout-corner-br .home-content { text-align: center; }
+      .home-wrap.layout-corner-bl .home-ctas, .home-wrap.layout-corner-br .home-ctas { justify-content: center; }
+      /* Footer-style caption: pinned to the bottom of the home slideshow
+         with a soft black-to-transparent gradient rising from the bottom
+         edge for legibility. Reads like a magazine masthead/footer rather
+         than a label hovering on the photo. */
+      .home-wrap.layout-corner-bl, .home-wrap.layout-corner-br {
+        align-items: flex-end !important;
+      }
+      .home-wrap.layout-corner-bl .home-content,
+      .home-wrap.layout-corner-br .home-content {
+        max-width: none;
+        padding: 0 28px 80px;
+        background: transparent;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        border-radius: 0;
+      }
+      .home-wrap.layout-corner-bl .home-content > *:last-child,
+      .home-wrap.layout-corner-br .home-content > *:last-child {
+        margin-bottom: 0;
+      }
+      /* Bottom-fade gradient providing legibility for the footer caption. */
+      .home-wrap.layout-corner-bl::before, .home-wrap.layout-corner-br::before {
+        display: block;
+        position: fixed; inset: auto 0 0 0;
+        height: 26vh;
+        background: linear-gradient(to top,
+          rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.25) 40%, rgba(0,0,0,0) 100%);
+        animation: homeContentReveal 0.7s var(--ease) both;
+        animation-delay: var(--home-reveal-delay, 0s);
+      }
+      /* Beefed-up text shadow as a second line of defense */
+      .home-headline, .home-subhead, .home-body {
+        text-shadow: 0 1px 18px rgba(0,0,0,0.55), 0 0 6px rgba(0,0,0,0.4);
+      }
+      .home-subhead { font-size: 12px; }
+    }
+    .home-headline { font-family: var(--font-serif); font-size: clamp(calc(36px * var(--font-serif-scale, 1)), 6vw, calc(76px * var(--font-serif-scale, 1))); font-weight: 400; font-style: italic; color: #fff; line-height: 1.12; margin-bottom: 20px; text-shadow: 0 1px 16px rgba(0,0,0,0.35); }
+    .home-subhead { font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; color: rgba(255,255,255,0.88); margin-bottom: 28px; text-shadow: 0 1px 10px rgba(0,0,0,0.4); }
+    .home-body { font-family: var(--font-serif); font-size: clamp(15px, 1.8vw, 19px); color: rgba(255,255,255,0.85); line-height: 1.8; margin-bottom: 44px; max-width: 620px; margin-left: auto; margin-right: auto; text-shadow: 0 1px 10px rgba(0,0,0,0.3); }
+    .home-ctas { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+    .home-cta { text-decoration: none; font-family: var(--font-sans); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; padding: 12px 32px; border: 1px solid rgba(255,255,255,0.5); color: #fff; transition: border-color 0.25s, color 0.25s, background 0.25s; cursor: pointer; background: none; }
+    .home-cta:hover { border-color: #fff; background: rgba(255,255,255,0.12); }
+    .home-cta.home-cta-primary { border-color: var(--accent); color: var(--accent); }
+    .home-cta.home-cta-primary:hover { border-color: var(--accent); color: var(--accent); opacity: 0.75; }
+    @media (max-width: 768px) {
+      .home-content { padding: 60px 28px; }
+      .home-subhead { letter-spacing: 0.22em; }
+    }
+    /* Tablet — distinct from phone but not yet desktop. Bigger title and
+       wrap padding so project pages feel substantial; corner caption +
+       chevrons + paired diptychs are inherited from the >=480 rules. */
+    @media (min-width: 769px) and (max-width: 1023px) {
+      .ps-wrap { padding: 24px 36px 80px; }
+      .ps-title { font-size: clamp(36px, 4.5vw, 52px); }
+      .ps-grid { gap: 18px; }
+    }
+
+    /* ── SITE FOOTER ── */
+/* sticky site-footer removed — IG lives in nav, copyright in about page */
+    /* Optional Instagram icon at the end of the desktop nav. Inherits color
+       from nav-link styles so it picks up the same dim → accent hover treatment. */
+    .nav-links .nav-link-ig { display: inline-flex; align-items: center; padding: 0; opacity: 0.7; transition: opacity 0.25s var(--ease), color 0.25s var(--ease); color: var(--fg-dim); }
+    .nav-links .nav-link-ig::after { display: none; }
+    .nav-links .nav-link-ig:hover { opacity: 1; color: var(--accent); }
+    /* translateY optically aligns the icon's center with the cap-height of
+       the adjacent text labels (which sit slightly above their box center
+       because of font ascender/descender geometry). */
+    /* The text nav-links have padding-bottom:3px reserving space for the
+       underline-on-hover slot, which pushes their visual content above the
+       flex-center. The icon has no such padding, so translateY(-2px) brings
+       it up to the same cap-line as HOME / WORK / CONTACT. */
+    .nav-links .nav-link-ig svg { width: 18px; height: 18px; display: block; transform: translateY(4px); }
+    /* main no longer needs bottom padding for a fixed footer */
+
+    /* ── SCROLL PROJECT PAGE ── */
+    .ps-wrap { max-width: 1240px; margin: 0 auto; padding: 12px 28px 40px; position: relative; }
+    /* Per-project width overrides — set on a project via projects.json's
+       displayWidth field ('wide' | 'narrow'). Useful for short projects
+       (like a 2-photo diptych) that benefit from more horizontal space,
+       or projects that should feel more intimate. Mobile is unchanged
+       — the @media rules below clamp wrap width to 100% anyway. */
+    .ps-wrap.ps-page-wide {
+      max-width: 1600px; padding-bottom: 16px;
+      /* Make the wide wrap a flex column at full viewport height so the
+         photo grid can vertically-center itself between the title and the
+         bottom of the page (good for short projects where the photos
+         would otherwise top-anchor with a sea of cream below). */
+      display: flex; flex-direction: column;
+      min-height: calc(100vh - var(--nav-h) - env(safe-area-inset-top, 0px));
+    }
+    .ps-wrap.ps-page-wide .ps-grid { margin: auto 0; }
+    .ps-wrap.ps-page-narrow { max-width: 980px; }
+    /* Sticky top row: back link on the left, prev/next on the right.
+       The cream bg covers content scrolling underneath. */
+    /* Top row — just the back link. Non-sticky now; the side chevrons
+       handle navigation while scrolling, the bottom prev/next handles
+       end-of-page wayfinding. Eliminates a whole class of sticky-position
+       artifacts (content rendering behind the nav, etc.). */
+    .ps-top { margin: 0 0 10px; }
+    /* (intermediate hide-labels rule removed — was producing tiny illegible arrows; chevron side-nav handles those widths now) */
+    /* Side chevrons — visible on narrower screens where the top sticky bar
+       loses room for full text labels. Live inside the wrap's padding zone
+       (left:8px / right:8px against the wrap, which has 44px padding). */
+    .ps-side-nav {
+      position: fixed; top: 50%; transform: translateY(-50%);
+      z-index: 45; display: none;
+      width: 44px; height: 44px;
+      align-items: center; justify-content: center;
+      background: rgba(35, 30, 26, 0.62);
+      color: rgba(255, 255, 255, 0.95);
+      border: none;
+      border-radius: 50%;
+      font-family: var(--font-sans); font-size: 16px; font-weight: 400; line-height: 1;
+      text-decoration: none; cursor: pointer;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      transition: background 0.2s, transform 0.2s, opacity 0.2s;
+      padding: 0;
+      opacity: 0.3;
+    }
+    .ps-side-nav:hover { background: rgba(35, 30, 26, 0.85); opacity: 1; transform: translateY(-50%) scale(1.05); }
+    .ps-side-nav-prev { left: 12px; }
+    .ps-side-nav-next { right: 12px; }
+    /* Side chevrons — visible at all desktop and tablet widths so
+       navigation is always one click away while scrolling a long gallery. */
+    @media (min-width: 480px) {
+      .ps-side-nav { display: flex; }
+    }
+    .ps-back { background: none; border: none; cursor: pointer; font-family: var(--font-sans); font-size: 10px; line-height: 1.6; letter-spacing: 0.18em; text-transform: uppercase; color: var(--fg-dim); padding: 4px 0; transition: color 0.2s; display: inline-flex; align-items: center; gap: 6px; }
+    .ps-back:hover { color: var(--fg); }
+    .ps-back::before { content: ''; display: inline-block; width: 10px; height: 10px; border-top: 1.5px solid currentColor; border-left: 1.5px solid currentColor; transform: rotate(-45deg) translate(1px,1px); flex-shrink: 0; }
+    .ps-header { margin-bottom: 16px; }
+    .ps-client { font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
+    .ps-title { font-family: var(--font-serif); font-size: clamp(calc(28px * var(--font-serif-scale,1)), 5vw, calc(60px * var(--font-serif-scale,1))); font-weight: 400; font-style: italic; color: var(--fg); margin: 0; line-height: 1.1; }
+    /* Single-column gallery: each photograph gets full width and breathes
+       on its own, mirroring an editorial print layout. Aspect ratios are
+       preserved — no awkward empty gutters between mismatched pairs. */
+    .ps-grid {
+      display: flex; flex-direction: column; gap: 24px; margin-bottom: 0;
+      /* Hidden until the portrait-pairing pass has finished rebuilding the
+         layout — prevents a flash of single-column before snapping into
+         pair/diptych layout when navigating between projects. */
+      opacity: 0; transition: opacity 0.25s ease;
+    }
+    .ps-grid.ps-grid-ready { opacity: 1; }
+    /* Paired portraits — two side by side. JS wraps consecutive portrait
+       images in a .ps-pair so landscapes still get their own full-width row. */
+    /* Each cell of a portrait pair is locked to 2:3 (the dominant aspect
+       of the actual photographs) and the image fills it via object-fit:
+       cover. Both halves of the diptych then have identical heights, with
+       only minimal cropping for genuinely-different aspects (e.g. a square
+       loses a sliver of top + bottom). */
+    .ps-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    .ps-pair .ps-img {
+      width: 100%; height: 100%; aspect-ratio: 2 / 3;
+      object-fit: cover; display: block;
+    }
+    /* Mixed pair: a landscape paired with a portrait. Asymmetric column
+       split (2.25fr / 1fr) gives both cells the same rendered height when
+       the landscape is locked to 3:2 and the portrait to 2:3. */
+    .ps-pair-mixed { display: grid; grid-template-columns: 2.25fr 1fr; gap: 24px; }
+    .ps-pair-mixed .ps-img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+      aspect-ratio: 2 / 3; /* fallback */
+    }
+    .ps-pair-mixed .ps-img-landscape { aspect-ratio: 3 / 2; }
+    .ps-pair-mixed .ps-img-portrait  { aspect-ratio: 2 / 3; }
+    @media (max-width: 479px) {
+      .ps-pair, .ps-pair-mixed { grid-template-columns: 1fr; gap: 14px; }
+      /* More breathing room between the fixed nav and the back link.
+         !important defeats the parent <=768 rule's `padding:` shorthand. */
+      .ps-wrap { padding-top: 16px !important; }
+    }
+    .ps-img { width: 100%; height: auto; display: block; }
+    .ps-nav { display: flex; justify-content: space-between; align-items: stretch; gap: 24px; }
+    /* Bottom prev/next nav: hidden by default; only shown on phone-portrait
+       viewports where chevrons + top nav are both unavailable. */
+    .ps-nav-bottom { display: none; padding-top: 28px; }
+    @media (max-width: 479px) {
+      .ps-nav-bottom { display: flex; }
+    }
+    .ps-nav-btn { background: none; border: none; cursor: pointer; font-family: var(--font-sans); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--fg-dim); padding: 0; transition: color 0.2s; display: flex; align-items: center; gap: 12px; }
+    .ps-nav-btn:hover { color: var(--fg); }
+    /* Disabled state is still rendered (for layout balance) but invisible
+       so the remaining button doesn't feel orphaned at the page edges. */
+    .ps-nav-btn:disabled { visibility: hidden; }
+    .ps-nav-label { display: flex; flex-direction: column; }
+    .ps-nav-direction { font-size: 9px; letter-spacing: 0.18em; opacity: 0.7; }
+    .ps-nav-name { font-family: var(--font-serif); font-size: 14px; font-style: italic; letter-spacing: 0; text-transform: none; color: var(--fg); margin-top: 4px; }
+    .ps-nav-prev .ps-nav-label { text-align: left; }
+    .ps-nav-next .ps-nav-label { text-align: right; }
+    .ps-nav-arrow { font-size: 14px; line-height: 1; opacity: 0.55; }
 
     /* ── SPLASH ── */
     #splash { position: fixed; inset: 0; z-index: 800; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.6s var(--ease); }
@@ -526,7 +953,7 @@
 
     /* ── RESPONSIVE ── */
     @media (max-width: 768px) {
-      :root { --nav-h: 56px; --safe-top: env(safe-area-inset-top, 0px); }
+      :root { --nav-h: 64px; --safe-top: env(safe-area-inset-top, 0px); }
       /* Path B: body becomes a non-scrolling fixed viewport container, main
          is the scroll container. This sidesteps the iOS Safari bug where
          scrolled body content gets composited above position:fixed elements
@@ -546,7 +973,9 @@
         overscroll-behavior: contain;
         padding-top: calc(var(--nav-h) + var(--safe-top));
       }
-      .about-wrap, .contact-wrap { overflow-x: hidden; max-width: 100%; }
+      .about-wrap, .contact-wrap, .ps-wrap { overflow-x: hidden; max-width: 100%; }
+      .ps-wrap { padding: 12px 22px 32px; }
+      .ps-grid { gap: 14px; margin-bottom: 0; }
       /* Stack contact photo above card on portrait mobile */
       .contact-layout { flex-direction: column; gap: 24px; }
       .contact-photo-frame { max-width: 100%; }
@@ -668,11 +1097,354 @@
       /* ── LANDSCAPE: compact top nav regardless of nav-style setting ── */
       :root { --nav-h: 40px; }
 
-      /* Force top-bar layout for both default and left-nav configs */
+      /* Trap horizontal pan inside main (mirrors the portrait Path B setup).
+         iPhone landscape is wider than 768px so the (max-width: 768px) block
+         doesn't fire — without this, html/body can rubber-band sideways. */
+      html { overflow: hidden; }
+      body {
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        overflow: hidden;
+      }
+      main, body.nav-left main {
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        overflow-y: auto;
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior: contain;
+      }
+
+      /* Use the hamburger site-wide in landscape (home, work/category,
+         project, contact, about). Top inline links eat too much horizontal
+         space in 844x390 — drawer keeps the bar clean across all pages. */
+      .nav-links { display: none !important; }
+      .nav-hamburger { display: flex !important; }
+
+      /* Tuck the bottom-left caption a bit lower so it sits closer to
+         the corner (was 44px on desktop). And tighten the scrim so the
+         dark cushion stays anchored to the new text position in this
+         compact landscape height. */
+      .home-wrap.layout-corner-bl .home-content,
+      .home-wrap.layout-corner-br .home-content {
+        padding: 20px 36px 14px;
+      }
+      /* Linear bottom-fade — uniform dark across the entire bottom edge,
+         only fading vertically. Better fit for a wide landscape caption
+         row than a corner-anchored radial. */
+      .home-wrap.layout-corner-bl::before,
+      .home-wrap.layout-corner-br::before {
+        inset: auto 0 0 0;
+        height: 50%;
+        background: linear-gradient(to top,
+          rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.3) 45%, rgba(0,0,0,0.1) 75%, rgba(0,0,0,0) 100%);
+      }
+      /* Mirror that scrim in the top-right corner so the white hamburger
+         button has a soft dark cushion on bright slides. Subtle radial
+         that fades to transparent inside ~30% of the viewport. */
+      .home-wrap::after {
+        content: '';
+        position: fixed;
+        inset: 0;
+        z-index: 1;
+        pointer-events: none;
+        background: radial-gradient(ellipse 28% 45% at 100% 0%,
+          rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.22) 35%, rgba(0,0,0,0.08) 65%, rgba(0,0,0,0) 90%);
+        animation: homeContentReveal 0.7s var(--ease) both;
+        animation-delay: var(--home-reveal-delay, 0s);
+      }
+
+      /* ── IMMERSIVE LANDSCAPE PAGES (home, work, contact) ──
+         Bar dissolves to transparent, brand floats with the same
+         translate as the original home placement, drawer extends from
+         the top edge of the viewport. About and project pages keep the
+         conventional solid bar. */
+      body.landscape-immersive nav,
+      body.landscape-immersive.nav-left nav {
+        background: transparent;
+        /* Click-through on the transparent bar so taps on the drawer's
+           first link (which sits inside the bar's vertical band) reach
+           the drawer underneath. The hamburger and brand are individually
+           re-enabled below. */
+        pointer-events: none;
+      }
+      body.landscape-immersive .nav-hamburger,
+      body.landscape-immersive .nav-brand {
+        pointer-events: auto;
+      }
+
+      /* Drawer extends to viewport top (rather than below the now-absent
+         bar). Hamburger stays in its corner; the first link aligns to it. */
+      body.landscape-immersive .nav-drawer {
+        top: 0 !important;
+      }
+      /* Pull main content up to start at viewport top — grid first row
+         then sits aligned with the hamburger top. Hamburger floats over
+         empty right-side space because the grid is narrowed (max-width
+         600px, centered). Home slideshow doesn't depend on this padding;
+         contact-wrap centers itself within available space regardless. */
+      body.landscape-immersive main,
+      body.landscape-immersive.nav-left main {
+        padding-top: 0;
+      }
+      /* Bottom padding only on project pages (long image scroll). Home
+         is fixed/non-scrolling, contact centers itself, category page's
+         grid has its own internal padding-bottom. */
+      body.landscape-immersive:has([id^="page-ps-"].visible) main {
+        padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+      }
+      /* Narrow wide-mode project pages on landscape so the photos don't
+         crowd the lower-left back button. Also undo the desktop
+         flex-vertical-centering that was producing big empty space at
+         the top — content should top-align like the narrow variants. */
+      body.landscape-immersive:has([id^="page-ps-"].visible) .ps-wrap.ps-page-wide {
+        max-width: 92%;
+        min-height: 0;
+        display: block;
+      }
+      body.landscape-immersive:has([id^="page-ps-"].visible) .ps-wrap.ps-page-wide .ps-grid {
+        margin: 0;
+      }
+      /* On home in immersive landscape (no top bar), home-wrap should
+         span the full viewport — not subtract var(--nav-h) — so the
+         bottom-left caption sits at the actual bottom edge of the
+         screen. Otherwise the corner-bl text floats 40px above where
+         it used to be (back when main had padding-top: var(--nav-h)). */
+      body.landscape-immersive:has(#page-home.visible) .home-wrap {
+        min-height: 100svh;
+      }
+      /* Same fix for contact: span full viewport so justify-content:
+         center anchors the card at the actual screen midpoint, not
+         40px above it. */
+      body.landscape-immersive:has(#page-contact.visible) .contact-wrap.contact-centered {
+        min-height: 100dvh;
+      }
+
+      /* Project page in landscape: sticky <- work button in the lower
+         left, project title floated to the right of the image scroll.
+         Both stay visible while the image stack scrolls. */
+      body.landscape-immersive:has([id^="page-ps-"].visible) .ps-top {
+        position: fixed;
+        left: calc(12px + env(safe-area-inset-left, 0px));
+        top: calc(10px + env(safe-area-inset-top, 0px));
+        z-index: 100;
+        padding: 0;
+      }
+      body.landscape-immersive:has([id^="page-ps-"].visible) .ps-back {
+        font-size: 10px;
+        letter-spacing: 0.2em;
+        color: var(--fg);
+      }
+      body.landscape-immersive:has([id^="page-ps-"].visible) .ps-back::before {
+        border-color: var(--fg);
+      }
+      /* Hide project title on landscape mobile — user just came from a
+         tile that showed the project name, no need to repeat it. Lets
+         the photos lead. */
+      body.landscape-immersive:has([id^="page-ps-"].visible) .ps-header {
+        display: none;
+      }
+
+
+      /* Side nav chevrons: vertically centered, tucked against the
+         safe-area edges so they live inside the camera-cutout band on
+         landscape iPhones (just past the notch on each side). */
+      body.landscape-immersive .ps-side-nav {
+        display: flex;
+        width: 28px; height: 28px;
+        font-size: 11px;
+        opacity: 0.3;
+      }
+      body.landscape-immersive .ps-side-nav-prev {
+        left: calc(4px + env(safe-area-inset-left, 0px));
+      }
+      body.landscape-immersive .ps-side-nav-next {
+        right: calc(4px + env(safe-area-inset-right, 0px));
+      }
+
+      /* Cap each image to the viewport so a single photo fits the
+         screen — landscape mobile is short, so portrait photos at
+         100% width would scroll past the screen height. */
+      /* Single image: capped to 85dvh tall, AND to the same width as a
+         portrait pair so wide-aspect singles don't dwarf adjacent
+         pairs. Pair width = 85dvh * 4/3 + 24px gap, so use the same. */
+      body.landscape-immersive .ps-img {
+        max-width: calc(85dvh * 4 / 3 + 24px);
+        max-height: 85dvh;
+        width: auto;
+        height: auto;
+        margin: 0 auto;
+      }
+      /* Portrait pair: cap pair max-width so its rendered HEIGHT lands
+         at 85dvh — matches the height ceiling of single images so the
+         pair leaves the same 15dvh peek of the next image at the
+         bottom of the viewport. Math: each portrait is 85dvh tall at
+         aspect 2:3, so width per column = 85dvh / 1.5 = 85dvh * 2/3.
+         Pair width = 2 columns * (85dvh * 2/3) + 24px gap
+                    = 85dvh * 4/3 + 24px. */
+      body.landscape-immersive .ps-pair {
+        max-width: calc(85dvh * 4 / 3 + 24px);
+        margin: 0 auto;
+        align-items: stretch;
+      }
+      body.landscape-immersive .ps-pair .ps-img {
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+        max-height: none;
+        margin: 0;
+        aspect-ratio: 2 / 3;
+        object-fit: cover;
+      }
+      /* Mixed pair (landscape + portrait): the desktop CSS uses a
+         2.25fr/1fr grid that produces matching heights when the images
+         render at their natural aspects. The .ps-img max-width override
+         above was capping landscape images BELOW their column width,
+         breaking that math and shrinking the landscape side. Exempt
+         mixed-pair images so they fill their columns. */
+      body.landscape-immersive .ps-pair-mixed .ps-img {
+        max-width: 100%;
+        max-height: none;
+      }
+      /* Center each image horizontally inside the column scroll. */
+      body.landscape-immersive .ps-grid {
+        align-items: center;
+      }
+
+      /* Hide inline nav links + right-side anchors on every landscape
+         immersive page (drawer is the only nav surface). */
+      body.landscape-immersive .nav-links,
+      body.landscape-immersive .nav-right > a {
+        display: none !important;
+      }
+      /* Brand hidden only on photo-led pages (home, work category,
+         project pages) — those have full-bleed imagery the logo would
+         compete with. Contact and about are text-led with a flat
+         background, so the brand belongs there for identity. */
+      body.landscape-immersive:has(#page-home.visible) .nav-brand,
+      body.landscape-immersive:has([id^="page-ps-"].visible) .nav-brand {
+        display: none !important;
+      }
+      /* Hide brand on category pages (work etc.) — covers any category
+         id by checking for body class set in showPage. */
+      body.landscape-immersive.is-category-page .nav-brand {
+        display: none !important;
+      }
+      body.landscape-immersive .nav-hamburger,
+      body.landscape-immersive.nav-left .nav-hamburger {
+        display: flex !important;
+      }
+      /* Nav padding in landscape immersive: 6% on the left for the brand,
+         and 14px on the right so the hamburger isn't kissing the screen
+         bezel. */
+      body.landscape-immersive nav {
+        padding: 0 14px 0 6%;
+      }
+      body.landscape-immersive .nav-right {
+        margin-left: auto;
+      }
+      /* Hamburger floats on top of the drawer (z-index above drawer's
+         190). White spans + soft shadow for legibility on bright slides. */
+      body.landscape-immersive nav {
+        z-index: 220;
+      }
+      body.landscape-immersive .nav-hamburger {
+        position: relative;
+        z-index: 230;
+        padding: 14px 12px;
+        gap: 5px;
+      }
+      body.landscape-immersive .nav-hamburger span {
+        background: var(--fg-mid);
+        width: 22px;
+        height: 1.5px;
+      }
+      /* On home in landscape, hamburger is white to match the bottom-
+         left caption text. The top-right scrim added below cushions
+         it for legibility on bright slides. */
+      body.landscape-immersive:has(#page-home.visible) .nav-hamburger span {
+        background: #fff;
+      }
+      /* Whenever the drawer is open in landscape, flip hamburger to
+         white so it stays visible against the dark frosted drawer
+         backdrop. (Home is already white; this catches the dark-
+         hamburger pages: category, project, contact.) */
+      body.landscape-immersive:has(.nav-drawer.open) .nav-hamburger span {
+        background: #fff;
+        transition: background 0.25s var(--ease);
+      }
+      /* Modest ::after extension — pointerdown handler is reliable now,
+         so we don't need a comically oversized hit zone. */
+      body.landscape-immersive .nav-hamburger::after {
+        inset: -8px;
+      }
+
+      /* ── DRAWER (default option B): folds down from top edge ──
+         Empty padding-top reserves space so the hamburger remains visible
+         on top of the (frosted) drawer surface. Closed drawer is invisible
+         — no border, max-height 0. */
+      body:has(#page-home.visible) .nav-drawer,
+      body.nav-left:has(#page-home.visible) .nav-drawer {
+        top: 0;
+        left: auto;
+        right: 0;
+        width: 240px;
+        max-width: 240px;
+        background: rgba(0, 0, 0, 0.45);
+        backdrop-filter: blur(18px) saturate(180%);
+        -webkit-backdrop-filter: blur(18px) saturate(180%);
+        border-bottom: none;
+        padding: 0 20px;
+      }
+      body:has(#page-home.visible) .nav-drawer.open,
+      body.nav-left:has(#page-home.visible) .nav-drawer.open {
+        /* No top blank space — first link sits on the same horizontal
+           line as the hamburger button. */
+        padding: 6px 20px 16px;
+        max-height: calc(100dvh - 16px);
+        border-bottom: none;
+      }
+
+      /* ── DRAWER (alternate option C): full-height side panel ──
+         Opt-in via body.landscape-drawer-side (admin setting:
+         nav.landscapeDrawerStyle = 'side'). Vertical strip slides in
+         from the right edge with translateX. Hamburger stays pinned
+         top-right; drawer slides under it. */
+      body.landscape-drawer-side:has(#page-home.visible) .nav-drawer {
+        top: 0;
+        bottom: 0;
+        right: 0;
+        left: auto;
+        width: 280px;
+        max-width: 280px;
+        height: 100%;
+        max-height: 100%;
+        padding: 72px 24px 24px;
+        overflow-y: auto;
+        transform: translateX(100%);
+        transition: transform 0.35s var(--ease);
+      }
+      body.landscape-drawer-side:has(#page-home.visible) .nav-drawer.open {
+        transform: translateX(0);
+        max-height: 100%;
+        padding: 72px 24px 24px;
+      }
+      body:has(#page-home.visible) .nav-drawer a,
+      body.nav-left:has(#page-home.visible) .nav-drawer a {
+        color: rgba(255,255,255,0.55) !important;
+        border-bottom-color: rgba(255,255,255,0.12) !important;
+      }
+      body:has(#page-home.visible) .nav-drawer a.active {
+        color: #fff !important;
+      }
+
+      /* Force top-bar layout for both default and left-nav configs.
+         Asymmetric padding: 10% on the left for the brand, 0 on the right
+         so the hamburger sits flush in the corner (matches home). */
       nav, body.nav-left nav {
         top: 0; left: 0; right: 0; bottom: auto;
         width: 100%; height: var(--nav-h);
-        padding: 0 10%; box-sizing: border-box;
+        padding: 0 0 0 10%; box-sizing: border-box;
         flex-direction: row; align-items: center; justify-content: space-between;
         border-bottom: none; border-right: none;
       }
@@ -680,6 +1452,8 @@
       nav::after, body.nav-left nav::after { display: none; }
       /* Content starts below the 40px nav; 15% side margins so theme color frames the gallery */
       main, body.nav-left main { padding-top: var(--nav-h); padding-left: 10%; padding-right: 10%; }
+      /* Home page is full-bleed — override the landscape side padding */
+      #page-home { margin-left: -10%; margin-right: -10%; width: calc(100% + 20%); }
       /* Kill any sidebar-style sub-element overrides */
       body.nav-left .nav-brand { flex-direction: row; align-items: baseline; gap: 10px; margin-bottom: 0; }
       body.nav-left .nav-brand-name { font-size: 17px; }
@@ -693,24 +1467,141 @@
 
       .nav-brand-name { font-size: 17px; }
       .nav-hamburger span { width: 25px; }
-      /* Drawer inset to match gallery width */
-      .nav-drawer { left: 10%; right: 10%; }
-      .nav-drawer.open { padding: 6px 16px 10px; max-height: calc(100dvh - var(--nav-h) - 16px); overflow-y: auto; }
-      .nav-drawer a { padding: 8px 0 8px 10px; font-size: 10px; }
-      /* Allow drawer to open in landscape (desktop hides it with !important) */
-      body.nav-left .nav-drawer { display: block !important; max-height: 0; overflow: hidden; left: 10%; right: 10%; }
-      body.nav-left .nav-drawer.open { max-height: calc(100dvh - var(--nav-h) - 16px); padding: 6px 16px 10px; overflow-y: auto; }
+      /* Bigger tap zone so the hamburger is reliably hittable on mobile.
+         Visible bars unchanged — padding extends the click target. */
+      .nav-hamburger {
+        padding: 22px 20px;
+        touch-action: manipulation;
+        position: relative;
+      }
+      /* Invisible hit-extension pad: tap zone extends 10px beyond the
+         button on every side, but the button itself stays visually the
+         same. Captures near-misses that would otherwise fall through to
+         the slideshow's click-to-advance handler. */
+      .nav-hamburger::after {
+        content: '';
+        position: absolute;
+        inset: -10px;
+      }
+      /* Unified drawer: narrow frosted right-anchored panel, same on all
+         landscape pages. Drops down from below the bar on non-home; on
+         home the bar is transparent so the drawer effectively starts
+         from the top edge. */
+      .nav-drawer,
+      body.nav-left .nav-drawer {
+        left: auto;
+        right: 0;
+        width: 240px;
+        max-width: 240px;
+        background: rgba(0, 0, 0, 0.45);
+        backdrop-filter: blur(18px) saturate(180%);
+        -webkit-backdrop-filter: blur(18px) saturate(180%);
+        border-bottom: none;
+        padding: 0 20px;
+        display: block;
+      }
+      .nav-drawer.open,
+      body.nav-left .nav-drawer.open {
+        padding: 6px 20px 16px;
+        max-height: calc(100dvh - var(--nav-h) - 16px);
+        overflow-y: auto;
+        border-bottom: none;
+      }
+      .nav-drawer a {
+        padding: 8px 0 8px 10px;
+        font-size: 10px;
+        color: rgba(255,255,255,0.55) !important;
+        border-bottom-color: rgba(255,255,255,0.12) !important;
+      }
+      .nav-drawer a.active {
+        color: #fff !important;
+        border-left-color: #fff !important;
+        border-left-width: 3px !important;
+      }
+
+      /* ── CONTACT PAGE in landscape ──
+         Drop the inline nav links in favor of the hamburger (more space
+         for content). Keep the brand visible. Center the card and tune
+         sizes so everything fits in the short viewport without scrolling. */
+      body:has(#page-contact.visible) .nav-links {
+        display: none !important;
+      }
+      body:has(#page-contact.visible) .nav-hamburger {
+        display: flex !important;
+      }
+      .contact-wrap.contact-centered {
+        min-height: calc(100dvh - var(--nav-h));
+        padding: 8px 24px 16px;
+        justify-content: center;
+      }
+      .contact-wrap.contact-centered .contact-heading {
+        font-size: clamp(28px, 4vw, 40px);
+        margin: 0 0 14px;
+      }
+      .contact-wrap.contact-centered .contact-intro {
+        margin: 0 auto 16px;
+        font-size: 13px;
+        line-height: 1.55;
+        max-width: 380px;
+      }
+      .contact-wrap.contact-centered .contact-card-email {
+        font-size: 13px;
+      }
+      .contact-wrap.contact-centered .contact-card-social {
+        margin-top: 16px;
+        gap: 6px;
+      }
+      .contact-wrap.contact-centered .contact-card-ig-text {
+        font-size: 13px;
+      }
 
       /* Grid: show masonry instead of the full-width mobile list */
       .gallery-grid { display: block !important; }
       .mobile-list { display: none !important; }
 
+      /* Captioned layout: 3 columns instead of 2 in landscape, tighter
+         gap + reduced padding so the grid starts higher in the viewport
+         and individual tiles read smaller (more fits on a 390px-tall
+         viewport without scroll). */
+      .gallery-grid.layout-captioned {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        padding: 0 0 calc(100px + env(safe-area-inset-bottom, 0px));
+        max-width: 600px;
+        margin: 0 auto;
+      }
+      .gallery-grid.layout-captioned .grid-item {
+        aspect-ratio: 16 / 9;
+      }
+      .gallery-grid.layout-captioned .editorial-label-title {
+        font-size: clamp(14px, 1.8vw, 17px);
+      }
+      .gallery-grid.layout-captioned .editorial-label-client {
+        font-size: 8px; margin-bottom: 4px;
+      }
+      .gallery-grid.layout-captioned .editorial-label {
+        padding: 12px;
+      }
+      /* Class-based cycling reveal — JS toggles .is-exposed on one tile
+         at a time, prefers in-frame tiles. Replaces the previous
+         nth-child keyframe approach so the active tile follows scroll. */
+      .gallery-grid.layout-captioned .editorial-scrim,
+      .gallery-grid.layout-captioned .editorial-label {
+        transition: opacity 0.3s ease-in-out;
+      }
+      .gallery-grid.layout-captioned .grid-item.is-exposed .editorial-scrim,
+      .gallery-grid.layout-captioned .grid-item.is-exposed .editorial-label {
+        opacity: 0;
+      }
+
+
       /* About: cancel the desktop nav-left side-nav left-shift since
          landscape uses a top bar, not a side nav. Tighter padding to
          nudge content toward the top, matching portrait spacing. */
       body.nav-left .about-wrap { left: 0; }
-      .about-wrap { padding: 16px 44px 12px; }
-      .contact-wrap { padding: 16px 44px 24px; }
+      .about-wrap { padding: 16px 16px 12px 0; }
+      .contact-wrap { padding: 16px 16px 24px; }
       /* Tight eyebrow gap in landscape — was 36px which created a big
          band above the photo/text block. Pulls block up toward heading. */
       .about-eyebrow { margin-bottom: 8px; }
@@ -721,20 +1612,33 @@
       .about-layout {
         flex-direction: row !important;
         align-items: flex-start;
-        gap: 24px;
+        gap: 16px;
       }
+      /* Offset the half-leading above the first line of bio text so the
+         text visually aligns with the top of the photo. */
+      .about-content { margin-top: -7px; }
+      .about-bio  { font-size: 15px; line-height: 1.6; }
+      .about-bio2 { font-size: 13px; line-height: 1.65; }
       .about-photo-frame.shape-natural.photo-full-width {
         width: auto !important;
       }
       .about-photo-frame.shape-natural .about-photo-img,
       .about-photo-frame.shape-natural.photo-full-width .about-photo-img {
         width: auto !important;
-        max-width: 40vw;
+        max-width: 28vw;
         /* Use svh (smallest viewport height) instead of dvh so the photo
            stays the same size when iOS Safari's URL bar collapses on
            scroll — sized once for URL-bar-visible state and stays put. */
         max-height: calc(100svh - 120px);
         height: auto;
+      }
+      /* The desktop placement-above full-width rule sets max-width/max-height: none
+         with higher specificity than the rule above, overriding the landscape
+         constraints. Re-assert them here at matching specificity. */
+      .about-layout.placement-above .about-photo-frame.shape-natural.photo-full-width .about-photo-img {
+        width: auto !important;
+        max-width: 28vw !important;
+        max-height: calc(100svh - 120px) !important;
       }
 
       /* Viewer covers the full viewport — sits above the nav (z-index 200) */
@@ -844,7 +1748,8 @@
 
   <!-- Nav -->
   <nav>
-    <a class="nav-brand" href="#" onclick="event.preventDefault();showFirst()">
+    <a class="nav-brand" href="#" onclick="event.preventDefault();goHome()">
+      <img class="nav-brand-logo" id="nav-logo" alt="" style="display:none">
       <span class="nav-brand-name" id="nav-name"></span>
       <span class="nav-brand-rule" id="nav-rule" style="display:none"></span>
       <span class="nav-brand-title" id="nav-title-el"></span>
@@ -858,7 +1763,7 @@
         <button class="gv-nav-back" onclick="closeGallery()">← Back</button>
       </div>
       <button class="theme-toggle hidden" id="theme-toggle-btn" onclick="toggleTheme()" title="Toggle theme">◐</button>
-      <button class="nav-hamburger" onclick="toggleDrawer()"><span></span><span></span></button>
+      <button class="nav-hamburger" onpointerdown="event.stopPropagation();toggleDrawer()" onclick="event.stopPropagation()"><span></span><span></span><span></span></button>
     </div>
   </nav>
 
@@ -947,6 +1852,50 @@
         .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
 
+    /* ── RICH-TEXT SANITIZER ──
+       Allowlist sanitizer for fields that intentionally render as HTML
+       (home.body, about.bio, about.bio2). Any tag not on the allow list
+       is dropped (its text content is kept). All attributes are stripped
+       except a validated href on <a>, which also gets rel/target hardening. */
+    const _XRICH_TAGS = new Set(['A','B','BLOCKQUOTE','BR','EM','I','LI','OL','P','SPAN','STRONG','U','UL']);
+    const _XRICH_HREF = /^(?:https?:|mailto:|tel:|#|\/|\.)/i;
+    function xRich(html) {
+      if (html == null || html === '') return '';
+      const doc = new DOMParser().parseFromString(String(html), 'text/html');
+      function clean(node) {
+        const frag = document.createDocumentFragment();
+        for (const child of [...node.childNodes]) {
+          if (child.nodeType === 3) {                       // text
+            frag.appendChild(document.createTextNode(child.nodeValue));
+          } else if (child.nodeType === 1) {                // element
+            const tag = child.tagName;
+            const inner = clean(child);
+            if (_XRICH_TAGS.has(tag)) {
+              const el = document.createElement(tag);
+              if (tag === 'A') {
+                const href = child.getAttribute('href') || '';
+                if (_XRICH_HREF.test(href)) {
+                  el.setAttribute('href', href);
+                  el.setAttribute('rel', 'noopener noreferrer');
+                  if (/^https?:/i.test(href)) el.setAttribute('target', '_blank');
+                }
+              }
+              el.appendChild(inner);
+              frag.appendChild(el);
+            } else {
+              // Drop the wrapper, keep its (already-sanitized) contents.
+              frag.appendChild(inner);
+            }
+          }
+          // Comments and other node types are silently dropped.
+        }
+        return frag;
+      }
+      const wrap = document.createElement('div');
+      wrap.appendChild(clean(doc.body));
+      return wrap.innerHTML;
+    }
+
     /* ── INIT ── */
     async function init() {
       try {
@@ -1011,6 +1960,48 @@
       }
     }
 
+    /* ── FONT SWAP ── */
+    const FONT_SERIF_OPTIONS = {
+      'playfair':           { url: 'https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&display=swap', stack: "'Playfair Display', Georgia, serif" },
+      'cormorant':          { url: 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap', stack: "'Cormorant Garamond', Georgia, serif" },
+      'lora':               { url: 'https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;1,400&display=swap',                          stack: "'Lora', Georgia, serif" },
+      'eb-garamond':        { url: 'https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;1,400&display=swap',                   stack: "'EB Garamond', Georgia, serif" },
+      'libre-baskerville':  { url: 'https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;1,400&display=swap',             stack: "'Libre Baskerville', Georgia, serif" },
+    };
+    function applyFontSerif(key) {
+      const opt = FONT_SERIF_OPTIONS[key];
+      if (!opt || key === 'playfair') return; // Playfair already loaded in <head>
+      let link = document.getElementById('dynamic-font-serif');
+      if (!link) {
+        link = document.createElement('link');
+        link.id  = 'dynamic-font-serif';
+        link.rel = 'stylesheet';
+        document.head.appendChild(link);
+      }
+      link.href = opt.url;
+      document.documentElement.style.setProperty('--font-serif', opt.stack);
+    }
+
+    const FONT_SANS_OPTIONS = {
+      'dm-sans':         { url: 'https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400&display=swap',         stack: "'DM Sans', sans-serif" },
+      'source-code-pro': { url: 'https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@300;400&display=swap', stack: "'Source Code Pro', monospace" },
+      'space-grotesk':   { url: 'https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400&display=swap',   stack: "'Space Grotesk', sans-serif" },
+      'inter':           { url: 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400&display=swap',           stack: "'Inter', sans-serif" },
+    };
+    function applyFontSans(key) {
+      const opt = FONT_SANS_OPTIONS[key];
+      if (!opt || key === 'dm-sans') return; // DM Sans already loaded in <head>
+      let link = document.getElementById('dynamic-font-sans');
+      if (!link) {
+        link = document.createElement('link');
+        link.id  = 'dynamic-font-sans';
+        link.rel = 'stylesheet';
+        document.head.appendChild(link);
+      }
+      link.href = opt.url;
+      document.documentElement.style.setProperty('--font-sans', opt.stack);
+    }
+
     /* ── APPLY CONFIG ── */
     function applyConfig() {
       const cfg = siteConfig;
@@ -1037,6 +2028,23 @@
       const rule = document.getElementById('nav-rule');
       if (rule) rule.style.display = ownerTitle ? '' : 'none';
 
+      // Optional brand logo — when set, the image replaces the text name.
+      // Title (if configured) still shows next to the logo.
+      const navLogo = document.getElementById('nav-logo');
+      const navName = document.getElementById('nav-name');
+      if (navLogo) {
+        if (cfg.brandLogo) {
+          navLogo.src = cfg.brandLogo;
+          navLogo.alt = ownerName || '';
+          navLogo.style.display = '';
+          if (navName) navName.style.display = 'none';
+        } else {
+          navLogo.removeAttribute('src');
+          navLogo.style.display = 'none';
+          if (navName) navName.style.display = '';
+        }
+      }
+
       document.getElementById('splash-name').textContent  = ownerName;
       document.getElementById('splash-title').textContent = ownerTitle;
 
@@ -1061,6 +2069,12 @@
       if (toggleBtn) toggleBtn.classList.toggle('hidden', !cfg.allowThemeToggle);
 
       document.body.classList.toggle('nav-left', cfg.navStyle === 'left');
+      document.body.classList.toggle('landscape-drawer-side', cfg.nav?.landscapeDrawerStyle === 'side');
+
+      if (cfg.fontSerif)      applyFontSerif(cfg.fontSerif);
+      if (cfg.fontSans)       applyFontSans(cfg.fontSans);
+      if (cfg.fontSerifScale) document.documentElement.style.setProperty('--font-serif-scale', cfg.fontSerifScale);
+      if (cfg.fontSansScale)  document.documentElement.style.setProperty('--font-sans-scale',  cfg.fontSansScale);
 
       if (cfg.viewerBg) document.documentElement.setAttribute('data-viewer-bg', cfg.viewerBg);
       if (cfg.favicon) {
@@ -1079,6 +2093,8 @@
         document.querySelector('meta[property="og:image"]')?.setAttribute('content', ogAbs);
         document.querySelector('meta[name="twitter:image"]')?.setAttribute('content', ogAbs);
       }
+
+
     }
 
     function applyTheme(mode) {
@@ -1123,12 +2139,27 @@
         drawerEl.appendChild(da);
       }
 
+      if (siteConfig.homePage?.enabled) addLink('home', 'Home');
       cats.forEach(cat => addLink(cat.id, cat.label));
       if (siteConfig.about?.show !== false) addLink('about', 'About');
       const _ctMode = siteConfig.contact?.mode;
       // 'card-only' and 'form' put a Contact link in BOTH desktop nav and drawer
       if ((siteConfig.contact?.enabled || _ctMode === 'card-only') && _ctMode !== 'email-nav') {
         addLink('contact', 'Contact');
+      }
+
+      // Optional Instagram icon at the end of the desktop nav.
+      const _navIgUrl = siteConfig.about?.social?.instagram;
+      if (siteConfig.nav?.showInstagramInNav && _navIgUrl) {
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.href = _navIgUrl; a.target = '_blank'; a.rel = 'noopener';
+        a.className = 'nav-link-ig';
+        a.title = 'Instagram';
+        a.setAttribute('aria-label', 'Instagram');
+        a.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>';
+        li.appendChild(a);
+        linksEl.appendChild(li);
       }
       const _navEmail = siteConfig.contact?.email || siteConfig.about?.contactEmail;
       if (_ctMode === 'email-nav' && _navEmail) {
@@ -1179,12 +2210,20 @@
       const main = document.getElementById('main-content');
       main.innerHTML = '';
 
+      // Home page — prepended so it's the first section
+      if (siteConfig.homePage?.enabled) {
+        const homeEl = document.createElement('section');
+        homeEl.id = 'page-home';
+        homeEl.className = 'page';
+        main.appendChild(homeEl);
+      }
+
       cats.forEach(cat => {
         const sec = document.createElement('section');
         sec.id = 'page-' + cat.id;
         sec.className = 'page';
         sec.innerHTML = [
-          `<div class="gallery-grid${cat.layout === 'grid' ? ' layout-grid' : ''}" id="grid-${x(cat.id)}"></div>`,
+          `<div class="gallery-grid${cat.layout === 'grid' ? ' layout-grid' : (cat.layout === 'captioned' || cat.layout === 'editorial') ? ' layout-captioned' : ''}" id="grid-${x(cat.id)}"></div>`,
           `<div class="mobile-list"  id="mlist-${x(cat.id)}"></div>`,
           isPreview ? `<div class="preview-tray" id="preview-tray-${x(cat.id)}" style="display:none"></div>` : ''
         ].join('');
@@ -1211,9 +2250,12 @@
         const name  = siteConfig.ownerName || '';
         // Prefer contact-card override email; fall back to About page email
         const email = (siteConfig.contact?.email || siteConfig.about.contactEmail || '');
+        const igUrl = siteConfig.about?.social?.instagram || '';
+        const igSvg = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>`;
         return `<div class="contact-card">
           ${name  ? `<div class="contact-card-name">${x(name)}</div>` : ''}
           ${email ? `<a class="contact-card-email" href="mailto:${x(email)}">${x(email)}</a>` : ''}
+          ${igUrl ? `<div class="contact-card-social"><a href="${x(igUrl)}" target="_blank" rel="noopener" class="contact-card-social-link" title="Instagram">${igSvg}</a></div>` : ''}
         </div>
         ${!isCardOnly ? `<div class="contact-card-divider"></div>` : ''}`;
       })() : '';
@@ -1228,11 +2270,35 @@
             <button type="submit" id="contact-submit" class="contact-submit">Send Message</button>
             <div id="contact-result" class="contact-result"></div>
           </form>` : ''}`;
-      ctc.innerHTML = `
-        <div class="contact-wrap">
-          <h2 class="about-eyebrow">Get in Touch</h2>
-          ${photoHtml ? `<div class="contact-layout">${photoHtml}<div class="contact-content">${cardWithFormHtml}</div></div>` : cardWithFormHtml}
-        </div>`;
+      const introHtml = cc.intro ? `<p class="contact-intro">${x(cc.intro)}</p>` : '';
+      // Card-only mode without a photo gets a dedicated centered treatment —
+      // the nav already carries the studio's name, so the page leads with a
+      // large italic "Contact" heading and skips both the eyebrow and the
+      // redundant studio name. Order: heading → intro → email → social.
+      if (isCardOnly && !photoHtml) {
+        const email = (siteConfig.contact?.email || siteConfig.about?.contactEmail || '');
+        const igUrl = siteConfig.about?.social?.instagram || '';
+        const igSvg = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>`;
+        const igHandle = igUrl ? (igUrl.match(/instagram\.com\/([^/?#]+)/)?.[1] || null) : null;
+        ctc.innerHTML = `
+          <div class="contact-wrap contact-centered">
+            <h1 class="contact-heading">Contact</h1>
+            ${introHtml}
+            ${email ? `<a class="contact-card-email" href="mailto:${x(email)}">${x(email)}</a>` : ''}
+            ${igUrl ? `
+              <div class="contact-card-social">
+                <a href="${x(igUrl)}" target="_blank" rel="noopener" class="contact-card-social-link" title="Instagram">${igSvg}</a>
+                ${igHandle ? `<a class="contact-card-ig-text" href="${x(igUrl)}" target="_blank" rel="noopener">@${x(igHandle)}</a>` : ''}
+              </div>` : ''}
+          </div>`;
+      } else {
+        ctc.innerHTML = `
+          <div class="contact-wrap">
+            <h2 class="about-eyebrow">Get in Touch</h2>
+            ${introHtml}
+            ${photoHtml ? `<div class="contact-layout">${photoHtml}<div class="contact-content">${cardWithFormHtml}</div></div>` : cardWithFormHtml}
+          </div>`;
+      }
       main.appendChild(ctc);
     }
 
@@ -1255,6 +2321,15 @@
       // Hide any already-leaving pages that aren't the target
       document.querySelectorAll('.page.leaving').forEach(p => { if (p === pg) p.classList.remove('leaving'); });
 
+      // Defensive: any page that's not the target AND not already mid-leave
+      // gets reset to plain .page, ensuring display:none kicks in immediately.
+      document.querySelectorAll('.page').forEach(p => {
+        if (p === pg) return;
+        if (!p.classList.contains('visible') && !p.classList.contains('leaving')) {
+          // already idle — leave alone
+          return;
+        }
+      });
       pg.classList.add('visible');
       history.replaceState(null, '', '#' + id);
       window.scrollTo(0, 0);
@@ -1271,19 +2346,59 @@
       const cats = isPreview
         ? siteConfig.categories
         : siteConfig.categories.filter(c => c.published !== false);
-      if (cats.some(c => c.id === id)) { buildCat(id); reanimateMobileList(id); }
+      if (cats.some(c => c.id === id)) {
+        buildCat(id);
+        reanimateMobileList(id);
+        // Always re-fire the editorial cycle on category navigation so
+        // it kicks in after Back-from-project + orientation change.
+        requestAnimationFrame(() => setupEditorialCycle(id));
+      }
 
+      // Mark immersive-landscape pages (home, contact, and category pages
+      // like Work) so the landscape CSS can drop the top bar and float
+      // the brand + drawer over the content. About and project pages
+      // keep the conventional solid bar.
+      const isImmersive = id === 'home' || id === 'contact' || cats.some(c => c.id === id) || id.startsWith('ps-');
+      document.body.classList.toggle('is-category-page', cats.some(c => c.id === id));
+      document.body.classList.toggle('landscape-immersive', isImmersive);
+
+      if (id === 'home')  { renderHome(); resumeHomeSlideshow(); }
+      else                { pauseHomeSlideshow(); }
       if (id === 'about') renderAbout();
+    }
+
+    function goHome() {
+      // Logo / brand click — always returns to home if enabled, else first
+      // published category.
+      if (siteConfig.homePage?.enabled) { showPage('home'); return; }
+      const visible = isPreview
+        ? siteConfig.categories
+        : siteConfig.categories.filter(c => c.published !== false);
+      const first = visible[0];
+      if (first) showPage(first.id);
     }
 
     function showFirst() {
       const hash = location.hash.slice(1);
       if (hash === 'about')   { showPage('about');   return; }
       if (hash === 'contact') { showPage('contact'); return; }
+      if (hash === 'home')    { showPage('home');    return; }
+      // Deep link to scroll project page: #ps-{catId}-{idx}
+      const psMatch = hash.match(/^ps-(.+)-(\d+)$/);
+      if (psMatch) {
+        const [, pscat, psidx] = psMatch;
+        const visible2 = isPreview ? siteConfig.categories : siteConfig.categories.filter(c => c.published !== false);
+        if (visible2.some(c => c.id === pscat)) {
+          buildCat(pscat);
+          showProjectScrollPage(pscat, parseInt(psidx, 10));
+          return;
+        }
+      }
       const visible = isPreview
         ? siteConfig.categories
         : siteConfig.categories.filter(c => c.published !== false);
       if (hash && visible.some(c => c.id === hash)) { showPage(hash); return; }
+      if (siteConfig.homePage?.enabled) { showPage('home'); return; }
       const first = visible[0];
       if (first) { showPage(first.id); return; }
       if (siteConfig.about?.show !== false) showPage('about');
@@ -1295,13 +2410,13 @@
     function getAutoThumb(p) {
       if (p.thumbnail || !p.url) return null;
       const yt = p.url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
-      if (yt) return { type: 'url', url: `https://img.youtube.com/vi/${yt[1]}/hqdefault.jpg` };
+      if (yt) return { type: 'url', url: `https://img.youtube.com/vi/${yt[1]}/hqdefault.webp` };
       if (/vimeo\.com\/\d+/.test(p.url)) return { type: 'vimeo', vimeoUrl: p.url };
-      // Cloudflare Stream — thumbnail available at /thumbnails/thumbnail.jpg
+      // Cloudflare Stream — thumbnail available at /thumbnails/thumbnail.webp
       const cfCustomer = p.url.match(/(https?:\/\/[a-z0-9-]+\.cloudflarestream\.com\/[a-zA-Z0-9]+)/);
-      if (cfCustomer) return { type: 'url', url: cfCustomer[1] + '/thumbnails/thumbnail.jpg' };
+      if (cfCustomer) return { type: 'url', url: cfCustomer[1] + '/thumbnails/thumbnail.webp' };
       const cfWatch = p.url.match(/(?:watch|iframe)\.cloudflarestream\.com\/([a-zA-Z0-9]+)/);
-      if (cfWatch) return { type: 'url', url: `https://cloudflarestream.com/${cfWatch[1]}/thumbnails/thumbnail.jpg` };
+      if (cfWatch) return { type: 'url', url: `https://cloudflarestream.com/${cfWatch[1]}/thumbnails/thumbnail.webp` };
       // Bunny.net — no reliable public thumbnail URL without pull zone; use placeholder
       return null;
     }
@@ -1338,14 +2453,77 @@
       buildDesktopGrid(catId, items);
       buildMobileList(catId, items);
       if (isPreview) renderPreviewTray(catId);
+      requestAnimationFrame(() => setupEditorialCycle(catId));
+    }
+
+    // ── Editorial cycling reveal (mobile landscape only) ──
+    // One tile at a time has .is-exposed (no scrim). Cycles every ~5s.
+    // Prefers tiles that are currently in the viewport (>= 50% visible),
+    // and immediately advances if the active tile drops below 25%.
+    const editorialCycleState = { observer: null, timer: null, idx: 0, vis: new Map() };
+    function setupEditorialCycle(catId) {
+      if (editorialCycleState.observer) { editorialCycleState.observer.disconnect(); editorialCycleState.observer = null; }
+      if (editorialCycleState.timer) { clearInterval(editorialCycleState.timer); clearTimeout(editorialCycleState.timer); editorialCycleState.timer = null; }
+      editorialCycleState.vis.clear();
+      if (!matchMedia('(max-height: 600px) and (orientation: landscape)').matches) return;
+      const grid = document.getElementById('grid-' + catId);
+      if (!grid || !grid.classList.contains('layout-captioned')) return;
+      const tiles = Array.from(grid.querySelectorAll('.grid-item'));
+      if (!tiles.length) return;
+      tiles.forEach(t => t.classList.remove('is-exposed'));
+      editorialCycleState.idx = 0;
+      const advance = () => {
+        let next = -1;
+        for (let i = 1; i <= tiles.length; i++) {
+          const idx = (editorialCycleState.idx + i) % tiles.length;
+          if ((editorialCycleState.vis.get(tiles[idx]) || 0) >= 0.5) { next = idx; break; }
+        }
+        if (next < 0) next = (editorialCycleState.idx + 1) % tiles.length;
+        tiles.forEach(t => t.classList.remove('is-exposed'));
+        editorialCycleState.idx = next;
+        tiles[next].classList.add('is-exposed');
+      };
+      editorialCycleState.observer = new IntersectionObserver(entries => {
+        for (const entry of entries) {
+          editorialCycleState.vis.set(entry.target, entry.intersectionRatio);
+        }
+        const cur = tiles[editorialCycleState.idx];
+        if ((editorialCycleState.vis.get(cur) || 0) < 0.25) {
+          const hasVisible = tiles.some((t, i) =>
+            i !== editorialCycleState.idx &&
+            (editorialCycleState.vis.get(t) || 0) >= 0.5
+          );
+          if (hasVisible) advance();
+        }
+      }, { threshold: [0, 0.25, 0.5, 0.75, 1] });
+      tiles.forEach(t => editorialCycleState.observer.observe(t));
+      // First reveal fires after 1.5s — gives the user a moment to read
+      // the page before motion starts. Then advance every 5s.
+      editorialCycleState.timer = setTimeout(() => {
+        tiles[0]?.classList.add('is-exposed');
+        editorialCycleState.timer = setInterval(advance, 5000);
+      }, 1500);
     }
 
     function buildDesktopGrid(cat, items) {
       const grid = document.getElementById('grid-' + cat);
       if (!grid) return;
       grid.innerHTML = '';
+      const catDef = siteConfig.categories.find(c => c.id === cat);
+      const isScrollCat = catDef?.type === 'scroll' || catDef?.type === 'gallery';
+      // 'captioned' is the renamed layout; 'editorial' kept as legacy alias.
+      const isCaptioned = catDef?.layout === 'captioned' || catDef?.layout === 'editorial';
       items.forEach((p, i) => {
-        const overlayClass = p.overlay || (p.opacity === 0 ? 'reveal' : 'default');
+        // Captioned-layout projects without an overlay default to the
+        // Editorial cream-scrim treatment so existing sites look identical.
+        const baseOverlay = p.overlay || (isCaptioned ? 'editorial' : (p.opacity === 0 ? 'reveal' : 'default'));
+        const overlayClass = isScrollCat ? 'cover' : baseOverlay;
+        // Hover direction: explicit p.hoverState wins; otherwise infer from
+        // the overlay style (editorial → rest-on, reveal → rest-off, else rest-on).
+        const hoverState = p.hoverState
+          || (overlayClass === 'editorial' ? 'rest-on'
+              : overlayClass === 'reveal' ? 'rest-off'
+              : 'rest-on');
         const hideBtn = isPreview
           ? `<button class="preview-hide-btn" onclick="event.stopPropagation();previewHideProject(${p._gi},'${x(cat)}')" title="Hide">×</button>`
           : '';
@@ -1361,9 +2539,14 @@
               ? `<img class="grid-thumb" data-vimeo-url="${x(auto.vimeoUrl)}" style="display:none" alt="${thumbAlt}"><div class="grid-placeholder" data-vimeo-ph><div class="grid-placeholder-icon"></div></div>`
               : `<div class="grid-placeholder"><div class="grid-placeholder-icon"></div></div>`;
         const el = document.createElement('div');
-        el.className = 'grid-item' + (overlayClass === 'none' ? ' overlay-none' : '');
-        const catDef2 = siteConfig.categories.find(c => c.id === cat);
-        el.onclick = catDef2?.type === 'gallery' ? () => openGallery(cat, i) : () => openLb(cat, i);
+        el.className = 'grid-item'
+          + (overlayClass === 'none' ? ' overlay-none' : '')
+          + (overlayClass === 'cover' ? ' overlay-cover-item' : '')
+          + (isScrollCat ? ' scroll-item' : '')
+          + ' hover-' + hoverState;
+        el.onclick = catDef?.type === 'carousel' ? () => openGallery(cat, i)
+                   : (catDef?.type === 'gallery' || catDef?.type === 'scroll') ? () => showProjectScrollPage(cat, i)
+                   : () => openLb(cat, i);
         // Hover preview accepts either a video file (mp4/webm) or an animated
         // image (webp/gif) — Bunny Stream's auto-generated /preview.webp is
         // typically the lightest and most compatible option.
@@ -1374,17 +2557,34 @@
               ? `<video class="grid-thumb-video" muted loop playsinline preload="none" data-hover-src="${x(p.hoverPreview)}"></video>`
               : `<img class="grid-thumb-video grid-thumb-preview-img" alt="" data-hover-src="${x(p.hoverPreview)}">`)
           : '';
-        el.innerHTML = `
-          ${hideBtn}${draftBadge}
-          ${thumbHtml}
-          ${hoverVideoHtml}
-          <div class="grid-scrim" style="background:radial-gradient(circle,rgba(19,17,16,${p.vignette ?? 0.35}) 0%,transparent 70%)"></div>
-          <div class="grid-center overlay-${x(overlayClass)}${!p.client ? ' solo' : ''}">
-            ${p.client ? `<div class="grid-client">${x(p.client)}</div>` : ''}
-            <div class="grid-title">${x(p.title)}</div>
-            <div class="grid-play"></div>
-            ${p.award ? `<div class="grid-award">${x(p.award)}</div>` : ''}
-          </div>`;
+        if (overlayClass === 'editorial') {
+          // Editorial overlay: cream scrim + centered italic title. Hover
+          // direction is driven by the .hover-rest-on / .hover-rest-off class
+          // on .grid-item (set above from p.hoverState).
+          el.innerHTML = `
+            ${hideBtn}${draftBadge}
+            ${thumbHtml}
+            ${hoverVideoHtml}
+            <div class="editorial-scrim"></div>
+            <div class="editorial-label">
+              <div>
+                ${p.client ? `<span class="editorial-label-client">${x(p.client)}</span>` : ''}
+                <span class="editorial-label-title">${x(p.title)}</span>
+              </div>
+            </div>`;
+        } else {
+          el.innerHTML = `
+            ${hideBtn}${draftBadge}
+            ${thumbHtml}
+            ${hoverVideoHtml}
+            <div class="grid-scrim" style="background:radial-gradient(circle,rgba(19,17,16,${p.vignette ?? 0.35}) 0%,transparent 70%)"></div>
+            <div class="grid-center overlay-${x(overlayClass)}${!p.client ? ' solo' : ''}">
+              ${p.client ? `<div class="grid-client">${x(p.client)}</div>` : ''}
+              <div class="grid-title">${x(p.title)}</div>
+              <div class="grid-play"></div>
+              ${p.award ? `<div class="grid-award">${x(p.award)}</div>` : ''}
+            </div>`;
+        }
         // Hover-to-play handler — only on devices that actually hover (skip
         // touch). Lazy-loads the preview src on first hover so nothing is
         // fetched until needed. Handles both <video> (mp4/webm) and <img>
@@ -1418,9 +2618,9 @@
       });
       resolveVimeoThumbs(grid);
 
-      // Masonry layout (JS-positioned, left-to-right order)
-      const catDef = siteConfig.categories.find(c => c.id === cat);
-      if (catDef?.layout !== 'grid') {
+      // Masonry layout (JS-positioned, left-to-right order). Skipped for
+      // both 'grid' and 'editorial' which use CSS Grid for positioning.
+      if (catDef?.layout !== 'grid' && catDef?.layout !== 'editorial') {
         layoutMasonry(grid);
         grid.querySelectorAll('img.grid-thumb').forEach(img => {
           if (!img.complete) img.addEventListener('load', () => layoutMasonry(grid), { once: true });
@@ -1454,7 +2654,7 @@
     window.addEventListener('resize', () => {
       cancelAnimationFrame(_masonryRaf);
       _masonryRaf = requestAnimationFrame(() => {
-        document.querySelectorAll('.gallery-grid:not(.layout-grid)').forEach(layoutMasonry);
+        document.querySelectorAll('.gallery-grid:not(.layout-grid):not(.layout-captioned)').forEach(layoutMasonry);
         updateDrawerPadding();
       });
     });
@@ -1468,6 +2668,7 @@
       const list = document.getElementById('mlist-' + cat);
       if (!list) return;
       list.innerHTML = '';
+      const mCatDef = siteConfig.categories.find(c => c.id === cat);
       items.forEach((p, i) => {
         const auto = getAutoThumb(p);
         const mobileThumbAlt = x(p.alt || p.title || '');
@@ -1480,8 +2681,9 @@
               : `<div class="mobile-placeholder-icon"></div>`;
         const el = document.createElement('div');
         el.className = 'mobile-item';
-        const mCatDef = siteConfig.categories.find(c => c.id === cat);
-        el.onclick = mCatDef?.type === 'gallery' ? () => openGallery(cat, i) : () => openLb(cat, i);
+        el.onclick = mCatDef?.type === 'carousel' ? () => openGallery(cat, i)
+                   : (mCatDef?.type === 'gallery' || mCatDef?.type === 'scroll') ? () => showProjectScrollPage(cat, i)
+                   : () => openLb(cat, i);
         el.innerHTML = `
           <div class="mobile-thumb-wrap">
             ${mobileThumbHtml}
@@ -1542,6 +2744,104 @@
     }
 
     /* ── ABOUT ── */
+    /* ── HOME PAGE RENDER ── */
+    let _homeSlideshowTimer = null;
+    let _homeSlideshow = null; // { advance, interval } once started
+
+    function startHomeSlideshow() {
+      const pg = document.getElementById('page-home');
+      const slides = pg ? pg.querySelectorAll('.home-slide') : [];
+      if (slides.length < 2) return;
+      let idx = 0;
+      const interval = ((siteConfig.homePage?.slideInterval) || 5) * 1000;
+
+      function advance() {
+        slides[idx].classList.remove('active');
+        idx = (idx + 1) % slides.length;
+        slides[idx].classList.add('active');
+      }
+
+      _homeSlideshow = { advance, interval };
+
+      pg.addEventListener('click', e => {
+        if (e.target.closest('.home-content, a, button')) return;
+        advance();
+        resumeHomeSlideshow();
+      });
+
+      resumeHomeSlideshow();
+    }
+
+    function pauseHomeSlideshow() {
+      if (_homeSlideshowTimer) { clearInterval(_homeSlideshowTimer); _homeSlideshowTimer = null; }
+    }
+
+    function resumeHomeSlideshow() {
+      if (!_homeSlideshow) return;
+      pauseHomeSlideshow();
+      _homeSlideshowTimer = setInterval(_homeSlideshow.advance, _homeSlideshow.interval);
+    }
+
+    function renderHome() {
+      const pg = document.getElementById('page-home');
+      if (!pg || pg.dataset.rendered) return;
+      pg.dataset.rendered = '1';
+      const h = siteConfig.homePage || {};
+
+      // Slideshow: use h.slides if present, fall back to single h.bg
+      const slideUrls = (Array.isArray(h.slides) && h.slides.length) ? h.slides : (h.bg ? [h.bg] : []);
+      const hasSlides = slideUrls.length > 0;
+      const multiSlide = slideUrls.length > 1;
+
+      const bgHtml = hasSlides || h.bgVideo ? `
+        <div class="home-bg"${multiSlide ? ' style="cursor:pointer"' : ''}>
+          ${slideUrls.map((s, i) => `<img class="home-slide${i === 0 ? ' active' : ''}" src="${x(s)}" alt="">`).join('')}
+          ${h.bgVideo ? `<video class="home-bg-video" src="${x(h.bgVideo)}" autoplay muted loop playsinline></video>` : ''}
+        </div>
+        <div class="home-overlay" style="opacity:${h.overlayOpacity ?? 1}"></div>` : '<div class="home-bg"></div>';
+
+      const showCtas = h.showCtas !== false; // default true if unset
+      const ctasHtml = !showCtas ? '' : (h.ctas || []).filter(c => c.label).map(c => {
+        const isUrl = c.target && /^https?:\/\//.test(c.target);
+        const cls   = 'home-cta' + (c.style === 'primary' ? ' home-cta-primary' : '');
+        if (isUrl) return `<a class="${cls}" href="${x(c.target)}" target="_blank" rel="noopener">${x(c.label)}</a>`;
+        return `<a class="${cls}" href="#${x(c.target||'')}" onclick="event.preventDefault();showPage('${x(c.target||'')}');closeDrawer&&closeDrawer()">${x(c.label)}</a>`;
+      }).join('');
+
+      // Layout class: centered (default) | corner-bl | corner-br | hidden
+      const layout = h.textLayout || 'centered';
+      const layoutCls = layout && layout !== 'centered' ? ` layout-${layout}` : '';
+      // Reveal delay (seconds) applied as CSS variable on home-wrap
+      const revealDelay = Math.max(0, parseFloat(h.revealDelay) || 0);
+      const wrapStyle = revealDelay > 0 ? ` style="--home-reveal-delay:${revealDelay}s"` : '';
+
+      pg.innerHTML = `
+        <div class="home-wrap${h.textTheme === 'dark' ? ' text-dark' : ''}${layoutCls}"${wrapStyle}>
+          ${bgHtml}
+          <div class="home-content">
+            ${h.headline ? `<div class="home-headline">${x(h.headline)}</div>` : ''}
+            ${h.subhead  ? `<div class="home-subhead">${x(h.subhead)}</div>`   : ''}
+            ${h.body     ? `<div class="home-body">${xRich(h.body)}</div>`     : ''}
+            ${ctasHtml   ? `<div class="home-ctas">${ctasHtml}</div>`          : ''}
+          </div>
+        </div>`;
+
+      // Only fade the bg in if the first image isn't already cached/ready —
+      // otherwise the page's own pageIn animation handles the entrance and a
+      // second bg-only fade creates a visible hitch / punch-in.
+      const homeBg    = pg.querySelector('.home-bg');
+      const firstSlide = pg.querySelector('.home-slide.active');
+      if (homeBg && firstSlide && !(firstSlide.complete && firstSlide.naturalWidth > 0)) {
+        homeBg.style.opacity   = '0';
+        homeBg.style.transition = 'opacity 0.6s ease';
+        const reveal = () => { homeBg.style.opacity = '1'; };
+        firstSlide.addEventListener('load',  reveal, { once: true });
+        firstSlide.addEventListener('error', reveal, { once: true });
+      }
+
+      if (multiSlide) startHomeSlideshow();
+    }
+
     function renderAbout() {
       if (_aboutRendered) return;
       _aboutRendered = true;
@@ -1609,8 +2909,8 @@
         <div class="about-layout placement-${x(a.photoPlacement || 'above')}">
           ${photoHtml}
           <div class="about-content">
-            ${a.bio  ? `<div class="about-bio">${a.bio}</div>`   : ''}
-            ${a.bio2 ? `<div class="about-bio2">${a.bio2}</div>` : ''}
+            ${a.bio  ? `<div class="about-bio">${xRich(a.bio)}</div>`   : ''}
+            ${a.bio2 ? `<div class="about-bio2">${xRich(a.bio2)}</div>` : ''}
             ${a.contactEmail && a.showEmail !== false ? `<div class="about-contact-line">Reach me at <a href="mailto:${x(a.contactEmail)}">${x(a.contactEmail)}</a></div>` : ''}
             ${resumeLink}
           </div>
@@ -1917,6 +3217,205 @@
       document.getElementById('gv-ctrl-next').disabled = atEnd;
     }
 
+    /* ── SCROLL PROJECT PAGE ── */
+    function showProjectScrollPage(catId, idx) {
+      const pageId = 'ps-' + catId + '-' + idx;
+      // Remove any stale cached version so preview changes are always reflected
+      const stale = document.getElementById('page-' + pageId);
+      if (stale) stale.remove();
+
+      const items = previewGetItems(catId);
+      const p = items[idx];
+      if (!p) return;
+
+      const catLabel = siteConfig.categories.find(c => c.id === catId)?.label || catId;
+      const prevP = items[idx - 1];
+      const nextP = items[idx + 1];
+
+      // Collect images: p.gallery array, or fall back to thumbnail / url
+      let images = [];
+      if (Array.isArray(p.gallery) && p.gallery.length) {
+        images = p.gallery;
+      } else if (p.thumbnail) {
+        images = [p.thumbnail];
+      } else if (p.url && isImageUrl(p.url)) {
+        images = [p.url];
+      }
+
+      const imagesHtml = images.length
+        ? images.map(src => `<img class="ps-img" src="${x(src)}" alt="">`).join('\n')
+        : `<div style="padding:80px 0;text-align:center;color:var(--fg-dim);font-size:12px;letter-spacing:0.1em;grid-column:1/-1">No images</div>`;
+
+      // Defer pairing until images have decoded their natural dimensions —
+      // setTimeout 0 so it runs after the innerHTML below paints. Safety:
+      // force-reveal the grid after 1.5s in case decode hangs for any reason.
+      const _pairAfterMount = () => {
+        setTimeout(() => pairProjectGalleryPortraits(pageId), 0);
+        setTimeout(() => {
+          const g = document.querySelector('#page-' + pageId + ' .ps-grid');
+          if (g) g.classList.add('ps-grid-ready');
+        }, 1500);
+      };
+
+      const prevHtml = prevP
+        ? `<button class="ps-nav-btn ps-nav-prev" onclick="showProjectScrollPage('${x(catId)}',${idx-1})">
+             <span class="ps-nav-arrow">←</span>
+             <span class="ps-nav-label">
+               <span class="ps-nav-direction">Previous</span>
+               <span class="ps-nav-name">${x(prevP.title || '')}</span>
+             </span>
+           </button>`
+        : `<button class="ps-nav-btn ps-nav-prev" disabled>
+             <span class="ps-nav-arrow">←</span>
+             <span class="ps-nav-label"><span class="ps-nav-direction">Previous</span></span>
+           </button>`;
+
+      const nextHtml = nextP
+        ? `<button class="ps-nav-btn ps-nav-next" onclick="showProjectScrollPage('${x(catId)}',${idx+1})">
+             <span class="ps-nav-label">
+               <span class="ps-nav-direction">Next</span>
+               <span class="ps-nav-name">${x(nextP.title || '')}</span>
+             </span>
+             <span class="ps-nav-arrow">→</span>
+           </button>`
+        : `<button class="ps-nav-btn ps-nav-next" disabled>
+             <span class="ps-nav-label"><span class="ps-nav-direction">Next</span></span>
+             <span class="ps-nav-arrow">→</span>
+           </button>`;
+
+      const pg = document.createElement('section');
+      pg.id = 'page-' + pageId;
+      pg.className = 'page';
+      const sideChevronPrev = prevP
+        ? `<button class="ps-side-nav ps-side-nav-prev" onclick="showProjectScrollPage('${x(catId)}',${idx-1})" aria-label="Previous: ${x(prevP.title || '')}">❮</button>`
+        : '';
+      const sideChevronNext = nextP
+        ? `<button class="ps-side-nav ps-side-nav-next" onclick="showProjectScrollPage('${x(catId)}',${idx+1})" aria-label="Next: ${x(nextP.title || '')}">❯</button>`
+        : '';
+      const _widthCls = p.displayWidth === 'wide' ? ' ps-page-wide'
+                       : p.displayWidth === 'narrow' ? ' ps-page-narrow'
+                       : '';
+      pg.innerHTML = `
+        <div class="ps-wrap${_widthCls}">
+          <div class="ps-top">
+            <button class="ps-back" onclick="showPage('${x(catId)}')">${x(catLabel)}</button>
+          </div>
+          ${sideChevronPrev}
+          ${sideChevronNext}
+          <header class="ps-header">
+            ${p.client ? `<div class="ps-client">${x(p.client)}</div>` : ''}
+            <h1 class="ps-title">${x(p.title || '')}</h1>
+          </header>
+          <div class="ps-grid">${imagesHtml}</div>
+          <nav class="ps-nav ps-nav-bottom">
+            ${prevHtml}
+            ${nextHtml}
+          </nav>
+        </div>`;
+
+      document.getElementById('main-content').appendChild(pg);
+      showPage(pageId);
+      _pairAfterMount();
+    }
+
+    /* Group consecutive portrait images into 2-up pairs while leaving
+       landscape (and orphan) images as full-width single rows. Runs once
+       per project page. Re-runs idempotently if called again. */
+    function pairProjectGalleryPortraits(pageId) {
+      const grid = document.querySelector('#page-' + pageId + ' .ps-grid');
+      if (!grid) return;
+      const imgs = Array.from(grid.querySelectorAll(':scope > img.ps-img, :scope > .ps-pair > img.ps-img'));
+      if (!imgs.length) return;
+
+      // Wait for each image to be decoded so we can read its naturalWidth /
+      // naturalHeight reliably. Using img.decode() instead of the 'load' event
+      // avoids a cache-hit race where the image completes before listeners
+      // attach (which is exactly what happened on revisits — pairing wouldn't
+      // re-fire because the events had already passed). decode() resolves
+      // either way, even when src was already in the cache.
+      const ready = imgs.map(img =>
+        (img.decode ? img.decode() : Promise.resolve()).catch(() => {})
+      );
+      Promise.all(ready).then(() => {
+        // All measured — flatten back to a list and re-group.
+        const flat = Array.from(grid.querySelectorAll(':scope img.ps-img'));
+        const groups = [];
+        let portraitBuf = [];
+        const flushPortraits = () => {
+          if (portraitBuf.length === 2) {
+            groups.push({ kind: 'pair', items: portraitBuf });
+          } else if (portraitBuf.length === 1) {
+            // Mark orphan portraits so post-processing can pair them with a
+            // neighbouring landscape (mixed diptych).
+            groups.push({ kind: 'orphan-portrait', items: portraitBuf });
+          }
+          portraitBuf = [];
+        };
+        for (const img of flat) {
+          // naturalWidth can be 0 for broken images — fall back to landscape.
+          // Use >= so square images qualify as 'portrait-pairable'.
+          const isPortrait = img.naturalWidth > 0 && img.naturalHeight >= img.naturalWidth;
+          if (isPortrait) {
+            portraitBuf.push(img);
+            if (portraitBuf.length === 2) flushPortraits();
+          } else {
+            flushPortraits();
+            groups.push({ kind: 'single', items: [img] });
+          }
+        }
+        flushPortraits();
+
+        // Post-process: merge each orphan portrait with an adjacent landscape
+        // single (preferring previous, else next) into a mixed diptych — kills
+        // the 'lone giant portrait' problem on projects like Home Office.
+        const merged = [];
+        for (let i = 0; i < groups.length; i++) {
+          const g = groups[i];
+          if (g.kind === 'orphan-portrait') {
+            const prev = merged[merged.length - 1];
+            const next = groups[i + 1];
+            if (prev && prev.kind === 'single') {
+              merged[merged.length - 1] = { kind: 'mixed', landscape: prev.items[0], portrait: g.items[0], landscapeFirst: true };
+              continue;
+            } else if (next && next.kind === 'single') {
+              merged.push({ kind: 'mixed', landscape: next.items[0], portrait: g.items[0], landscapeFirst: false });
+              i += 1; // consume next
+              continue;
+            }
+            // No landscape neighbour — render as standalone single (rare)
+            merged.push({ kind: 'single', items: g.items });
+            continue;
+          }
+          merged.push(g);
+        }
+
+        // Rebuild grid contents (then mark ready so the grid fades in)
+        grid.innerHTML = '';
+        // Defer adding ready class to next frame so the rebuilt layout has
+        // a chance to compute before the fade kicks in.
+        requestAnimationFrame(() => grid.classList.add('ps-grid-ready'));
+        for (const g of merged) {
+          if (g.kind === 'pair') {
+            const wrap = document.createElement('div');
+            wrap.className = 'ps-pair';
+            g.items.forEach(i => wrap.appendChild(i));
+            grid.appendChild(wrap);
+          } else if (g.kind === 'mixed') {
+            const wrap = document.createElement('div');
+            wrap.className = 'ps-pair-mixed';
+            g.landscape.classList.add('ps-img-landscape');
+            g.portrait.classList.add('ps-img-portrait');
+            // Always render landscape on the left (wider column), portrait on the right
+            wrap.appendChild(g.landscape);
+            wrap.appendChild(g.portrait);
+            grid.appendChild(wrap);
+          } else {
+            grid.appendChild(g.items[0]);
+          }
+        }
+      });
+    }
+
     /* ── EMBED URL ── */
     function getEmbedUrl(url) {
       if (!url) return '';
@@ -1998,6 +3497,22 @@
     }
     window.addEventListener('orientationchange', closeDrawerInstant);
     window.addEventListener('resize', closeDrawerInstant);
+    // Re-trigger the editorial matte cycle when the landscape media query
+    // actually flips. orientationchange fires too early — before the
+    // matchMedia state has flipped — so the cycle was bailing out on its
+    // matchMedia check.
+    (function () {
+      const _mq = matchMedia('(max-height: 600px) and (orientation: landscape)');
+      const refire = () => {
+        const v = document.querySelector('.page.visible');
+        if (!v) return;
+        const id = v.id.replace('page-', '');
+        const _cats = isPreview ? siteConfig.categories : siteConfig.categories.filter(c => c.published !== false);
+        if (_cats.some(c => c.id === id)) setupEditorialCycle(id);
+      };
+      if (_mq.addEventListener) _mq.addEventListener('change', refire);
+      else if (_mq.addListener) _mq.addListener(refire);
+    })();
 
     // Pinch-zoom lock — only active when siteConfig.zoomLock is true
     if (siteConfig.zoomLock) {

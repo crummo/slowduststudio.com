@@ -1,6 +1,8 @@
 # Credentials
 _internal/
 
+# Media — managed per site
+# images/  ← un-ignored: SDS site uses force-tracked logos / slides anyway
 
 # Memory / AI context
 CLAUDE.md

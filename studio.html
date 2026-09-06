@@ -47,6 +47,35 @@
     }
     .theme-toggle:hover { color: var(--fg); }
 
+    /* ── UTILITY CLASSES ── */
+
+    /* small parenthetical hint inside a <label>, e.g. "(optional)" */
+    .label-aside {
+      color: var(--fg-dim); font-size: 9px;
+      text-transform: none; letter-spacing: 0;
+      font-weight: 400;
+    }
+
+    /* checkbox + text label on a single row (12px, cursor:pointer) */
+    .checkbox-row {
+      display: flex; align-items: center; gap: 8px;
+      cursor: pointer; text-transform: none; letter-spacing: 0;
+      font-size: 12px;
+    }
+
+    /* settings-section-title with a right-aligned action button */
+    .section-title-actions {
+      display: flex; align-items: center; justify-content: space-between;
+    }
+
+    /* quiet "Preview ↗"-style text link rendered as a button */
+    .text-link-btn {
+      background: none; border: none; cursor: pointer;
+      font-size: 11px; color: var(--fg-dim); padding: 0;
+      text-transform: none; letter-spacing: 0; font-weight: 400;
+    }
+    .text-link-btn:hover { color: var(--fg-mid); }
+
     html {
       background: var(--bg);
       color: var(--fg);
@@ -127,14 +156,19 @@
     .pw-wrap { position: relative; }
     .pw-wrap input { padding-right: 44px; }
     .pw-toggle {
-      position: absolute; right: 12px; top: 50%;
+      position: absolute; right: 10px; top: 50%;
       transform: translateY(-50%);
       background: none; border: none;
       color: var(--fg-dim); cursor: pointer;
-      font-size: 13px; padding: 4px;
+      padding: 4px; line-height: 0;
+      display: flex; align-items: center; justify-content: center;
       transition: color 0.2s;
     }
     .pw-toggle:hover { color: var(--fg-mid); }
+    .pw-toggle svg { width: 16px; height: 16px; display: block; }
+    .pw-toggle .icon-eye-off { display: none; }
+    .pw-toggle.revealed .icon-eye { display: none; }
+    .pw-toggle.revealed .icon-eye-off { display: block; }
 
     /* ── DIRTY SAVE BUTTON ── */
     #save-btn.dirty {
@@ -475,6 +509,17 @@
     .social-field-row { display: flex; align-items: center; gap: 8px; }
     .social-field-platform { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--fg-dim); width: 72px; flex-shrink: 0; }
 
+    /* ── PROJECT FILTER ── */
+    .project-filter-input {
+      background: var(--bg2); border: 1px solid var(--fg-dimmer);
+      border-radius: 3px; padding: 6px 10px;
+      color: var(--fg); font-family: var(--font-sans); font-size: 11px;
+      width: 180px; outline: none;
+      transition: border-color 0.2s var(--ease), width 0.2s var(--ease);
+    }
+    .project-filter-input::placeholder { color: var(--fg-dim); }
+    .project-filter-input:focus { border-color: var(--fg-dim); width: 240px; }
+
     /* ── PROJECT LIST ── */
     .project-list { display: flex; flex-direction: column; gap: 6px; }
 
@@ -614,6 +659,112 @@
       pointer-events: none;
     }
 
+    /* ── PROJECT GRID (admin) ── */
+    .project-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 8px;
+    }
+    .project-grid-card {
+      position: relative;
+      aspect-ratio: 16/9;
+      background: var(--bg2);
+      border: 1px solid var(--fg-dimmer);
+      border-radius: 3px;
+      overflow: hidden;
+      cursor: pointer;
+      user-select: none;
+      transition: border-color 0.15s, opacity 0.2s;
+    }
+    .project-grid-card:hover { border-color: var(--fg-dim); }
+    .project-grid-card.dragging { opacity: 0.45; border-style: dashed; }
+    .project-grid-card.drag-over { border-color: var(--accent); background: var(--bg3); }
+    .project-grid-card.unpublished { background: var(--card-unpublished); }
+    .project-grid-card.unpublished .project-grid-thumb,
+    .project-grid-card.unpublished .project-grid-placeholder { opacity: 0.4; }
+    .project-grid-thumb {
+      width: 100%; height: 100%;
+      object-fit: cover; display: block;
+      pointer-events: none;
+    }
+    .project-grid-placeholder {
+      width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--fg-dim); font-size: 10px;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      pointer-events: none;
+    }
+    .project-grid-overlay {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      padding: 22px 10px 8px;
+      background: linear-gradient(transparent, rgba(0,0,0,0.78));
+      pointer-events: none;
+    }
+    .project-grid-client {
+      font-size: 8px; letter-spacing: 0.18em;
+      text-transform: uppercase; color: var(--accent);
+      font-weight: 500; margin-bottom: 2px;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .project-grid-title {
+      font-family: var(--font-serif);
+      font-size: 13px; font-style: italic; color: #ede8e0;
+      line-height: 1.2;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .project-grid-dot {
+      position: absolute; top: 6px; right: 6px;
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 0 2px rgba(0,0,0,0.45);
+      pointer-events: none;
+    }
+    .project-grid-card.unpublished .project-grid-dot { background: var(--danger); }
+    .project-grid-mediatype {
+      position: absolute; top: 6px; right: 18px;
+      font-size: 11px; color: rgba(255,255,255,0.85);
+      text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+      pointer-events: none; line-height: 1;
+    }
+    .project-grid-check {
+      position: absolute; top: 6px; left: 6px;
+      width: 16px; height: 16px; border-radius: 3px;
+      border: 1.5px solid rgba(255,255,255,0.65); background: rgba(0,0,0,0.35);
+      cursor: pointer; z-index: 2;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.12s, border-color 0.12s;
+    }
+    .project-grid-check:hover { border-color: rgba(255,255,255,0.95); }
+    .project-grid-check::after {
+      content: ''; width: 8px; height: 5px;
+      border-left: 1.5px solid #fff; border-bottom: 1.5px solid #fff;
+      transform: rotate(-45deg) translateY(-1px); opacity: 0; transition: opacity 0.1s;
+    }
+    .project-grid-card.selected { border-color: var(--accent); }
+    .project-grid-card.selected .project-grid-check {
+      background: var(--accent); border-color: var(--accent);
+    }
+    .project-grid-card.selected .project-grid-check::after { opacity: 1; }
+
+    /* Bulk-action bar for project grid (mirrors .gai-bulk-bar) */
+    .project-bulk-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 8px 10px; margin-bottom: 8px; border-radius: 4px;
+      background: var(--bg2); border: 1px solid var(--fg-dimmer);
+      font-size: 12px; color: var(--fg-mid);
+    }
+    .project-bulk-bar.hidden { display: none; }
+    .project-bulk-bar select {
+      background: var(--bg); border: 1px solid var(--fg-dimmer);
+      border-radius: 3px; padding: 4px 8px;
+      color: var(--fg); font-family: var(--font-sans);
+      font-size: 11px; cursor: pointer; outline: none;
+    }
+
+    /* View-mode toggle icons (12×12 SVG) */
+    .view-toggle svg { width: 12px; height: 12px; display: block; }
+    .view-toggle button { padding: 5px 9px; }
+
     /* ── BULK IMPORT ZONE ── */
     .bulk-drop-zone {
       border: 1px dashed var(--fg-dimmer); border-radius: 4px;
@@ -684,6 +835,54 @@
       background: var(--bg2);
     }
 
+    /* ── SEGMENTED CONTROL ── */
+    .segmented {
+      display: inline-flex; gap: 0;
+      border: 1px solid var(--fg-dimmer);
+      border-radius: 3px; overflow: hidden;
+      width: fit-content;
+    }
+    .segmented.full { width: 100%; }
+    .segmented.full button { flex: 1; }
+    .segmented button {
+      background: none; border: none;
+      border-left: 1px solid var(--fg-dimmer);
+      cursor: pointer;
+      font-family: var(--font-sans);
+      font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+      padding: 6px 16px;
+      color: var(--fg-dim);
+      transition: background 0.15s, color 0.15s;
+    }
+    .segmented button:first-child { border-left: none; }
+    .segmented button:hover { color: var(--fg-mid); }
+    .segmented button.active {
+      background: var(--fg-dimmer); color: var(--fg);
+    }
+
+    /* ── MODAL INTERNAL TABS ── */
+    .modal-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--fg-dimmer);
+      margin: -8px 0 24px;
+    }
+    .modal-tab-btn {
+      background: none; border: none; outline: none;
+      border-bottom: 2px solid transparent;
+      color: var(--fg-dim);
+      cursor: pointer;
+      font-family: var(--font-sans);
+      font-size: 10px; font-weight: 400;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      padding: 8px 18px;
+      margin-bottom: -1px;
+      transition: color 0.2s var(--ease), border-color 0.2s var(--ease);
+    }
+    .modal-tab-btn:hover { color: var(--fg-mid); }
+    .modal-tab-btn.active { color: var(--fg); border-bottom-color: var(--accent); }
+    .modal-tab-pane { display: none; }
+    .modal-tab-pane.active { display: block; }
+
     .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 
     /* ── THUMB PREVIEW + FILE LIST ── */
@@ -746,6 +945,26 @@
     }
     #about-photo-drop-zone.has-image .thumb-drop-hint { display: none; }
     #about-photo-drop-zone.has-image #about-photo-preview { display: block; }
+
+    /* ── HOME BG DROP ZONE ── */
+    #home-bg-drop-zone {
+      width: 100%; height: 100px;
+      border: 1px dashed var(--fg-dimmer); border-radius: 3px;
+      margin: 8px 0 0;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden; position: relative; cursor: pointer;
+      user-select: none; -webkit-user-select: none;
+      transition: border-color 0.2s var(--ease), background 0.2s var(--ease);
+    }
+    #home-bg-drop-zone.has-image { border-style: solid; }
+    #home-bg-drop-zone.drag-active { border-color: var(--accent); background: rgba(201,169,110,0.05); }
+    #home-bg-preview {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover; display: none;
+    }
+    #home-bg-drop-zone.has-image .thumb-drop-hint { display: none; }
+    #home-bg-drop-zone.has-image #home-bg-preview { display: block; }
 
     /* ── THUMB PREVIEW DROP ZONE ── */
     #thumb-drop-zone {
@@ -861,7 +1080,8 @@
       margin-bottom: 10px;
     }
     .fm-count { font-size: 10px; color: var(--fg-dim); letter-spacing: 0.1em; text-transform: uppercase; }
-    #pane-files { padding: 4px 44px; max-width: 1000px; }
+    #pane-files,
+    #pane-categories { padding: 4px 44px; max-width: 1000px; }
     .fm-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(116px, 1fr));
@@ -942,19 +1162,25 @@
         <input type="text" id="setup-owner" value="crummo" />
       </div>
       <div class="field">
-        <label>Branch</label>
-        <input type="text" id="setup-branch" value="main" />
+        <label>Repository</label>
+        <input type="text" id="setup-repo" value="folio-template" />
       </div>
     </div>
-    <div class="field">
-      <label>Repository</label>
-      <input type="text" id="setup-repo" value="katrinarumford.com" />
+    <div style="margin-bottom:20px">
+      <button class="add-link" id="setup-branch-toggle" type="button" data-closed="+ Advanced" data-open="− Advanced" onclick="toggleDisclosure('setup-branch')">+ Advanced</button>
+      <div id="setup-branch-body" style="display:none;margin-top:8px">
+        <div class="field" style="margin-bottom:0">
+          <label>Branch</label>
+          <input type="text" id="setup-branch" value="main" />
+          <div class="field-hint">Defaults to <code style="color:var(--accent)">main</code>. Only change if your repo uses a different default branch.</div>
+        </div>
+      </div>
     </div>
     <div class="field">
       <label>GitHub Personal Access Token</label>
       <div class="pw-wrap">
         <input type="password" id="setup-token" placeholder="github_pat_…" />
-        <button class="pw-toggle" type="button" onclick="togglePw('setup-token')" title="Show/hide">●</button>
+        <button class="pw-toggle" type="button" onclick="togglePw('setup-token')" title="Show/hide" aria-label="Show token"><svg class="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><svg class="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.5 10.5 0 0 1 12 19c-6.5 0-10-7-10-7a18.5 18.5 0 0 1 4.06-5.19"/><path d="M9.9 4.24A9.5 9.5 0 0 1 12 4c6.5 0 10 7 10 7a18.5 18.5 0 0 1-2.16 3.19"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="2" y1="2" x2="22" y2="22"/></svg></button>
       </div>
       <div class="field-hint">
         Create at <a href="https://github.com/settings/tokens?type=beta" target="_blank">github.com/settings/tokens</a>.
@@ -966,14 +1192,14 @@
       <label>Admin Password</label>
       <div class="pw-wrap">
         <input type="password" id="setup-pw" placeholder="Choose a password" />
-        <button class="pw-toggle" type="button" onclick="togglePw('setup-pw')" title="Show/hide">●</button>
+        <button class="pw-toggle" type="button" onclick="togglePw('setup-pw')" title="Show/hide" aria-label="Show password"><svg class="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><svg class="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.5 10.5 0 0 1 12 19c-6.5 0-10-7-10-7a18.5 18.5 0 0 1 4.06-5.19"/><path d="M9.9 4.24A9.5 9.5 0 0 1 12 4c6.5 0 10 7 10 7a18.5 18.5 0 0 1-2.16 3.19"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="2" y1="2" x2="22" y2="22"/></svg></button>
       </div>
     </div>
     <div class="field">
       <label>Confirm Password</label>
       <div class="pw-wrap">
         <input type="password" id="setup-pw2" placeholder="Confirm password" onkeydown="if(event.key==='Enter')doSetup()" />
-        <button class="pw-toggle" type="button" onclick="togglePw('setup-pw2')" title="Show/hide">●</button>
+        <button class="pw-toggle" type="button" onclick="togglePw('setup-pw2')" title="Show/hide" aria-label="Show password"><svg class="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><svg class="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.5 10.5 0 0 1 12 19c-6.5 0-10-7-10-7a18.5 18.5 0 0 1 4.06-5.19"/><path d="M9.9 4.24A9.5 9.5 0 0 1 12 4c6.5 0 10 7 10 7a18.5 18.5 0 0 1-2.16 3.19"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="2" y1="2" x2="22" y2="22"/></svg></button>
       </div>
     </div>
 
@@ -992,7 +1218,7 @@
       <div class="pw-wrap">
         <input type="password" id="login-pw" placeholder="Enter your password"
                onkeydown="if(event.key==='Enter')doLogin()" />
-        <button class="pw-toggle" type="button" onclick="togglePw('login-pw')" title="Show/hide">●</button>
+        <button class="pw-toggle" type="button" onclick="togglePw('login-pw')" title="Show/hide" aria-label="Show password"><svg class="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><svg class="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.5 10.5 0 0 1 12 19c-6.5 0-10-7-10-7a18.5 18.5 0 0 1 4.06-5.19"/><path d="M9.9 4.24A9.5 9.5 0 0 1 12 4c6.5 0 10 7 10 7a18.5 18.5 0 0 1-2.16 3.19"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="2" y1="2" x2="22" y2="22"/></svg></button>
       </div>
     </div>
     <button class="btn btn-primary" style="width:100%" onclick="doLogin()">Unlock</button>
@@ -1010,10 +1236,9 @@
       <span class="nav-status" id="nav-status"></span>
       <button class="btn btn-ghost btn-sm" id="revert-btn" onclick="reloadFromGitHub()" style="display:none">↺ Revert</button>
       <button class="btn btn-primary btn-sm" id="save-btn" onclick="saveToGitHub()" style="display:none">Save</button>
-      <button class="btn btn-ghost btn-sm" onclick="window.open('https://crummo.github.io/katrinarumford.com/index.html','_blank')">Live Site ↗</button>
+      <button class="btn btn-ghost btn-sm" onclick="openLiveSite()">Live Site ↗</button>
       <button class="btn btn-ghost btn-sm" onclick="openPreview()">Preview Site ↗</button>
-      <button class="btn btn-ghost btn-sm" onclick="window.open('https://github.com/crummo/katrinarumford.com/actions','_blank')" title="GitHub Actions">Actions ↗</button>
-      <button class="btn btn-ghost btn-sm" onclick="lock()">Lock</button>
+      <button class="btn btn-ghost btn-sm" onclick="lock()">Sign out</button>
     </div>
   </nav>
 
@@ -1027,6 +1252,7 @@
       </div>
       <button class="tab-scroll-btn right" id="tab-scroll-right" onclick="scrollTabs(1)" title="Scroll right">›</button>
       <button class="tab" id="tab-site" onclick="switchTab('site')">Site Settings</button>
+      <button class="tab" id="tab-categories" onclick="switchTab('categories')">Categories</button>
       <button class="tab" id="tab-files" onclick="switchTab('files')">Files</button>
     </div>
 
@@ -1038,10 +1264,11 @@
 
       <!-- Sub-tabs -->
       <div class="settings-tabs">
-        <button class="settings-tab-btn active" onclick="switchSettingsTab('general')">General</button>
-        <button class="settings-tab-btn" onclick="switchSettingsTab('categories')">Categories</button>
-        <button class="settings-tab-btn" onclick="switchSettingsTab('about')">About</button>
-        <button class="settings-tab-btn" onclick="switchSettingsTab('advanced')">Advanced</button>
+        <button class="settings-tab-btn active" data-stab="general"       onclick="switchSettingsTab('general')">General</button>
+        <button class="settings-tab-btn"        data-stab="appearance"    onclick="switchSettingsTab('appearance')">Appearance</button>
+        <button class="settings-tab-btn"        data-stab="about"         onclick="switchSettingsTab('about')">About</button>
+        <button class="settings-tab-btn"        data-stab="pages"         onclick="switchSettingsTab('pages')">Home</button>
+        <button class="settings-tab-btn"        data-stab="special-pages" onclick="switchSettingsTab('special-pages')">Other</button>
       </div>
 
       <!-- ── GENERAL TAB ── -->
@@ -1057,16 +1284,43 @@
             <div class="field-hint">Shown in the nav bar on the public site and admin panel.</div>
           </div>
           <div class="field">
-            <label>Title / Role <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(shown next to your name in the nav)</span></label>
+            <label>Title / Role <span class="label-aside">(shown next to your name in the nav)</span></label>
             <div class="field-clearable">
               <input type="text" id="site-title-input" placeholder="e.g. Editor, Photographer, Director" oninput="markDirty()" />
               <button class="field-clear-btn" type="button" onclick="clearField('site-title-input')" title="Clear">×</button>
             </div>
           </div>
+          <div class="field">
+            <label class="checkbox-row">
+              <input type="checkbox" id="site-nav-show-ig" onchange="markDirty()" />
+              Show Instagram icon in nav
+            </label>
+            <div class="field-hint" style="margin-top:4px">Adds a small Instagram icon to the right of the nav links. Pulls the URL from About → Instagram.</div>
+          </div>
+          <div class="field">
+            <label>Landscape Drawer Style <span class="label-aside">(home page on phone in landscape)</span></label>
+            <select id="site-nav-landscape-drawer-style" style="width:100%" onchange="markDirty()">
+              <option value="top">Top — folds down from edge (default)</option>
+              <option value="side">Side — slides in from the right</option>
+            </select>
+            <div class="field-hint" style="margin-top:4px">Only affects the immersive home page when viewed on a phone in landscape orientation.</div>
+          </div>
+          <div class="field">
+            <label>Brand Logo <span class="label-aside">(optional — replaces text name in the nav)</span></label>
+            <div class="field-clearable">
+              <input type="text" id="site-brand-logo" placeholder="https://… or images/logo.png" oninput="updateBrandLogoPreview();markDirty()" />
+              <button class="field-clear-btn" type="button" onclick="clearField('site-brand-logo');updateBrandLogoPreview()" title="Clear">×</button>
+            </div>
+            <img id="site-brand-logo-preview" alt="" style="display:none;max-height:48px;margin-top:8px;background:var(--bg2);padding:6px 10px;border-radius:2px" />
+            <div class="field-hint" style="margin-top:4px">PNG with transparency works best. Sized to ~32 px tall in the nav.</div>
+          </div>
         </div>
+      </div>
 
+      <!-- ── APPEARANCE TAB ── -->
+      <div class="settings-tab-pane" id="stab-appearance">
         <div class="settings-section">
-          <div class="settings-section-title">Appearance</div>
+          <div class="settings-section-title">Color</div>
           <div class="field">
             <label>Accent Color</label>
             <div style="display:flex;align-items:center;gap:10px">
@@ -1075,13 +1329,6 @@
               <button class="btn btn-ghost btn-sm" onclick="resetAccentColor()" type="button">Reset</button>
             </div>
             <div class="field-hint" style="margin-top:4px">Used for highlights, active nav links, and client labels across the site</div>
-          </div>
-          <div class="field" style="margin-top:12px">
-            <label>Nav Position</label>
-            <select id="site-nav-style" onchange="markDirty()" style="margin-top:6px;width:100%">
-              <option value="top">Top — horizontal bar</option>
-              <option value="left">Left — vertical sidebar</option>
-            </select>
           </div>
           <div class="field" style="margin-top:12px">
             <label>Site Theme</label>
@@ -1104,70 +1351,111 @@
             </select>
             <div class="field-hint" style="margin-top:4px">Background color of the lightbox and gallery viewer. Auto follows the site theme.</div>
           </div>
-          <div class="field" style="margin-top:12px">
-            <label>Film Grain <span id="site-film-grain-pct" style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0;font-weight:400"></span></label>
+        </div>
+
+        <div class="settings-section">
+          <div class="settings-section-title">Typography</div>
+
+          <div class="field">
+            <label>Display / Heading Font</label>
+            <select id="site-font-serif" onchange="applyFontSerif(this.value);markDirty()" style="margin-top:6px;width:100%">
+              <option value="playfair">Playfair Display — dramatic editorial</option>
+              <option value="cormorant">Cormorant Garamond — elegant, delicate</option>
+              <option value="lora">Lora — modern and friendly</option>
+              <option value="eb-garamond">EB Garamond — classical</option>
+              <option value="libre-baskerville">Libre Baskerville — clean book</option>
+            </select>
+            <div style="display:flex;align-items:center;gap:8px;margin-top:8px">
+              <input type="range" id="site-font-serif-scale" min="0.8" max="1.3" step="0.05" value="1"
+                oninput="document.documentElement.style.setProperty('--font-serif-scale',this.value);document.getElementById('font-serif-scale-pct').textContent=Math.round(this.value*100)+'%';markDirty()"
+                style="flex:1" />
+              <span id="font-serif-scale-pct" style="font-size:11px;color:var(--fg-dim);min-width:36px;text-align:right">100%</span>
+            </div>
+            <div id="font-serif-sample" style="margin-top:8px;padding:8px 10px;border:1px solid var(--fg-dimmer);border-radius:3px;font-size:16px;font-style:italic;color:var(--fg-mid);font-family:var(--font-serif)">The quick brown fox — <em>Headline Sample</em></div>
+          </div>
+
+          <div class="field" style="margin-top:16px">
+            <label>UI / Body Font</label>
+            <select id="site-font-sans" onchange="applyFontSans(this.value);markDirty()" style="margin-top:6px;width:100%">
+              <option value="dm-sans">DM Sans — clean geometric sans</option>
+              <option value="source-code-pro">Source Code Pro — monospace</option>
+              <option value="space-grotesk">Space Grotesk — geometric modern</option>
+              <option value="inter">Inter — neutral workhorse</option>
+            </select>
+            <div style="display:flex;align-items:center;gap:8px;margin-top:8px">
+              <input type="range" id="site-font-sans-scale" min="0.8" max="1.3" step="0.05" value="1"
+                oninput="document.documentElement.style.setProperty('--font-sans-scale',this.value);document.getElementById('font-sans-scale-pct').textContent=Math.round(this.value*100)+'%';markDirty()"
+                style="flex:1" />
+              <span id="font-sans-scale-pct" style="font-size:11px;color:var(--fg-dim);min-width:36px;text-align:right">100%</span>
+            </div>
+            <div id="font-sans-sample" style="margin-top:8px;padding:8px 10px;border:1px solid var(--fg-dimmer);border-radius:3px;font-size:14px;color:var(--fg-mid);letter-spacing:0.02em;font-family:var(--font-sans)">Aa — The quick brown fox jumps over the lazy dog</div>
+            <div class="field-hint" style="margin-top:4px">Applies to nav, labels, and UI text across the site.</div>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <div class="settings-section-title">Layout</div>
+          <div class="field">
+            <label>Nav Position</label>
+            <div class="segmented full" data-for="site-nav-style" style="margin-top:6px">
+              <button type="button" data-value="top">Top — horizontal bar</button>
+              <button type="button" data-value="left">Left — vertical sidebar</button>
+            </div>
+            <input type="hidden" id="site-nav-style" />
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <div class="settings-section-title">Texture &amp; Detail</div>
+          <div class="field">
+            <label>Film Grain <span id="site-film-grain-pct" class="label-aside"></span></label>
             <input type="range" id="site-film-grain" min="0" max="100" step="1" value="28"
               style="width:100%;accent-color:var(--accent)"
               oninput="document.getElementById('site-film-grain-pct').textContent='— '+this.value+'%';document.documentElement.style.setProperty('--film-grain-opacity', this.value/500);markDirty()" />
             <div class="field-hint" style="margin-top:4px">Subtle texture overlay on the public site. 0 = off.</div>
           </div>
           <div class="field" style="margin-top:12px">
-            <label>Thumbnail Filter <span id="site-thumb-filter-pct" style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0;font-weight:400"></span></label>
+            <label>Thumbnail Filter <span id="site-thumb-filter-pct" class="label-aside"></span></label>
             <input type="range" id="site-thumb-filter" min="0" max="100" step="1" value="0"
               style="width:100%;accent-color:var(--accent)"
               oninput="updateThumbFilter(this.value);markDirty()" />
             <div class="field-hint" style="margin-top:4px">Desaturates and dims thumbnails at rest. 0 = natural, 100 = cinematic.</div>
           </div>
           <div class="field" style="margin-top:12px">
-            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;letter-spacing:0;font-size:12px">
+            <label class="checkbox-row">
               <input type="checkbox" id="site-zoom-lock" onchange="markDirty()" />
               Lock zoom on mobile
             </label>
             <div class="field-hint" style="margin-top:4px">Prevents pinch-to-zoom on phones and tablets. Off by default — visitors can zoom in to inspect detail.</div>
           </div>
           <div class="field" style="margin-top:12px">
-            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;letter-spacing:0;font-size:12px">
+            <label class="checkbox-row">
               <input type="checkbox" id="site-mobile-thumbs-native" onchange="markDirty()" />
               Native aspect ratio for mobile thumbnails
             </label>
             <div class="field-hint" style="margin-top:4px">Each thumbnail in the mobile list keeps its original proportions instead of being cropped to 16:9. Magazine-feed style.</div>
           </div>
         </div>
-
-      </div>
-
-      <!-- ── SECTIONS TAB ── -->
-      <div class="settings-tab-pane" id="stab-categories">
-        <div class="settings-section">
-          <div class="settings-section-title">Categories</div>
-          <p class="about-hint">
-            Drag to reorder. The <strong>Label</strong> is what visitors see in the nav.
-            The <strong>ID</strong> (slug) identifies existing projects — don't change it if projects already use it.
-          </p>
-          <div class="toolbar" style="margin-bottom:12px">
-            <span></span>
-            <button class="btn btn-ghost btn-sm" onclick="openAddCategory()">+ Add Category</button>
-          </div>
-          <div id="cat-list"></div>
-          <p class="field-hint" style="margin-top:12px">Changes here take effect after saving.</p>
-        </div>
       </div>
 
       <!-- ── ABOUT TAB ── -->
       <div class="settings-tab-pane" id="stab-about">
         <div class="settings-section about-editor">
-          <div class="settings-section-title" style="display:flex;align-items:center;justify-content:space-between">
+          <div class="settings-section-title section-title-actions">
             About Page
-            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;letter-spacing:0;font-size:12px;font-weight:300;margin:0">
-              <input type="checkbox" id="about-show-input" onchange="markDirty()" />
-              <span style="color:var(--fg-dim)">Show About page</span>
-            </label>
+            <div style="display:flex;align-items:center;gap:12px">
+              <button type="button" onclick="previewPage('about')" class="text-link-btn">Preview ↗</button>
+              <label class="checkbox-row" style="margin:0">
+                <input type="checkbox" id="about-show-input" onchange="markDirty()" />
+                <span style="color:var(--fg-dim)">Show About page</span>
+              </label>
+            </div>
           </div>
 
           <!-- Photo -->
           <div class="about-subsection-title">Photo</div>
           <div class="field">
-            <label>Photo <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(optional — URL or relative path)</span></label>
+            <label>Photo <span class="label-aside">(optional — URL or relative path)</span></label>
             <div class="field-clearable">
               <input type="text" id="about-photo-input" placeholder="e.g. images/headshot.jpg or https://…" oninput="updateAboutPhotoPreview();markDirty()" />
               <button class="field-clear-btn" type="button" onclick="clearField('about-photo-input')" title="Clear">×</button>
@@ -1193,21 +1481,29 @@
             <div id="about-photo-style-field" style="display:none;margin-top:10px">
               <button class="add-link" id="fine-tune-toggle" data-closed="+ Fine-tune" data-open="− Fine-tune" onclick="toggleDisclosure('fine-tune')">+ Fine-tune</button>
               <div id="fine-tune-body" style="display:none;margin-top:8px">
-                <div style="display:flex;gap:8px;margin-bottom:6px">
-                  <select id="about-photo-shape" onchange="updateAboutPhotoUI();markDirty()" style="flex:1">
-                    <option value="natural">Original</option>
-                    <option value="circle">Circle</option>
-                    <option value="square">Square</option>
-                  </select>
-                  <select id="about-photo-placement" onchange="updateAboutPhotoUI();markDirty()" style="flex:1">
-                    <option value="above">Above</option>
-                    <option value="left">Left</option>
-                    <option value="right">Right</option>
-                  </select>
+                <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:6px">
+                  <div>
+                    <div style="font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-mid);margin-bottom:4px">Shape</div>
+                    <div class="segmented full" data-for="about-photo-shape">
+                      <button type="button" data-value="natural">Original</button>
+                      <button type="button" data-value="circle">Circle</button>
+                      <button type="button" data-value="square">Square</button>
+                    </div>
+                    <input type="hidden" id="about-photo-shape" onchange="updateAboutPhotoUI()" />
+                  </div>
+                  <div>
+                    <div style="font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-mid);margin-bottom:4px">Placement</div>
+                    <div class="segmented full" data-for="about-photo-placement">
+                      <button type="button" data-value="above">Above</button>
+                      <button type="button" data-value="left">Left</button>
+                      <button type="button" data-value="right">Right</button>
+                    </div>
+                    <input type="hidden" id="about-photo-placement" onchange="updateAboutPhotoUI()" />
+                  </div>
                 </div>
                 <div class="field-hint" id="about-photo-hint" style="margin-bottom:6px">Circle crop, positioned above the bio</div>
                 <div id="about-photo-fullwidth-field" style="display:none;margin-bottom:8px">
-                  <label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;letter-spacing:0;font-size:12px;font-weight:300;margin:0">
+                  <label class="checkbox-row" style="margin:0">
                     <input type="checkbox" id="about-photo-fullwidth" onchange="markDirty()" />
                     Full width
                   </label>
@@ -1226,7 +1522,7 @@
             <div class="thumb-file-list" id="about-photo-file-list"></div>
           </div>
           <div class="field">
-            <label>Photo Alt Text <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(optional — defaults to your name)</span></label>
+            <label>Photo Alt Text <span class="label-aside">(optional — defaults to your name)</span></label>
             <input type="text" id="about-photo-alt" placeholder="e.g. Cameron Rumford, film editor" oninput="markDirty()" />
             <div class="field-hint" style="margin-top:4px">Describes your photo for screen readers and search engines</div>
           </div>
@@ -1239,7 +1535,7 @@
             <div class="field-hint" style="margin-top:4px">Accepts basic HTML: <code style="color:var(--accent)">&lt;strong&gt;</code>, <code style="color:var(--accent)">&lt;em&gt;</code>, <code style="color:var(--accent)">&lt;a href="…"&gt;</code></div>
           </div>
           <div style="margin-bottom:16px">
-            <button class="add-link" id="bio2-toggle" data-closed="+ Add second paragraph" data-open="− Second paragraph" onclick="toggleDisclosure('bio2')">+ Add second paragraph</button>
+            <button class="add-link" id="bio2-toggle" data-closed="+ Second paragraph" data-open="− Second paragraph" onclick="toggleDisclosure('bio2')">+ Second paragraph</button>
             <div id="bio2-body" style="display:none;margin-top:8px">
               <div class="field" style="margin-bottom:0">
                 <label>Secondary paragraph</label>
@@ -1253,7 +1549,7 @@
           <div class="field">
             <label>Email</label>
             <input type="email" id="about-email-input" placeholder="you@example.com" oninput="markDirty()" />
-            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;letter-spacing:0;font-size:12px;margin-top:8px">
+            <label class="checkbox-row" style="margin-top:8px">
               <input type="checkbox" id="about-show-email" onchange="markDirty()" />
               Show email on About page
             </label>
@@ -1263,7 +1559,7 @@
             <button class="add-link" id="cv-toggle" data-closed="+ CV / Resume" data-open="− CV / Resume" onclick="toggleDisclosure('cv')">+ CV / Resume</button>
             <div id="cv-body" style="display:none;margin-top:8px">
               <div class="field" style="margin-bottom:0">
-                <label>CV / Resume <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(optional — URL or relative path)</span></label>
+                <label>CV / Resume <span class="label-aside">(optional — URL or relative path)</span></label>
                 <div class="field-clearable">
                   <input type="text" id="about-resume-input" placeholder="files/resume.pdf or https://…" oninput="markDirty()" />
                   <button class="field-clear-btn" type="button" onclick="clearField('about-resume-input')" title="Clear">×</button>
@@ -1369,11 +1665,124 @@
         </div>
       </div>
 
-      <!-- ── ADVANCED TAB ── -->
-      <div class="settings-tab-pane" id="stab-advanced">
+      <!-- ── HOME TAB ── -->
+      <div class="settings-tab-pane" id="stab-pages">
+        <div class="settings-section">
+          <div class="settings-section-title section-title-actions">
+            Home Page
+            <button type="button" onclick="previewPage('home')" class="text-link-btn">Preview ↗</button>
+          </div>
+          <div class="field">
+            <label class="checkbox-row">
+              <input type="checkbox" id="home-enabled" onchange="markDirty()" />
+              Enable home page
+            </label>
+            <div class="field-hint" style="margin-top:4px">When enabled, visitors land here first instead of the portfolio grid. The nav brand name returns here.</div>
+          </div>
+          <div class="field" style="margin-top:12px">
+            <label>Headline</label>
+            <input type="text" id="home-headline" placeholder="e.g. We make things look good." oninput="markDirty()" style="margin-top:6px" />
+          </div>
+          <div class="field" style="margin-top:12px">
+            <label>Subhead <span class="label-aside">(displayed in uppercase above or below headline)</span></label>
+            <input type="text" id="home-subhead" placeholder="e.g. Post-production / Los Angeles" oninput="markDirty()" style="margin-top:6px" />
+          </div>
+          <div class="field" style="margin-top:12px">
+            <label>Body Copy <span class="label-aside">(optional — keep it short)</span></label>
+            <textarea id="home-body" rows="3" placeholder="A sentence or two about who you are…" oninput="markDirty()" style="margin-top:6px"></textarea>
+          </div>
+        </div>
 
         <div class="settings-section">
-          <div class="settings-section-title">Contact</div>
+          <div class="settings-section-title">Layout</div>
+          <div class="field">
+            <label>Text Position</label>
+            <select id="home-text-layout" onchange="markDirty()" style="margin-top:6px">
+              <option value="centered">Centered (default)</option>
+              <option value="corner-bl">Bottom-left caption</option>
+              <option value="corner-br">Bottom-right caption</option>
+              <option value="hidden">Hidden — gallery mode</option>
+            </select>
+            <div class="field-hint" style="margin-top:4px">Caption modes pin the text to a corner like a wall card. Gallery mode hides all text and CTAs so the photo speaks for itself. Caption modes fall back to centered on small screens.</div>
+          </div>
+          <div class="field" style="margin-top:12px">
+            <label>Reveal Delay <span class="label-aside">(seconds)</span></label>
+            <input type="number" id="home-reveal-delay" min="0" max="10" step="0.1" placeholder="0" oninput="markDirty()" style="margin-top:6px;width:120px" />
+            <div class="field-hint" style="margin-top:4px">Lets the photograph land first, then fades in the text. Try <em>1.5</em> for a slow, intentional feel. <em>0</em> = instant.</div>
+          </div>
+          <div class="field" style="margin-top:12px">
+            <label class="checkbox-row">
+              <input type="checkbox" id="home-show-ctas" onchange="markDirty()" />
+              Show CTA buttons on home
+            </label>
+            <div class="field-hint" style="margin-top:4px">Off by default in gallery mode. Turn off to keep the configured buttons but hide them on home — the nav still handles navigation.</div>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <div class="settings-section-title">Background</div>
+          <div class="field">
+            <label>Image</label>
+            <div class="field-clearable" style="margin-top:6px">
+              <input type="text" id="home-bg" placeholder="images/hero.jpg or https://…" oninput="updateHomeBgPreview();markDirty()" />
+              <button class="field-clear-btn" type="button" onclick="clearField('home-bg')" title="Clear">×</button>
+            </div>
+            <div id="home-bg-drop-zone">
+              <img id="home-bg-preview" alt="Background preview" />
+              <div class="thumb-drop-hint" style="font-size:9px;text-align:center;padding:12px;line-height:1.6;color:var(--fg-dim)">↓ Drop image<br>or browse below</div>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center;justify-content:center;margin-top:8px">
+              <label class="btn btn-ghost btn-sm" style="cursor:pointer">Browse local files…<input type="file" id="home-bg-file-input" accept="image/*" class="file-input-hidden" onchange="handleFileInput(this,'homebg')" /></label>
+              <button class="btn btn-ghost btn-sm" type="button" onclick="toggleHomeBgList()">Browse uploaded ↓</button>
+            </div>
+            <div class="field-hint" style="margin-top:4px;text-align:center">Full-bleed background · overlay added automatically</div>
+            <div class="thumb-file-list" id="home-bg-file-list"></div>
+          </div>
+          <div style="margin-top:14px">
+            <button class="add-link" id="home-bg-extras-toggle" type="button" data-closed="+ Slideshow or video" data-open="− Slideshow or video" onclick="toggleDisclosure('home-bg-extras')">+ Slideshow or video</button>
+            <div id="home-bg-extras-body" style="display:none;margin-top:8px">
+              <div class="field">
+                <label>Slideshow <span class="label-aside">(optional — replaces single image above)</span></label>
+                <textarea id="home-slides" rows="4" placeholder="images/slide-1.jpg&#10;images/slide-2.jpg&#10;https://…" oninput="markDirty()" style="margin-top:6px;font-size:11px;font-family:monospace"></textarea>
+                <div class="field-hint" style="margin-top:4px">One image URL per line · crossfades automatically every 5 s · click the image to advance</div>
+              </div>
+              <div class="field" style="margin-top:12px">
+                <label>Video <span class="label-aside">(mp4 — plays silently, loops)</span></label>
+                <input type="text" id="home-bg-video" placeholder="videos/reel.mp4 or https://…" oninput="markDirty()" style="margin-top:6px" />
+                <div class="field-hint" style="margin-top:4px">If both image and video are set, the video plays over the image as a fallback.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <div class="settings-section-title">Call to Action Buttons</div>
+          <div class="field">
+            <label>Primary Button</label>
+            <div style="display:flex;gap:8px;margin-top:6px">
+              <input type="text" id="home-cta1-label" placeholder="Label" oninput="markDirty()" style="flex:1" />
+              <input type="text" id="home-cta1-target" placeholder="Category ID, about, or URL" oninput="markDirty()" style="flex:1.5" />
+            </div>
+            <div class="field-hint" style="margin-top:4px">Highlighted in accent color. Target can be a category ID (e.g. <em>work</em>), <em>about</em>, <em>contact</em>, or a full URL.</div>
+          </div>
+          <div class="field" style="margin-top:12px">
+            <label>Secondary Button <span class="label-aside">(optional)</span></label>
+            <div style="display:flex;gap:8px;margin-top:6px">
+              <input type="text" id="home-cta2-label" placeholder="Label" oninput="markDirty()" style="flex:1" />
+              <input type="text" id="home-cta2-target" placeholder="Category ID, about, or URL" oninput="markDirty()" style="flex:1.5" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── OTHER TAB ── -->
+      <div class="settings-tab-pane" id="stab-special-pages">
+
+        <div class="settings-section">
+          <div class="settings-section-title section-title-actions">
+            Contact
+            <button type="button" onclick="previewPage('contact')" class="text-link-btn">Preview ↗</button>
+          </div>
           <div class="field">
             <label>Mode</label>
             <select id="contact-mode-select" onchange="updateContactMode();markDirty()" style="margin-top:4px;width:240px">
@@ -1386,6 +1795,11 @@
             <div class="field-hint" style="margin-top:6px" id="contact-mode-hint"></div>
           </div>
           <div id="contact-fields" style="display:none">
+            <div class="field">
+              <label>Intro Text <span style="font-weight:normal;text-transform:none;letter-spacing:0;color:var(--fg-dim);font-size:11px">(optional)</span></label>
+              <input type="text" id="contact-intro-input" placeholder="To enquire about a project, please get in touch." oninput="markDirty()" style="width:100%" />
+              <div class="field-hint" style="margin-top:4px">Sentence shown above the email on the contact page.</div>
+            </div>
             <div class="field">
               <label>Card Email <span style="font-weight:normal;text-transform:none;letter-spacing:0;color:var(--fg-dim);font-size:11px">(optional)</span></label>
               <div class="field-clearable">
@@ -1403,7 +1817,7 @@
               <div class="field-hint" style="margin-top:4px">Optional photo shown beside the contact card (side-by-side on desktop, stacked on mobile). Use a different image from About if you want — behind-the-scenes, environmental, etc.</div>
             </div>
             <div class="field">
-              <label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;letter-spacing:0;font-size:12px">
+              <label class="checkbox-row">
                 <input type="checkbox" id="contact-show-email-in-drawer" onchange="markDirty()" />
                 Show email under Contact in mobile menu
               </label>
@@ -1432,16 +1846,19 @@
         </div>
 
         <div class="settings-section">
-          <div class="settings-section-title" style="display:flex;align-items:center;justify-content:space-between">
+          <div class="settings-section-title section-title-actions">
             Splash Screen
-            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;letter-spacing:0;font-size:12px;font-weight:300;margin:0">
-              <span style="color:var(--fg-dim)">Enable</span>
-              <input type="checkbox" id="splash-enabled" onchange="updateSplashFieldsVisibility();markDirty()" />
-            </label>
+            <div style="display:flex;align-items:center;gap:12px">
+              <button type="button" onclick="previewPage('splash')" class="text-link-btn">Preview ↗</button>
+              <label class="checkbox-row" style="margin:0">
+                <span style="color:var(--fg-dim)">Enable</span>
+                <input type="checkbox" id="splash-enabled" onchange="updateSplashFieldsVisibility();markDirty()" />
+              </label>
+            </div>
           </div>
           <div id="splash-fields" style="display:none">
             <div class="field">
-              <label>Video <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(URL or relative path)</span></label>
+              <label>Video <span class="label-aside">(URL or relative path)</span></label>
               <div class="field-clearable">
                 <input type="text" id="splash-video" placeholder="videos/reel.mp4 or https://…" oninput="markDirty()" />
                 <button class="field-clear-btn" type="button" onclick="clearField('splash-video')" title="Clear">×</button>
@@ -1468,7 +1885,7 @@
         <div class="settings-section">
           <div class="settings-section-title">SEO &amp; Sharing</div>
           <div class="field">
-            <label>Favicon <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(optional)</span></label>
+            <label>Favicon <span class="label-aside">(optional)</span></label>
             <div class="field-clearable">
               <input type="text" id="site-favicon-input" placeholder="favicon.png or https://…" oninput="updateFaviconPreview();markDirty()" />
               <button class="field-clear-btn" type="button" onclick="clearField('site-favicon-input');updateFaviconPreview()" title="Clear">×</button>
@@ -1496,7 +1913,7 @@
             <div class="field-hint" style="margin-top:3px">Browsers cache favicons aggressively — after uploading a new one, you may need to hard-refresh (⌘⇧R on Mac, Ctrl+Shift+R on Windows) to see the update in the tab.</div>
           </div>
           <div class="field">
-            <label>Social Preview Image <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(shown when sharing your link)</span></label>
+            <label>Social Preview Image <span class="label-aside">(shown when sharing your link)</span></label>
             <div class="field-clearable">
               <input type="text" id="site-og-input" placeholder="filename.jpg or https://…" oninput="updateOgPreview();markDirty()" />
               <button class="field-clear-btn" type="button" onclick="clearField('site-og-input');updateOgPreview()" title="Clear">×</button>
@@ -1513,21 +1930,21 @@
             <div class="field-hint">Recommended: 1200×630px · saved to <code style="color:var(--accent)">/images/</code> · set your site URL below for correct preview links</div>
           </div>
           <div class="field">
-            <label>Site URL <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(optional — used for social preview links)</span></label>
+            <label>Site URL <span class="label-aside">(optional — used for social preview links)</span></label>
             <div class="field-clearable">
               <input type="url" id="site-website-input" placeholder="https://yoursite.com" oninput="markDirty()" />
               <button class="field-clear-btn" type="button" onclick="clearField('site-website-input')" title="Clear">×</button>
             </div>
           </div>
           <div class="field">
-            <label>Meta Description <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(shown in search results and social previews)</span></label>
+            <label>Meta Description <span class="label-aside">(shown in search results and social previews)</span></label>
             <textarea id="site-meta-desc" rows="3" maxlength="160" placeholder="Brief description of your work — 120–160 characters recommended" oninput="markDirty();updateMetaDescCounter()"></textarea>
             <div style="display:flex;justify-content:flex-end;margin-top:3px">
               <span id="site-meta-desc-counter" style="font-size:9px;color:var(--fg-dim)">0 / 160</span>
             </div>
           </div>
           <div class="field">
-            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;letter-spacing:0;font-size:12px">
+            <label class="checkbox-row">
               <input type="checkbox" id="site-allow-indexing" onchange="markDirty()" style="margin:0" />
               Allow search engines to index this site
             </label>
@@ -1553,7 +1970,10 @@
         </div>
 
         <div class="settings-section">
-          <div class="settings-section-title">404 Page</div>
+          <div class="settings-section-title section-title-actions">
+            404 Page
+            <button type="button" onclick="previewPage('404')" class="text-link-btn">Preview ↗</button>
+          </div>
           <div class="field">
             <label>Heading</label>
             <input type="text" id="nf-heading" placeholder="Pulled for another shoot." />
@@ -1615,16 +2035,145 @@
   </div>
 </div>
 
+<!-- ═══════════════ CATEGORIES TAB PANE ═══════════════ -->
+<div id="pane-categories" style="display:none">
+  <div class="settings-section">
+    <div class="settings-section-title">Categories</div>
+    <p class="about-hint">
+      Drag to reorder. The <strong>Label</strong> is what visitors see in the nav.
+      The <strong>ID</strong> (slug) identifies existing projects — don't change it if projects already use it.
+    </p>
+    <div class="toolbar" style="margin-bottom:12px">
+      <span></span>
+      <button class="btn btn-ghost btn-sm" onclick="openAddCategory()">+ Add Category</button>
+    </div>
+    <div id="cat-list"></div>
+    <p class="field-hint" style="margin-top:12px">Changes here take effect after saving.</p>
+  </div>
+</div>
+
 <!-- ═══════════════ ADD / EDIT MODAL ═══════════════ -->
 <div class="modal-backdrop hidden" id="modal-edit">
   <div class="modal">
     <div class="modal-title" id="modal-title">Add Project</div>
 
-    <div class="field-row">
+    <div class="modal-tabs">
+      <button class="modal-tab-btn active" data-mtab="basics"     onclick="switchModalTab('basics')">Basics</button>
+      <button class="modal-tab-btn"        data-mtab="media"      onclick="switchModalTab('media')">Media</button>
+      <button class="modal-tab-btn"        data-mtab="details"    onclick="switchModalTab('details')">Details</button>
+      <button class="modal-tab-btn"        data-mtab="appearance" onclick="switchModalTab('appearance')">Appearance</button>
+    </div>
+
+    <!-- ── BASICS TAB ── -->
+    <div class="modal-tab-pane active" id="mtab-basics">
       <div class="field">
         <label>Category</label>
-        <select id="f-category"></select>
+        <select id="f-category" onchange="updateProjectGalleryFieldVisibility()"></select>
       </div>
+      <div class="field">
+        <label>Title</label>
+        <div class="field-clearable">
+          <input type="text" id="f-title" placeholder="Project title" />
+          <button class="field-clear-btn" type="button" onclick="clearField('f-title')" title="Clear">×</button>
+        </div>
+      </div>
+      <div class="field">
+        <label>Client <span class="label-aside">(optional — shown in gold above title)</span></label>
+        <div class="field-clearable">
+          <input type="text" id="f-client" placeholder="e.g. Amazon Web Services" />
+          <button class="field-clear-btn" type="button" onclick="clearField('f-client')" title="Clear">×</button>
+        </div>
+      </div>
+      <div class="field" style="margin-top:4px">
+        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;text-transform:none;letter-spacing:0;font-size:13px;font-weight:300;margin-bottom:0">
+          <input type="checkbox" id="f-published" checked />
+          Published
+        </label>
+        <div class="field-hint" style="margin-top:6px">Uncheck to hide this project without deleting it.</div>
+      </div>
+    </div>
+
+    <!-- ── MEDIA TAB ── -->
+    <div class="modal-tab-pane" id="mtab-media">
+      <!-- Media type toggle -->
+      <div class="field">
+        <label>Media</label>
+        <div style="display:flex;gap:0;border:1px solid var(--fg-dimmer);border-radius:3px;overflow:hidden;width:fit-content">
+          <button type="button" id="f-type-video" onclick="setProjectMediaType('video')"
+            style="background:none;border:none;cursor:pointer;font-family:var(--font-sans);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;padding:6px 16px;transition:background 0.15s,color 0.15s;color:var(--fg-dim)">
+            ▶ Video
+          </button>
+          <button type="button" id="f-type-still" onclick="setProjectMediaType('still')"
+            style="background:none;border:none;border-left:1px solid var(--fg-dimmer);cursor:pointer;font-family:var(--font-sans);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;padding:6px 16px;transition:background 0.15s,color 0.15s;color:var(--fg-dim)">
+            ▣ Still
+          </button>
+        </div>
+      </div>
+      <!-- Video URL — shown when type = video -->
+      <div class="field" id="f-video-field">
+        <label>Video URL <span class="label-aside">(YouTube, Vimeo, etc.)</span></label>
+        <div class="field-clearable">
+          <input type="url" id="f-url" placeholder="https://youtu.be/…" />
+          <button class="field-clear-btn" type="button" onclick="clearField('f-url')" title="Clear">×</button>
+        </div>
+      </div>
+      <!-- Still image — shown when type = still -->
+      <div class="field" id="f-still-field" style="display:none">
+        <label>Image <span class="label-aside">(shown full-size in lightbox)</span></label>
+        <div class="field-clearable">
+          <input type="text" id="f-still-url" placeholder="gallery/motion/filename.webp" oninput="syncStillUrl()" />
+          <button class="field-clear-btn" type="button" onclick="clearField('f-still-url');syncStillUrl()" title="Clear">×</button>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <label class="btn btn-ghost btn-sm" style="cursor:pointer;flex:1;justify-content:center">Upload image…
+            <input type="file" id="f-still-file" accept="image/*" class="file-input-hidden" onchange="handleStillFileInput(this)" />
+          </label>
+        </div>
+        <div id="f-still-preview-wrap" style="margin-top:8px;display:none">
+          <img id="f-still-preview" alt="" style="width:100%;max-height:160px;object-fit:contain;border-radius:2px;border:1px solid var(--fg-dimmer)" />
+        </div>
+        <div class="field-hint" style="margin-top:4px">Uploads to gallery/{category}/ · use Thumbnail below for a separate grid preview</div>
+      </div>
+
+      <div class="field">
+        <label>Thumbnail <span class="label-aside">(images live in /thumbs/)</span></label>
+        <div class="field-clearable">
+          <input type="text" id="f-thumbnail" placeholder="filename.jpeg" oninput="updateThumbPreview()" />
+          <button class="field-clear-btn" type="button" onclick="clearField('f-thumbnail');updateThumbPreview()" title="Clear">×</button>
+        </div>
+        <div id="thumb-drop-zone">
+          <img id="thumb-preview" alt="thumbnail preview" />
+          <div class="thumb-empty-state" id="thumb-empty-state">
+            <div class="thumb-empty-icon">⬜</div>
+            <div class="thumb-empty-label">Drop image here to upload</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;justify-content:center;margin-top:8px">
+          <label class="btn btn-ghost btn-sm" style="cursor:pointer">Browse local files…<input type="file" id="thumb-file-input" accept="image/*" class="file-input-hidden" onchange="handleFileInput(this,'thumb')" /></label>
+          <button class="btn btn-ghost btn-sm" type="button" onclick="toggleThumbList()">Browse uploaded ↓</button>
+        </div>
+        <label style="display:flex;align-items:center;gap:6px;margin-top:8px;cursor:pointer;font-size:10px;color:var(--fg-dim);letter-spacing:0.1em;text-transform:uppercase">
+          <input type="checkbox" id="thumb-optimize" checked />
+          Optimize (WebP)
+        </label>
+        <div class="field-hint" style="margin-top:4px">Re-encodes to WebP and resizes to longest edge ≤ 1200 px on upload. Turn off to keep the original file.</div>
+        <div class="thumb-file-list" id="thumb-file-list"></div>
+      </div>
+      <div class="field">
+        <label>Alt Text <span class="label-aside">(optional — defaults to project title)</span></label>
+        <input type="text" id="f-alt" placeholder="e.g. Amazon Web Services brand film" />
+        <div class="field-hint" style="margin-top:4px">Describes the thumbnail for screen readers and search engines</div>
+      </div>
+
+      <div class="field" id="f-gallery-field" style="display:none">
+        <label>Gallery Images <span class="label-aside">(one path per line — shown on the project detail page)</span></label>
+        <textarea id="f-gallery" rows="5" placeholder="gallery/work/project-01.jpg&#10;gallery/work/project-02.jpg&#10;…" style="font-family:var(--font-mono,monospace);font-size:12px;line-height:1.6;resize:vertical" oninput="markDirty()"></textarea>
+        <div class="field-hint" style="margin-top:4px">Used when the category type is <strong>Gallery</strong>. Upload images via Files → Gallery, then paste the paths here.</div>
+      </div>
+    </div>
+
+    <!-- ── DETAILS TAB ── -->
+    <div class="modal-tab-pane" id="mtab-details">
       <div class="field">
         <label>Overlay Text</label>
         <select id="f-overlay" onchange="updateOverlayHint()">
@@ -1636,140 +2185,42 @@
         </select>
         <div class="field-hint" id="overlay-hint" style="margin-top:4px">Standard overlay with play icon</div>
       </div>
-    </div>
-
-    <div class="field">
-      <label>Title</label>
-      <div class="field-clearable">
-        <input type="text" id="f-title" placeholder="Project title" />
-        <button class="field-clear-btn" type="button" onclick="clearField('f-title')" title="Clear">×</button>
-      </div>
-    </div>
-    <div class="field">
-      <label>Client <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(optional — shown in gold above title)</span></label>
-      <div class="field-clearable">
-        <input type="text" id="f-client" placeholder="e.g. Amazon Web Services" />
-        <button class="field-clear-btn" type="button" onclick="clearField('f-client')" title="Clear">×</button>
-      </div>
-    </div>
-    <!-- Media type toggle -->
-    <div class="field">
-      <label>Media</label>
-      <div style="display:flex;gap:0;border:1px solid var(--fg-dimmer);border-radius:3px;overflow:hidden;width:fit-content">
-        <button type="button" id="f-type-video" onclick="setProjectMediaType('video')"
-          style="background:none;border:none;cursor:pointer;font-family:var(--font-sans);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;padding:6px 16px;transition:background 0.15s,color 0.15s;color:var(--fg-dim)">
-          ▶ Video
-        </button>
-        <button type="button" id="f-type-still" onclick="setProjectMediaType('still')"
-          style="background:none;border:none;border-left:1px solid var(--fg-dimmer);cursor:pointer;font-family:var(--font-sans);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;padding:6px 16px;transition:background 0.15s,color 0.15s;color:var(--fg-dim)">
-          ▣ Still
-        </button>
-        <button type="button" id="f-type-none" onclick="setProjectMediaType('none')"
-          style="background:none;border:none;border-left:1px solid var(--fg-dimmer);cursor:pointer;font-family:var(--font-sans);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;padding:6px 16px;transition:background 0.15s,color 0.15s;color:var(--fg-dim)">
-          None
-        </button>
-      </div>
-    </div>
-    <!-- Video URL — shown when type = video -->
-    <div class="field" id="f-video-field">
-      <label>Video URL <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(YouTube, Vimeo, etc.)</span></label>
-      <div class="field-clearable">
-        <input type="url" id="f-url" placeholder="https://youtu.be/…" />
-        <button class="field-clear-btn" type="button" onclick="clearField('f-url')" title="Clear">×</button>
-      </div>
-    </div>
-    <!-- Still image — shown when type = still -->
-    <div class="field" id="f-still-field" style="display:none">
-      <label>Image <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(shown full-size in lightbox)</span></label>
-      <div class="field-clearable">
-        <input type="text" id="f-still-url" placeholder="gallery/motion/filename.webp" oninput="syncStillUrl()" />
-        <button class="field-clear-btn" type="button" onclick="clearField('f-still-url');syncStillUrl()" title="Clear">×</button>
-      </div>
-      <div style="display:flex;gap:8px;margin-top:8px">
-        <label class="btn btn-ghost btn-sm" style="cursor:pointer;flex:1;justify-content:center">Upload image…
-          <input type="file" id="f-still-file" accept="image/*" class="file-input-hidden" onchange="handleStillFileInput(this)" />
-        </label>
-      </div>
-      <div id="f-still-preview-wrap" style="margin-top:8px;display:none">
-        <img id="f-still-preview" alt="" style="width:100%;max-height:160px;object-fit:contain;border-radius:2px;border:1px solid var(--fg-dimmer)" />
-      </div>
-      <div class="field-hint" style="margin-top:4px">Uploads to gallery/{category}/ · use Thumbnail below for a separate grid preview</div>
-    </div>
-    <div style="margin-bottom:16px">
-      <button class="add-link" id="award-toggle" data-closed="+ Add award" data-open="− Award" onclick="toggleDisclosure('award')">+ Add award</button>
-      <div id="award-body" style="display:none;margin-top:8px">
-        <div class="field" style="margin-bottom:0">
-          <label>Award <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(shown in lightbox and on grid)</span></label>
-          <div class="field-clearable">
-            <input type="text" id="f-award" placeholder="e.g. Telly Award 2023" />
-            <button class="field-clear-btn" type="button" onclick="clearField('f-award')" title="Clear">×</button>
+      <div style="margin-bottom:16px">
+        <button class="add-link" id="award-toggle" data-closed="+ Award" data-open="− Award" onclick="toggleDisclosure('award')">+ Award</button>
+        <div id="award-body" style="display:none;margin-top:8px">
+          <div class="field" style="margin-bottom:0">
+            <label>Award <span class="label-aside">(shown in lightbox and on grid)</span></label>
+            <div class="field-clearable">
+              <input type="text" id="f-award" placeholder="e.g. Telly Award 2023" />
+              <button class="field-clear-btn" type="button" onclick="clearField('f-award')" title="Clear">×</button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    <div style="margin-bottom:16px">
-      <button class="add-link" id="description-toggle" data-closed="+ Add description" data-open="− Description" onclick="toggleDisclosure('description')">+ Add description</button>
-      <div id="description-body" style="display:none;margin-top:8px">
-        <div class="field" style="margin-bottom:0">
-          <label>Description <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(shown in lightbox)</span></label>
-          <textarea id="f-description" rows="3" maxlength="500" placeholder="Brief description, credits, or context…" oninput="updateDescCounter()"></textarea>
-          <div style="display:flex;justify-content:flex-end;margin-top:3px">
-            <span id="f-description-counter" style="font-size:9px;color:var(--fg-dim)">0 / 500</span>
+      <div style="margin-bottom:16px">
+        <button class="add-link" id="description-toggle" data-closed="+ Description" data-open="− Description" onclick="toggleDisclosure('description')">+ Description</button>
+        <div id="description-body" style="display:none;margin-top:8px">
+          <div class="field" style="margin-bottom:0">
+            <label>Description <span class="label-aside">(shown in lightbox)</span></label>
+            <textarea id="f-description" rows="3" maxlength="500" placeholder="Brief description, credits, or context…" oninput="updateDescCounter()"></textarea>
+            <div style="display:flex;justify-content:flex-end;margin-top:3px">
+              <span id="f-description-counter" style="font-size:9px;color:var(--fg-dim)">0 / 500</span>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="field">
-      <label>Thumbnail <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(images live in /thumbs/)</span></label>
-      <div class="field-clearable">
-        <input type="text" id="f-thumbnail" placeholder="filename.jpeg" oninput="updateThumbPreview()" />
-        <button class="field-clear-btn" type="button" onclick="clearField('f-thumbnail');updateThumbPreview()" title="Clear">×</button>
+    <!-- ── APPEARANCE TAB ── -->
+    <div class="modal-tab-pane" id="mtab-appearance">
+      <div class="field">
+        <label>Aspect Ratio <span class="label-aside">— auto-detected from thumbnail</span></label>
+        <input type="number" id="f-aspect" min="0.1" max="5" step="0.01" placeholder="1.78 (16:9 default)" style="width:160px" oninput="markDirty()" />
+        <div class="field-hint" style="margin-top:4px">Width ÷ height. e.g. 1.78 = 16:9, 1.33 = 4:3, 1.0 = square, 0.67 = 2:3 portrait. Auto-filled when thumbnail loads.</div>
       </div>
-      <div id="thumb-drop-zone">
-        <img id="thumb-preview" alt="thumbnail preview" />
-        <div class="thumb-empty-state" id="thumb-empty-state">
-          <div class="thumb-empty-icon">⬜</div>
-          <div class="thumb-empty-label">Drop image here to upload</div>
-        </div>
-      </div>
-      <div style="display:flex;gap:8px;align-items:center;justify-content:center;margin-top:8px">
-        <label class="btn btn-ghost btn-sm" style="cursor:pointer">Browse local files…<input type="file" id="thumb-file-input" accept="image/*" class="file-input-hidden" onchange="handleFileInput(this,'thumb')" /></label>
-        <button class="btn btn-ghost btn-sm" type="button" onclick="toggleThumbList()">Browse uploaded ↓</button>
-      </div>
-      <label style="display:flex;align-items:center;gap:6px;margin-top:8px;cursor:pointer;font-size:10px;color:var(--fg-dim);letter-spacing:0.1em;text-transform:uppercase">
-        <input type="checkbox" id="thumb-optimize" checked />
-        Optimize (WebP)
-      </label>
-      <div class="field-hint" style="margin-top:4px">Re-encodes to WebP and resizes to longest edge ≤ 1200 px on upload. Turn off to keep the original file.</div>
-      <div class="thumb-file-list" id="thumb-file-list"></div>
-    </div>
-    <div class="field">
-      <label>Alt Text <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(optional — defaults to project title)</span></label>
-      <input type="text" id="f-alt" placeholder="e.g. Amazon Web Services brand film" />
-      <div class="field-hint" style="margin-top:4px">Describes the thumbnail for screen readers and search engines</div>
-    </div>
-
-    <div class="field" style="margin-top:4px">
-      <label style="display:flex;align-items:center;gap:10px;cursor:pointer;text-transform:none;letter-spacing:0;font-size:13px;font-weight:300;margin-bottom:0">
-        <input type="checkbox" id="f-published" checked />
-        Published
-      </label>
-      <div class="field-hint" style="margin-top:6px">Uncheck to hide this project without deleting it.</div>
-    </div>
-
-    <div style="margin-bottom:16px">
-      <button class="add-link" id="appearance-toggle" data-closed="+ Appearance" data-open="− Appearance" onclick="toggleDisclosure('appearance')">+ Appearance</button>
-      <div id="appearance-body" style="display:none;margin-top:8px">
-        <div class="field" style="margin-bottom:12px">
-          <label>Aspect Ratio <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">— auto-detected from thumbnail</span></label>
-          <input type="number" id="f-aspect" min="0.1" max="5" step="0.01" placeholder="1.78 (16:9 default)" style="width:160px" oninput="markDirty()" />
-          <div class="field-hint" style="margin-top:4px">Width ÷ height. e.g. 1.78 = 16:9, 1.33 = 4:3, 1.0 = square, 0.67 = 2:3 portrait. Auto-filled when thumbnail loads.</div>
-        </div>
-        <div class="field" style="margin-bottom:0">
-          <label>Vignette Opacity <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(0–100%) — darkens the background behind text</span></label>
-          <input type="number" id="f-vignette" min="0" max="100" step="5" placeholder="30" />
-        </div>
+      <div class="field" style="margin-bottom:0">
+        <label>Vignette Opacity <span class="label-aside">(0–100%) — darkens the background behind text</span></label>
+        <input type="number" id="f-vignette" min="0" max="100" step="5" placeholder="30" />
       </div>
     </div>
 
@@ -1814,17 +2265,17 @@
     </div>
 
     <div class="field">
-      <label>Title <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(optional)</span></label>
+      <label>Title <span class="label-aside">(optional)</span></label>
       <input type="text" id="ge-title" placeholder="e.g. Editorial shoot, Spring 2024" />
     </div>
     <div class="field">
-      <label>Client <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(optional)</span></label>
+      <label>Client <span class="label-aside">(optional)</span></label>
       <input type="text" id="ge-client" placeholder="e.g. Nordstrom" />
     </div>
 
     <!-- Thumbnail — shown for video items only -->
     <div class="field" id="ge-thumb-field" style="display:none">
-      <label>Thumbnail <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(shown on grid)</span></label>
+      <label>Thumbnail <span class="label-aside">(shown on grid)</span></label>
       <div class="field-clearable">
         <input type="text" id="ge-thumbnail" placeholder="filename.jpg" oninput="updateGeThumbPreview()" />
         <button class="field-clear-btn" type="button" onclick="clearField('ge-thumbnail');updateGeThumbPreview()" title="Clear">×</button>
@@ -1841,7 +2292,7 @@
 
     <!-- Award -->
     <div style="margin-bottom:16px">
-      <button class="add-link" id="ge-award-toggle" data-closed="+ Add award" data-open="− Award" onclick="toggleDisclosure('ge-award')">+ Add award</button>
+      <button class="add-link" id="ge-award-toggle" data-closed="+ Award" data-open="− Award" onclick="toggleDisclosure('ge-award')">+ Award</button>
       <div id="ge-award-body" style="display:none;margin-top:8px">
         <div class="field" style="margin-bottom:0">
           <label>Award</label>
@@ -1855,7 +2306,7 @@
 
     <!-- Description -->
     <div style="margin-bottom:16px">
-      <button class="add-link" id="ge-description-toggle" data-closed="+ Add description" data-open="− Description" onclick="toggleDisclosure('ge-description')">+ Add description</button>
+      <button class="add-link" id="ge-description-toggle" data-closed="+ Description" data-open="− Description" onclick="toggleDisclosure('ge-description')">+ Description</button>
       <div id="ge-description-body" style="display:none;margin-top:8px">
         <div class="field" style="margin-bottom:0">
           <label>Description</label>
@@ -1891,11 +2342,11 @@
       <div class="field-hint" style="margin-top:4px">YouTube or Vimeo URL</div>
     </div>
     <div class="field">
-      <label>Title <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(optional)</span></label>
+      <label>Title <span class="label-aside">(optional)</span></label>
       <input type="text" id="gv-av-title" placeholder="e.g. Brand film" />
     </div>
     <div class="field">
-      <label>Client <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(optional)</span></label>
+      <label>Client <span class="label-aside">(optional)</span></label>
       <input type="text" id="gv-av-client" placeholder="e.g. Nike" />
     </div>
     <div class="modal-actions" style="border-top:1px solid var(--fg-dimmer);margin-top:16px;padding-top:12px">
@@ -1947,11 +2398,11 @@
   <div class="modal" style="max-width:420px">
     <div class="modal-title" id="modal-cat-title">Add Category</div>
     <div class="field">
-      <label>Label <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(shown in nav)</span></label>
+      <label>Label <span class="label-aside">(shown in nav)</span></label>
       <input type="text" id="cat-label" placeholder="e.g. Social" />
     </div>
     <div class="field" id="cat-id-field">
-      <label>ID / slug <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(used in projects.json — lowercase, no spaces)</span></label>
+      <label>ID / slug <span class="label-aside">(used in projects.json — lowercase, no spaces)</span></label>
       <input type="text" id="cat-id" placeholder="e.g. social" oninput="this.value=this.value.toLowerCase().replace(/[^a-z0-9-]/g,'')" />
       <div class="field-hint">Set once. Changing after adding projects will orphan them.</div>
     </div>
@@ -1960,6 +2411,7 @@
       <select id="cat-type" style="width:100%" onchange="updateCatHints()">
         <option value="lightbox">Lightbox</option>
         <option value="gallery">Gallery</option>
+        <option value="carousel">Carousel</option>
       </select>
       <div class="field-hint" id="cat-type-hint" style="margin-top:4px">Overlay viewer — best for video projects or single images</div>
     </div>
@@ -1968,6 +2420,7 @@
       <select id="cat-layout" style="width:100%" onchange="updateCatHints()">
         <option value="masonry">Masonry</option>
         <option value="grid">Grid</option>
+        <option value="editorial">Editorial (two columns, captioned)</option>
       </select>
       <div class="field-hint" id="cat-layout-hint" style="margin-top:4px">Natural proportions — each image displays at its own aspect ratio</div>
     </div>
@@ -2010,7 +2463,7 @@
 
     <!-- Password row -->
     <div class="field" style="margin-bottom:6px">
-      <label>Password <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0;font-weight:300" id="share-modal-pass-status"></span></label>
+      <label>Password <span class="label-aside" id="share-modal-pass-status"></span></label>
       <div style="display:flex;gap:6px;align-items:center">
         <input id="share-modal-pass" type="password" placeholder="Leave blank to share without a password" style="flex:1" onkeydown="if(event.key==='Enter')shareModalSave()" />
         <button type="button" class="btn btn-ghost btn-sm" id="share-modal-reveal" onclick="shareModalToggleReveal()" style="flex-shrink:0;font-size:11px;padding:6px 10px">Show</button>
@@ -2044,22 +2497,21 @@
 <div class="toast" id="toast"></div>
 
 <script>
-// --- Place this in the <script> section of admin.html ---
 function togglePw(id) {
   const input = document.getElementById(id);
+  if (!input) return;
   const btn = input.nextElementSibling;
-  if (input.type === 'password') {
-    input.type = 'text';
-    btn.textContent = '○'; // Changes the dot to a circle when visible
-  } else {
-    input.type = 'password';
-    btn.textContent = '●'; // Changes back to a dot when hidden
+  const wasHidden = input.type === 'password';
+  input.type = wasHidden ? 'text' : 'password';
+  if (btn && btn.classList.contains('pw-toggle')) {
+    btn.classList.toggle('revealed', wasHidden);
+    btn.setAttribute('aria-label', wasHidden ? 'Hide' : 'Show');
   }
 }
 const DEFAULT_FAVICON = "data:image/svg+xml,%3Csvg viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='%23c9a96e' stroke-width='1.5' stroke-linejoin='round'%3E%3Cpolygon points='16,2 28,9 16,16 4,9'/%3E%3Cpolygon points='28,9 28,23 16,30 16,16'/%3E%3Cpolygon points='4,9 16,16 16,30 4,23'/%3E%3C/svg%3E";
 
 // ─── VERSION ─────────────────────────────────────────────────────────────────
-const ADMIN_VERSION = '0.6.5';
+const ADMIN_VERSION = '0.1.0';
 
 // ─── STORAGE KEYS ───────────────────────────────────────────────────────────
 const K_HASH   = 'cr_pw_hash';
@@ -2194,11 +2646,6 @@ function resetSetup() {
   location.reload();
 }
 
-function togglePw(id) {
-  const el = document.getElementById(id);
-  el.type = el.type === 'password' ? 'text' : 'password';
-}
-
 // ─── APP INIT ────────────────────────────────────────────────────────────────
 async function showApp(restoreTab = false) {
   document.getElementById('screen-setup').classList.add('hidden');
@@ -2208,6 +2655,7 @@ async function showApp(restoreTab = false) {
   await loadAll(restoreTab);
   loadThumbFiles(); // non-blocking
   initThumbDropZone();
+  initSegmentedControls();
   // Background token permission check
   const token = localStorage.getItem(K_TOKEN);
   const owner = localStorage.getItem(K_OWNER);
@@ -2386,7 +2834,7 @@ function buildAdminUI(restoreTab = false) {
   if (restoreTab) {
     // Browser reload — restore last active tab
     const saved = localStorage.getItem(K_TAB);
-    const valid = [...siteConfig.categories.map(c => c.id), 'site'];
+    const valid = [...siteConfig.categories.map(c => c.id), 'site', 'categories'];
     const tab   = saved && valid.includes(saved) ? saved : (siteConfig.categories[0]?.id || 'site');
     switchTab(tab);
     if (tab === 'site') switchSettingsTab(localStorage.getItem(K_STAB) || 'general');
@@ -2438,7 +2886,7 @@ function buildAdminCategoryPanes() {
     pane.id = 'pane-' + cat.id;
     pane.style.display = 'none';
 
-    if (cat.type === 'gallery') {
+    if (cat.type === 'carousel') {
       pane.innerHTML = `
         <div class="toolbar">
           <span class="toolbar-label" id="count-${cat.id}"></span>
@@ -2487,15 +2935,36 @@ function buildAdminCategoryPanes() {
       pane.innerHTML = `
         <div class="toolbar">
           <span class="toolbar-label" id="count-${cat.id}"></span>
-          <div style="display:flex;gap:8px">
+          <div style="display:flex;gap:8px;align-items:center">
+            <input type="text" placeholder="Filter projects…" class="project-filter-input" id="filter-${cat.id}" oninput="filterProjects('${cat.id}', this.value)" />
+            <div class="segmented view-toggle" data-for="view-${cat.id}" data-skip-dirty="1" title="View mode">
+              <button type="button" data-value="list" title="List view" aria-label="List view"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="3" y1="4" x2="13" y2="4"/><line x1="3" y1="8" x2="13" y2="8"/><line x1="3" y1="12" x2="13" y2="12"/></svg></button>
+              <button type="button" data-value="grid" title="Grid view" aria-label="Grid view"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2.5" y="2.5" width="4.5" height="4.5"/><rect x="9" y="2.5" width="4.5" height="4.5"/><rect x="2.5" y="9" width="4.5" height="4.5"/><rect x="9" y="9" width="4.5" height="4.5"/></svg></button>
+            </div>
+            <input type="hidden" id="view-${cat.id}" onchange="onCategoryViewChange('${cat.id}', this.value)" />
             <button class="btn btn-ghost btn-sm" onclick="openAdd('${cat.id}')">+ Add Project</button>
             <button class="btn btn-ghost btn-sm" onclick="previewCategory('${cat.id}')">Preview ↗</button>
           </div>
         </div>
-        <div class="project-list" id="list-${cat.id}"></div>
+        <div class="project-bulk-bar hidden" id="bulk-bar-${cat.id}">
+          <span id="bulk-count-${cat.id}">0 selected</span>
+          <div style="display:flex;gap:8px;align-items:center">
+            <select id="bulk-move-${cat.id}" onchange="bulkMoveProjects('${cat.id}', this.value); this.value=''">
+              <option value="">Move to…</option>
+            </select>
+            <button class="btn btn-ghost btn-sm" onclick="clearProjectSelection('${cat.id}')">Deselect all</button>
+            <button class="btn btn-danger btn-sm" onclick="bulkDeleteProjects('${cat.id}')">Delete selected</button>
+          </div>
+        </div>
+        <div id="list-${cat.id}"></div>
       `;
     }
     container.appendChild(pane);
+  });
+  // Bind any newly-injected segmented controls (view toggles) and seed their initial values
+  initSegmentedControls();
+  siteConfig.categories.forEach(cat => {
+    if (cat.type !== 'carousel') setSegmentedValue('view-' + cat.id, getCategoryView(cat.id));
   });
 }
 
@@ -2506,13 +2975,22 @@ function renderAll() {
 
 function renderCategory(cat) {
   const catDef = siteConfig.categories.find(c => c.id === cat);
-  if (catDef?.type === 'gallery') { renderGalleryCategory(cat); return; }
+  if (catDef?.type === 'carousel') { renderGalleryCategory(cat); return; }
+
+  // Sync the view-mode toggle and pick rendering path
+  const view = getCategoryView(cat);
+  setSegmentedValue('view-' + cat, view);
+  if (view === 'grid') { renderProjectGrid(cat); return; }
 
   const items = projects.filter(p => p.category === cat);
   const list  = document.getElementById('list-' + cat);
-  // Lightbox categories use a stacked list layout, not the photo grid
-  if (list) { list.classList.remove('gallery-admin-grid'); list.classList.add('project-list'); }
+  // List view uses a stacked layout
+  if (list) { list.classList.remove('gallery-admin-grid', 'project-grid'); list.classList.add('project-list'); }
   const count = document.getElementById('count-' + cat);
+  // Hide bulk bar when leaving grid view
+  const bulkBar = document.getElementById('bulk-bar-' + cat);
+  if (bulkBar) bulkBar.classList.add('hidden');
+  if (_projectSelection) _projectSelection.delete(cat);
 
   count.textContent = `${items.length} project${items.length !== 1 ? 's' : ''}`;
 
@@ -2528,6 +3006,7 @@ function renderCategory(cat) {
     card.className = 'project-card' + (p.published === false ? ' unpublished' : '');
     card.draggable = true;
     card.dataset.idx = globalIdx;
+    card.dataset.searchTerms = ((p.title || '') + ' ' + (p.client || '') + ' ' + (p.award || '')).toLowerCase();
 
     card.innerHTML = `
       <div class="drag-handle" title="Drag to reorder">
@@ -2588,6 +3067,216 @@ function renderCategory(cat) {
       }
     }
   });
+
+  // Re-apply any active filter so cards stay hidden through re-renders
+  const filterEl = document.getElementById('filter-' + cat);
+  if (filterEl && filterEl.value) filterProjects(cat, filterEl.value);
+}
+
+function filterProjects(catId, query) {
+  const list = document.getElementById('list-' + catId);
+  if (!list) return;
+  const q = (query || '').trim().toLowerCase();
+  const cards = list.querySelectorAll('.project-card, .project-grid-card');
+  let visible = 0;
+  cards.forEach(card => {
+    const matches = !q || (card.dataset.searchTerms || '').includes(q);
+    card.style.display = matches ? '' : 'none';
+    if (matches) visible++;
+  });
+  // Show / clear a "no matches" hint
+  let emptyHint = list.querySelector('.filter-empty');
+  if (cards.length > 0 && visible === 0) {
+    if (!emptyHint) {
+      emptyHint = document.createElement('div');
+      emptyHint.className = 'empty filter-empty';
+      emptyHint.textContent = 'No projects match.';
+      list.appendChild(emptyHint);
+    }
+  } else if (emptyHint) {
+    emptyHint.remove();
+  }
+  // Update count to reflect filter
+  const count = document.getElementById('count-' + catId);
+  if (count) {
+    if (q) count.textContent = `${visible} of ${cards.length} project${cards.length !== 1 ? 's' : ''}`;
+    else   count.textContent = `${cards.length} project${cards.length !== 1 ? 's' : ''}`;
+  }
+}
+
+// ─── PROJECT GRID (admin view-mode = "grid") ─────────────────────────────────
+const _projectSelection = new Map(); // catId → Set<globalIdx>
+
+function getCategoryView(catId) {
+  return localStorage.getItem('cr_view_' + catId) === 'grid' ? 'grid' : 'list';
+}
+function setCategoryView(catId, view) {
+  if (view === 'grid') localStorage.setItem('cr_view_' + catId, 'grid');
+  else                 localStorage.removeItem('cr_view_' + catId);
+}
+function onCategoryViewChange(catId, view) {
+  setCategoryView(catId, view);
+  renderCategory(catId);
+}
+
+function renderProjectGrid(cat) {
+  const items = projects.filter(p => p.category === cat);
+  const list  = document.getElementById('list-' + cat);
+  if (!list) return;
+  list.classList.remove('project-list', 'gallery-admin-grid');
+  list.classList.add('project-grid');
+  const count = document.getElementById('count-' + cat);
+  count.textContent = `${items.length} project${items.length !== 1 ? 's' : ''}`;
+
+  if (items.length === 0) {
+    list.innerHTML = '<div class="empty">No projects yet. Use the button above to add one.</div>';
+    updateProjectBulkBar(cat);
+    return;
+  }
+
+  const sel = _projectSelection.get(cat) || new Set();
+  list.innerHTML = '';
+  items.forEach(p => {
+    const globalIdx = projects.indexOf(p);
+    const card = document.createElement('div');
+    card.className = 'project-grid-card'
+      + (p.published === false ? ' unpublished' : '')
+      + (sel.has(globalIdx) ? ' selected' : '');
+    card.draggable = true;
+    card.dataset.idx = globalIdx;
+    card.dataset.searchTerms = ((p.title || '') + ' ' + (p.client || '') + ' ' + (p.award || '')).toLowerCase();
+
+    const isVid   = isVideoUrl(p.url);
+    const isImg   = isImageUrl(p.url);
+    const thumbSrc = p.thumbnail || (isImg ? p.url : '');
+
+    card.innerHTML = `
+      <div class="project-grid-check" data-check title="Select"></div>
+      ${thumbSrc
+        ? `<img class="project-grid-thumb" src="${esc(thumbSrc)}" alt="" loading="lazy" onerror="this.outerHTML='<div class=\\'project-grid-placeholder\\'>no image</div>'">`
+        : `<img class="project-grid-thumb" data-auto-poster data-idx="${globalIdx}" style="display:none" alt="" loading="lazy">
+           <div class="project-grid-placeholder" data-placeholder>no image</div>`}
+      ${isVid ? '<div class="project-grid-mediatype">▶</div>' : ''}
+      <div class="project-grid-dot" title="${p.published === false ? 'Unpublished' : 'Published'}"></div>
+      <div class="project-grid-overlay">
+        ${p.client ? `<div class="project-grid-client">${esc(p.client)}</div>` : ''}
+        <div class="project-grid-title">${esc(p.title || '(untitled)')}</div>
+      </div>
+    `;
+
+    // Click checkbox = toggle select; click anywhere else = open edit
+    card.addEventListener('click', (e) => {
+      if (e.target.closest('[data-check]')) {
+        toggleProjectSelection(cat, globalIdx);
+      } else {
+        openEdit(globalIdx);
+      }
+    });
+
+    card.addEventListener('dragstart', onDragStart);
+    card.addEventListener('dragover',  onDragOver);
+    card.addEventListener('dragleave', onDragLeave);
+    card.addEventListener('drop',      onDrop);
+    card.addEventListener('dragend',   onDragEnd);
+
+    list.appendChild(card);
+
+    // Auto-poster fallback when no thumb
+    if (!thumbSrc) {
+      const poster = getAdminPoster(p);
+      if (poster) {
+        const imgEl = card.querySelector('[data-auto-poster]');
+        const phEl  = card.querySelector('[data-placeholder]');
+        if (poster.url) {
+          imgEl.src = poster.url;
+          imgEl.style.display = '';
+          if (phEl) phEl.remove();
+        } else if (poster.vimeoUrl) {
+          fetchVimeoAdminPoster(poster.vimeoUrl, imgEl, null).then(() => {
+            if (imgEl.src && phEl) phEl.remove();
+          });
+        }
+      }
+    }
+  });
+
+  updateProjectBulkBar(cat);
+
+  // Re-apply any active filter
+  const filterEl = document.getElementById('filter-' + cat);
+  if (filterEl && filterEl.value) filterProjects(cat, filterEl.value);
+}
+
+function toggleProjectSelection(catId, globalIdx) {
+  if (!_projectSelection.has(catId)) _projectSelection.set(catId, new Set());
+  const set = _projectSelection.get(catId);
+  if (set.has(globalIdx)) set.delete(globalIdx);
+  else                    set.add(globalIdx);
+  // Update visual state on the affected card without re-render
+  const list = document.getElementById('list-' + catId);
+  const card = list?.querySelector(`.project-grid-card[data-idx="${globalIdx}"]`);
+  if (card) card.classList.toggle('selected', set.has(globalIdx));
+  updateProjectBulkBar(catId);
+}
+
+function clearProjectSelection(catId) {
+  _projectSelection.set(catId, new Set());
+  document.querySelectorAll('#list-' + catId + ' .project-grid-card.selected')
+    .forEach(c => c.classList.remove('selected'));
+  updateProjectBulkBar(catId);
+}
+
+function updateProjectBulkBar(catId) {
+  const bar   = document.getElementById('bulk-bar-' + catId);
+  const count = document.getElementById('bulk-count-' + catId);
+  const move  = document.getElementById('bulk-move-' + catId);
+  const set   = _projectSelection.get(catId) || new Set();
+  if (!bar) return;
+  if (set.size === 0) { bar.classList.add('hidden'); return; }
+  bar.classList.remove('hidden');
+  if (count) count.textContent = `${set.size} selected`;
+  // Refresh Move-to dropdown options (other non-carousel categories)
+  if (move) {
+    const targets = siteConfig.categories.filter(c => c.id !== catId && c.type !== 'carousel');
+    move.innerHTML = '<option value="">Move to…</option>'
+      + targets.map(c => `<option value="${esc(c.id)}">${esc(c.label)}</option>`).join('');
+  }
+}
+
+function bulkDeleteProjects(catId) {
+  const set = _projectSelection.get(catId);
+  if (!set || set.size === 0) return;
+  const n = set.size;
+  showConfirm({
+    title: `Delete ${n} project${n !== 1 ? 's' : ''}?`,
+    body:  `This will remove ${n} project${n !== 1 ? 's' : ''} from the site. This can't be undone.`,
+    confirmLabel: 'Delete',
+    danger: true,
+    onConfirm: async () => {
+      // Sort descending so splicing doesn't shift remaining indexes
+      const indexes = [...set].sort((a, b) => b - a);
+      indexes.forEach(idx => projects.splice(idx, 1));
+      _projectSelection.set(catId, new Set());
+      renderAll();
+      markDirty();
+      showToast(`${indexes.length} project${indexes.length !== 1 ? 's' : ''} deleted.`, 'success');
+      saveToGitHub();
+    }
+  });
+}
+
+function bulkMoveProjects(catId, targetCatId) {
+  if (!targetCatId) return;
+  const set = _projectSelection.get(catId);
+  if (!set || set.size === 0) return;
+  const targetCat = siteConfig.categories.find(c => c.id === targetCatId);
+  if (!targetCat) return;
+  set.forEach(idx => { if (projects[idx]) projects[idx].category = targetCatId; });
+  const moved = set.size;
+  _projectSelection.set(catId, new Set());
+  renderAll();
+  markDirty();
+  showToast(`${moved} project${moved !== 1 ? 's' : ''} moved to ${targetCat.label}.`, 'success');
 }
 
 // ─── GALLERY CATEGORY RENDER ─────────────────────────────────────────────────
@@ -2683,19 +3372,28 @@ async function bulkDeleteSelected(catId) {
   if (!n) return;
   if (!confirm(`Delete ${n} image${n !== 1 ? 's' : ''}? This cannot be undone.`)) return;
 
-  const toDelete  = projects.filter(p => selectedGaiItems.has(p.id));
-  const filePaths = toDelete.map(p => p.url || p.thumbnail || '').filter(f => f.startsWith('gallery/'));
+  // Snapshot the deletion set up front. We do NOT mutate the in-memory `projects`
+  // array until after the GitHub commit succeeds, so a failed commit can't leave
+  // the local state out of sync with projects.json on disk.
+  const idsToDelete       = new Set(selectedGaiItems);
+  const toDelete          = projects.filter(p => idsToDelete.has(p.id));
+  const filePaths         = toDelete.map(p => p.url || p.thumbnail || '').filter(f => f.startsWith('gallery/'));
+  const projectedProjects = projects.filter(p => !idsToDelete.has(p.id));
 
-  toDelete.forEach(p => { const i = projects.indexOf(p); if (i !== -1) projects.splice(i, 1); });
-  selectedGaiItems.clear(); selectedGaiCat = null;
-  markDirty(); renderAll(); updateGaiBulkBar(catId);
-
-  // Commit deletion — update projects.json + delete image files atomically
+  // Commit deletion — update projects.json + delete image files atomically.
   try {
     const o = localStorage.getItem(K_OWNER), r = localStorage.getItem(K_REPO), b = localStorage.getItem(K_BRANCH);
-    if (!o || !r || !b) { await saveToGitHub(); return; }
+    if (!o || !r || !b) {
+      // Missing config — fall back to the standard save path. Mutate locally
+      // and let saveToGitHub() handle persistence (file deletion will be skipped).
+      projects.length = 0; projects.push(...projectedProjects);
+      selectedGaiItems.clear(); selectedGaiCat = null;
+      markDirty(); renderAll(); updateGaiBulkBar(catId);
+      await saveToGitHub();
+      return;
+    }
 
-    const projectsContent = JSON.stringify(projects, null, 2);
+    const projectsContent = JSON.stringify(projectedProjects, null, 2);
     for (let attempt = 1; attempt <= 3; attempt++) {
       if (attempt > 1) await new Promise(res => setTimeout(res, 1500 * attempt));
       const refRes = await fetch(`https://api.github.com/repos/${o}/${r}/git/ref/heads/${b}?t=${Date.now()}`, { headers: ghHeaders() });
@@ -2726,7 +3424,15 @@ async function bulkDeleteSelected(catId) {
         method: 'PATCH', headers: { ...ghHeaders(), 'Content-Type': 'application/json' },
         body: JSON.stringify({ sha: newCommitSha })
       });
-      if (updateRes.ok) { clearDirty(); pollDeployStatus(); showToast(`${n} image${n !== 1 ? 's' : ''} deleted.`, 'success'); return; }
+      if (updateRes.ok) {
+        // Commit succeeded — now safe to mutate local state.
+        projects.length = 0; projects.push(...projectedProjects);
+        selectedGaiItems.clear(); selectedGaiCat = null;
+        clearDirty(); renderAll(); updateGaiBulkBar(catId);
+        pollDeployStatus();
+        showToast(`${n} image${n !== 1 ? 's' : ''} deleted.`, 'success');
+        return;
+      }
       if (attempt === 3) throw new Error('Could not update branch ref after 3 attempts');
     }
   } catch(e) {
@@ -2859,28 +3565,79 @@ async function deleteGalleryImage() {
       : `Remove "${label}" from the list?\n\nThe file won't be deleted (not a gallery upload).`;
   if (!confirm(msg)) return;
 
-  projects.splice(editingGalleryIdx, 1);
-  markDirty();
-  renderAll();
-  closeGalleryEdit();
-  await saveToGitHub();
+  // Snapshot the deletion. Don't mutate the in-memory `projects` array until
+  // after the commit succeeds — that keeps local state and the repo in sync
+  // even if the network drops mid-delete.
+  const deletedIdx        = editingGalleryIdx;
+  const projectedProjects = projects.filter((_, i) => i !== deletedIdx);
 
-  if (isGalleryFile) {
-    try {
-      const o = localStorage.getItem(K_OWNER);
-      const r = localStorage.getItem(K_REPO);
-      const b = localStorage.getItem(K_BRANCH);
-      const metaRes = await fetch(`https://api.github.com/repos/${o}/${r}/contents/${filePath}?ref=${b}`, { headers: ghHeaders() });
-      if (metaRes.ok) {
-        const { sha } = await metaRes.json();
-        await fetch(`https://api.github.com/repos/${o}/${r}/contents/${filePath}`, {
-          method: 'DELETE', headers: { ...ghHeaders(), 'Content-Type': 'application/json' },
-          body: JSON.stringify({ message: `Delete gallery image ${filePath}`, sha, branch: b })
-        });
-      }
-    } catch(e) {
-      showToast('Entry removed, but file delete failed: ' + e.message, 'error');
+  closeGalleryEdit();
+
+  if (!isGalleryFile) {
+    // No repo file to remove (video or external URL) — just update projects.json.
+    projects.splice(deletedIdx, 1);
+    markDirty();
+    renderAll();
+    await saveToGitHub();
+    return;
+  }
+
+  // Atomic commit: write projects.json AND delete the file in a single git tree.
+  try {
+    const o = localStorage.getItem(K_OWNER), r = localStorage.getItem(K_REPO), b = localStorage.getItem(K_BRANCH);
+    if (!o || !r || !b) {
+      // Missing config — fall back to standard save path (file won't be deleted).
+      projects.splice(deletedIdx, 1);
+      markDirty();
+      renderAll();
+      await saveToGitHub();
+      return;
     }
+
+    const projectsContent = JSON.stringify(projectedProjects, null, 2);
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      if (attempt > 1) await new Promise(res => setTimeout(res, 1500 * attempt));
+      const refRes = await fetch(`https://api.github.com/repos/${o}/${r}/git/ref/heads/${b}?t=${Date.now()}`, { headers: ghHeaders() });
+      if (!refRes.ok) throw new Error('Could not get branch ref');
+      const { object: { sha: headSha } } = await refRes.json();
+      const commitRes = await fetch(`https://api.github.com/repos/${o}/${r}/git/commits/${headSha}`, { headers: ghHeaders() });
+      if (!commitRes.ok) throw new Error('Could not get commit');
+      const { tree: { sha: treeSha } } = await commitRes.json();
+
+      const treeEntries = [
+        { path: 'projects.json', mode: '100644', type: 'blob', content: projectsContent },
+        { path: filePath,        mode: '100644', type: 'blob', sha: null }
+      ];
+      const treeRes = await fetch(`https://api.github.com/repos/${o}/${r}/git/trees`, {
+        method: 'POST', headers: { ...ghHeaders(), 'Content-Type': 'application/json' },
+        body: JSON.stringify({ base_tree: treeSha, tree: treeEntries })
+      });
+      if (!treeRes.ok) throw new Error('Could not create tree');
+      const { sha: newTreeSha } = await treeRes.json();
+      const newCommitRes = await fetch(`https://api.github.com/repos/${o}/${r}/git/commits`, {
+        method: 'POST', headers: { ...ghHeaders(), 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: `Delete gallery image ${filePath}`, tree: newTreeSha, parents: [headSha] })
+      });
+      if (!newCommitRes.ok) throw new Error('Could not create commit');
+      const { sha: newCommitSha } = await newCommitRes.json();
+      const updateRes = await fetch(`https://api.github.com/repos/${o}/${r}/git/refs/heads/${b}`, {
+        method: 'PATCH', headers: { ...ghHeaders(), 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sha: newCommitSha })
+      });
+      if (updateRes.ok) {
+        // Commit succeeded — now safe to mutate local state.
+        projects.splice(deletedIdx, 1);
+        clearDirty();
+        renderAll();
+        pollDeployStatus();
+        showToast(`"${label}" deleted.`, 'success');
+        return;
+      }
+      if (attempt === 3) throw new Error('Could not update branch ref after 3 attempts');
+    }
+  } catch(e) {
+    showToast('Delete failed: ' + e.message, 'error');
+    console.error(e);
   }
 }
 
@@ -3142,7 +3899,7 @@ function onDragStart(e) {
 function onDragOver(e) {
   e.preventDefault();
   e.dataTransfer.dropEffect = 'move';
-  document.querySelectorAll('.project-card.drag-over').forEach(el => el.classList.remove('drag-over'));
+  document.querySelectorAll('.project-card.drag-over, .project-grid-card.drag-over').forEach(el => el.classList.remove('drag-over'));
   this.classList.add('drag-over');
 }
 function onDragLeave() {
@@ -3155,7 +3912,7 @@ function onDrop(e) {
   if (dragSrcIdx === null || dragSrcIdx === targetIdx) return;
 
   const item = projects.splice(dragSrcIdx, 1)[0];
-  const insertAt = dragSrcIdx < targetIdx ? targetIdx : targetIdx;
+  const insertAt = dragSrcIdx < targetIdx ? targetIdx - 1 : targetIdx;
   projects.splice(insertAt, 0, item);
 
   markDirty();
@@ -3163,13 +3920,13 @@ function onDrop(e) {
 }
 function onDragEnd() {
   this.classList.remove('dragging');
-  document.querySelectorAll('.project-card.drag-over').forEach(el => el.classList.remove('drag-over'));
+  document.querySelectorAll('.project-card.drag-over, .project-grid-card.drag-over').forEach(el => el.classList.remove('drag-over'));
   dragSrcIdx = null;
 }
 
 // ─── TABS ────────────────────────────────────────────────────────────────────
 function switchTabDirect(tabId) {
-  const allTabIds = [...siteConfig.categories.map(c => c.id), 'site', 'files'];
+  const allTabIds = [...siteConfig.categories.map(c => c.id), 'site', 'categories', 'files'];
   allTabIds.forEach(id => {
     const tab  = document.getElementById('tab-'  + id);
     const pane = document.getElementById('pane-' + id);
@@ -3180,6 +3937,7 @@ function switchTabDirect(tabId) {
   localStorage.setItem(K_TAB, tabId);
   if (tabId !== 'site') localStorage.removeItem(K_STAB);
   if (tabId === 'files') initFileManagerTab();
+  if (tabId === 'categories') renderCategoryList();
   // Scroll active tab into view in the scroll container
   const activeTab = document.getElementById('tab-' + tabId);
   if (activeTab) activeTab.scrollIntoView({ block: 'nearest', inline: 'nearest' });
@@ -3189,6 +3947,52 @@ function switchTabDirect(tabId) {
 function switchTab(tabId) {
   if (isDirty) { guardDirty(() => switchTabDirect(tabId)); return; }
   switchTabDirect(tabId);
+}
+
+function switchModalTab(tab) {
+  document.querySelectorAll('#modal-edit .modal-tab-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.mtab === tab);
+  });
+  document.querySelectorAll('#modal-edit .modal-tab-pane').forEach(pane => {
+    pane.classList.toggle('active', pane.id === 'mtab-' + tab);
+  });
+}
+
+// ─── SEGMENTED CONTROLS ──────────────────────────────────────────────────────
+// Markup pattern:
+//   <div class="segmented" data-for="my-input">
+//     <button type="button" data-value="a">A</button>
+//     <button type="button" data-value="b">B</button>
+//   </div>
+//   <input type="hidden" id="my-input" />
+// Use setSegmentedValue('my-input', 'a') from populate code.
+function initSegmentedControls() {
+  document.querySelectorAll('.segmented[data-for]').forEach(seg => {
+    if (seg.dataset.bound === '1') return; // idempotent — safe to call multiple times
+    seg.dataset.bound = '1';
+    const name  = seg.dataset.for;
+    const input = document.getElementById(name);
+    const skipDirty = seg.dataset.skipDirty === '1';
+    seg.querySelectorAll('button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (input && input.value === btn.dataset.value) return;
+        setSegmentedValue(name, btn.dataset.value);
+        if (input) {
+          input.dispatchEvent(new Event('change', { bubbles: true }));
+          input.dispatchEvent(new Event('input',  { bubbles: true }));
+        }
+        if (!skipDirty) markDirty();
+      });
+    });
+  });
+}
+function setSegmentedValue(name, value) {
+  const input = document.getElementById(name);
+  const seg   = document.querySelector(`.segmented[data-for="${name}"]`);
+  if (input) input.value = value;
+  if (seg) seg.querySelectorAll('button').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.value === value);
+  });
 }
 
 // ─── ADD / EDIT ──────────────────────────────────────────────────────────────
@@ -3241,10 +4045,10 @@ function updateMetaDescCounter() {
 }
 
 function clearModalForm() {
-  ['f-title','f-client','f-url','f-still-url','f-award','f-description','f-thumbnail','f-vignette','f-aspect','f-alt'].forEach(id => {
+  ['f-title','f-client','f-url','f-still-url','f-award','f-description','f-thumbnail','f-vignette','f-aspect','f-alt','f-gallery'].forEach(id => {
     document.getElementById(id).value = '';
   });
-  ['award','description','appearance'].forEach(closeDisclosure);
+  ['award','description'].forEach(closeDisclosure);
   document.getElementById('f-overlay').value = '';
   updateOverlayHint();
   document.getElementById('f-published').checked = true;
@@ -3266,6 +4070,8 @@ function openAdd(cat) {
   clearModalForm();
   setProjectMediaType('video');
   populateCategoryDropdown(cat);
+  updateProjectGalleryFieldVisibility();
+  switchModalTab('basics');
   document.getElementById('modal-edit').classList.remove('hidden');
   document.getElementById('f-title').focus();
 }
@@ -3286,16 +4092,17 @@ function openEdit(globalIdx) {
   updateDescCounter();
   document.getElementById('f-thumbnail').value = thumbDisplay(p.thumbnail);
   document.getElementById('f-alt').value        = p.alt || '';
+  document.getElementById('f-gallery').value   = Array.isArray(p.gallery) ? p.gallery.join('\n') : '';
   document.getElementById('f-vignette').value  = p.vignette !== undefined ? Math.round(p.vignette * 100) : '';
   document.getElementById('f-aspect').value    = p.aspect   !== undefined ? p.aspect : '';
+  updateProjectGalleryFieldVisibility();
   if (p.award)                   openDisclosure('award');
   if (p.description)             openDisclosure('description');
-  if (p.vignette !== undefined || p.aspect !== undefined) openDisclosure('appearance');
   document.getElementById('f-published').checked = p.published !== false;
   updateOverlayHint();
   updateThumbPreview();
-  // Detect media type and set toggle
-  const mediaType = isVideoUrl(p.url) ? 'video' : isImageUrl(p.url) ? 'still' : 'none';
+  // Detect media type and set toggle (legacy 'none' projects fall back to video)
+  const mediaType = isImageUrl(p.url) ? 'still' : 'video';
   setProjectMediaType(mediaType);
   if (mediaType === 'still') {
     document.getElementById('f-still-url').value = p.url || '';
@@ -3304,6 +4111,7 @@ function openEdit(globalIdx) {
     if (wrap && img && p.url) { img.src = p.url; wrap.style.display = ''; }
   }
   document.getElementById('edit-delete-zone').style.display = '';
+  switchModalTab('basics');
   document.getElementById('modal-edit').classList.remove('hidden');
   document.getElementById('f-title').focus();
 }
@@ -3343,6 +4151,9 @@ async function saveProject() {
   if (vignetteRaw !== '') proj.vignette = parseFloat(vignetteRaw) / 100;
   const aspectRaw = document.getElementById('f-aspect').value;
   if (aspectRaw !== '')   proj.aspect   = parseFloat(aspectRaw);
+  const galleryRaw = document.getElementById('f-gallery').value;
+  const galleryLines = galleryRaw.split('\n').map(s => s.trim()).filter(Boolean);
+  if (galleryLines.length) proj.gallery = galleryLines;
 
   if (editingIdx !== null) {
     // Preserve shareKey — it's not in the form, so copy it forward if present
@@ -3380,7 +4191,7 @@ async function confirmDelete() {
   projects.splice(deletingIdx, 1);
   renderAll();
   closeDelete();
-closeModal();;
+  closeModal();
   await saveToGitHub();
 }
 
@@ -3448,8 +4259,8 @@ function openEditCategory(idx) {
   document.getElementById('modal-cat-title').textContent = 'Edit Category';
   document.getElementById('cat-label').value = cat.label;
   document.getElementById('cat-id').value = cat.id;
-  document.getElementById('cat-type').value   = cat.type === 'gallery' ? 'gallery' : 'lightbox';
-  document.getElementById('cat-layout').value = cat.layout === 'grid' ? 'grid' : 'masonry';
+  document.getElementById('cat-type').value   = ['gallery','scroll','carousel'].includes(cat.type) ? cat.type : 'lightbox';
+  document.getElementById('cat-layout').value = ['grid','editorial'].includes(cat.layout) ? cat.layout : 'masonry';
   document.getElementById('cat-id-field').style.display = 'none'; // ID is set on create only
   document.getElementById('cat-delete-btn').style.display = '';
   document.getElementById('cat-label').oninput = null;
@@ -3458,16 +4269,26 @@ function openEditCategory(idx) {
   document.getElementById('cat-label').focus();
 }
 
+function updateProjectGalleryFieldVisibility() {
+  const catId = document.getElementById('f-category')?.value;
+  const catDef = (siteConfig.categories || []).find(c => c.id === catId);
+  const show = catDef?.type === 'scroll' || catDef?.type === 'gallery';
+  const field = document.getElementById('f-gallery-field');
+  if (field) field.style.display = show ? '' : 'none';
+}
+
 function updateCatHints() {
   const type   = document.getElementById('cat-type')?.value;
   const layout = document.getElementById('cat-layout')?.value;
   const typeHints = {
     lightbox: 'Overlay viewer — best for video projects or single images',
-    gallery:  'Full-screen inline viewer with prev/next — best for photo series'
+    gallery:  'Scrolling image grid — each project opens a dedicated detail page',
+    carousel: 'Full-screen inline viewer with prev/next — best for photo series'
   };
   const layoutHints = {
-    masonry: 'Natural proportions — each image displays at its own aspect ratio',
-    grid:    'Uniform 16:9 grid — consistent crops, good for mixed content'
+    masonry:   'Natural proportions — each image displays at its own aspect ratio',
+    grid:      'Uniform 16:9 grid — consistent crops, good for mixed content',
+    editorial: 'Two-column gallery with title captioned below each tile — for considered, smaller portfolios'
   };
   const th = document.getElementById('cat-type-hint');
   const lh = document.getElementById('cat-layout-hint');
@@ -3492,8 +4313,7 @@ function deleteCategoryFromModal() {
       buildAdminCategoryPanes();
       renderAll();
       renderCategoryList();
-      switchTabDirect('site');
-      switchSettingsTab('categories');
+      switchTabDirect('categories');
       showToast('Section deleted.', 'success');
       saveToGitHub();
     }
@@ -3589,8 +4409,8 @@ function populateAboutEditor() {
   const a = siteConfig.about || {};
   document.getElementById('about-show-input').checked       = a.show !== false; // checked = visible (default on)
   document.getElementById('about-photo-input').value        = a.photo || '';
-  document.getElementById('about-photo-shape').value     = a.photoShape     || 'natural';
-  document.getElementById('about-photo-placement').value = a.photoPlacement || 'above';
+  setSegmentedValue('about-photo-shape',     a.photoShape     || 'natural');
+  setSegmentedValue('about-photo-placement', a.photoPlacement || 'above');
   // backward compat: parse old "X% Y%" string if new fields missing
   const legacyPos = a.photoPosition || '';
   const defX = a.photoX !== undefined ? a.photoX : (legacyPos ? parseFloat(legacyPos) : 50);
@@ -3656,12 +4476,10 @@ function updateAboutPhotoPreview(silent = false) {
     prev.src = val || '';
   }
 
-  // Reset style selects when photo is cleared
+  // Reset style controls when photo is cleared
   if (!val) {
-    const shapeEl = document.getElementById('about-photo-shape');
-    const placementEl = document.getElementById('about-photo-placement');
-    if (shapeEl) shapeEl.value = 'natural';
-    if (placementEl) placementEl.value = 'above';
+    setSegmentedValue('about-photo-shape', 'natural');
+    setSegmentedValue('about-photo-placement', 'above');
   }
 
   const show = !!val;
@@ -4027,7 +4845,7 @@ function initFileManagerTab() {
   fmSelected = new Set();
   const savedFMTab = localStorage.getItem(K_FM_TAB) || 'thumbs';
   fmCurrentTab = ['logos','thumbs','images','gallery'].includes(savedFMTab) ? savedFMTab : 'thumbs';
-  fmGalleryCat = (siteConfig.categories.find(c => c.type === 'gallery') || {}).id || null;
+  fmGalleryCat = (siteConfig.categories.find(c => c.type === 'carousel') || {}).id || null;
   updateFMDeleteBtn();
   document.getElementById('fm-unused-only').checked = false;
   buildFMGallerySubtabs();
@@ -4164,7 +4982,7 @@ function buildFMGallerySubtabs() {
   const row = document.getElementById('fm-gallery-subtabs');
   if (!row) return;
   row.innerHTML = '';
-  const galCats = siteConfig.categories.filter(c => c.type === 'gallery');
+  const galCats = siteConfig.categories.filter(c => c.type === 'carousel');
   galCats.forEach(c => {
     const btn = document.createElement('button');
     btn.className = 'fm-subtab-btn' + (c.id === fmGalleryCat ? ' active' : '');
@@ -4904,6 +5722,7 @@ function populateContactEditor() {
   const sel = document.getElementById('contact-mode-select');
   if (sel) sel.value = mode;
   document.getElementById('contact-endpoint').value = c.endpoint || '';
+  document.getElementById('contact-intro-input').value = c.intro || '';
   document.getElementById('contact-email-input').value = c.email || '';
   document.getElementById('contact-photo-input').value = c.photo || '';
   document.getElementById('contact-show-card').checked = !!c.showCard;
@@ -4944,6 +5763,7 @@ async function saveContactFields() {
     mode:     mode === 'off' ? undefined : mode,
     showCard: mode === 'form' ? (document.getElementById('contact-show-card')?.checked || false) : false,
     endpoint: document.getElementById('contact-endpoint')?.value.trim() || '',
+    intro:    document.getElementById('contact-intro-input')?.value.trim() || '',
     email:    document.getElementById('contact-email-input')?.value.trim() || '',
     photo:    document.getElementById('contact-photo-input')?.value.trim() || '',
     showEmailInDrawer: document.getElementById('contact-show-email-in-drawer')?.checked || false,
@@ -4953,6 +5773,51 @@ async function saveContactFields() {
 
 // ─── ACCENT COLOR + ANALYTICS ────────────────────────────────────────────────
 const DEFAULT_ACCENT = '#c9a96e';
+
+const FONT_SERIF_OPTIONS = {
+  'playfair':          { url: 'https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&display=swap', stack: "'Playfair Display', Georgia, serif" },
+  'cormorant':         { url: 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap', stack: "'Cormorant Garamond', Georgia, serif" },
+  'lora':              { url: 'https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;1,400&display=swap',                          stack: "'Lora', Georgia, serif" },
+  'eb-garamond':       { url: 'https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;1,400&display=swap',                   stack: "'EB Garamond', Georgia, serif" },
+  'libre-baskerville': { url: 'https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;1,400&display=swap',             stack: "'Libre Baskerville', Georgia, serif" },
+};
+
+function applyFontSerif(key) {
+  const opt = FONT_SERIF_OPTIONS[key] || FONT_SERIF_OPTIONS['playfair'];
+  let link = document.getElementById('dynamic-font-serif');
+  if (!link) {
+    link = document.createElement('link');
+    link.id  = 'dynamic-font-serif';
+    link.rel = 'stylesheet';
+    document.head.appendChild(link);
+  }
+  link.href = opt.url;
+  document.documentElement.style.setProperty('--font-serif', opt.stack);
+  const sample = document.getElementById('font-serif-sample');
+  if (sample) sample.style.fontFamily = opt.stack;
+}
+
+const FONT_SANS_OPTIONS = {
+  'dm-sans':         { url: 'https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400&display=swap',         stack: "'DM Sans', sans-serif" },
+  'source-code-pro': { url: 'https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@300;400&display=swap', stack: "'Source Code Pro', monospace" },
+  'space-grotesk':   { url: 'https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400&display=swap',   stack: "'Space Grotesk', sans-serif" },
+  'inter':           { url: 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400&display=swap',           stack: "'Inter', sans-serif" },
+};
+
+function applyFontSans(key) {
+  const opt = FONT_SANS_OPTIONS[key] || FONT_SANS_OPTIONS['dm-sans'];
+  let link = document.getElementById('dynamic-font-sans');
+  if (!link) {
+    link = document.createElement('link');
+    link.id  = 'dynamic-font-sans';
+    link.rel = 'stylesheet';
+    document.head.appendChild(link);
+  }
+  link.href = opt.url;
+  document.documentElement.style.setProperty('--font-sans', opt.stack);
+  const sample = document.getElementById('font-sans-sample');
+  if (sample) sample.style.fontFamily = opt.stack;
+}
 
 function updateThumbFilter(val) {
   document.getElementById('site-thumb-filter-pct').textContent = '— ' + val + '%';
@@ -4971,7 +5836,13 @@ function previewAccentColor(color) {
 }
 
 function syncAccentFromHex(val) {
-  const color = val.trim();
+  let color = val.trim();
+  // Auto-prepend # if missing
+  if (color && color[0] !== '#') color = '#' + color;
+  // Expand 3-digit shorthand → 6-digit (#abc → #aabbcc)
+  if (/^#[0-9a-fA-F]{3}$/.test(color)) {
+    color = '#' + color[1]+color[1] + color[2]+color[2] + color[3]+color[3];
+  }
   if (/^#[0-9a-fA-F]{6}$/.test(color)) {
     document.documentElement.style.setProperty('--accent', color);
     const picker = document.getElementById('site-accent-color');
@@ -5139,7 +6010,7 @@ async function deleteUploadedFile(path, listEl, onSelectCallback) {
     const ti = thumbFiles.indexOf(path);
     if (ti !== -1) thumbFiles.splice(ti, 1);
     // Re-render the list in place
-    const inputIdMap = { 'thumb-file-list': 'f-thumbnail', 'og-file-list': 'site-og-input', 'about-photo-file-list': 'about-photo-input' };
+    const inputIdMap = { 'thumb-file-list': 'f-thumbnail', 'og-file-list': 'site-og-input', 'about-photo-file-list': 'about-photo-input', 'home-bg-file-list': 'home-bg' };
     const inputId = inputIdMap[listEl.id] || 'f-thumbnail';  // fallback to project thumbnail
     const currentVal = document.getElementById(inputId)?.value?.trim() || '';
     const files = listEl.id === 'about-photo-file-list' ? thumbFiles.filter(p => p.startsWith('images/')) : thumbFiles;
@@ -5248,6 +6119,10 @@ function flushSettingsForms() {
   // General tab
   siteConfig.ownerName  = document.getElementById('site-name-input').value.trim();
   siteConfig.ownerTitle = document.getElementById('site-title-input').value.trim();
+  siteConfig.brandLogo  = document.getElementById('site-brand-logo')?.value.trim() || '';
+  siteConfig.nav = siteConfig.nav || {};
+  siteConfig.nav.showInstagramInNav = !!document.getElementById('site-nav-show-ig')?.checked;
+  siteConfig.nav.landscapeDrawerStyle = document.getElementById('site-nav-landscape-drawer-style')?.value || 'top';
   siteConfig.favicon         = document.getElementById('site-favicon-input').value.trim();
   siteConfig.metaDescription = document.getElementById('site-meta-desc').value.trim() || undefined;
   siteConfig.allowIndexing = document.getElementById('site-allow-indexing').checked;
@@ -5296,6 +6171,7 @@ function flushSettingsForms() {
     mode:     _cmode === 'off' ? undefined : _cmode,
     showCard: _cmode === 'form' ? (document.getElementById('contact-show-card')?.checked || false) : false,
     endpoint: document.getElementById('contact-endpoint')?.value.trim() || '',
+    intro:    document.getElementById('contact-intro-input')?.value.trim() || '',
     email:    document.getElementById('contact-email-input')?.value.trim() || '',
     photo:    document.getElementById('contact-photo-input')?.value.trim() || '',
     showEmailInDrawer: document.getElementById('contact-show-email-in-drawer')?.checked || false,
@@ -5323,8 +6199,36 @@ function flushSettingsForms() {
   siteConfig.thumbnailFilter = parseInt(document.getElementById('site-thumb-filter')?.value || 0);
   siteConfig.zoomLock       = document.getElementById('site-zoom-lock')?.checked || false;
   siteConfig.mobileThumbsNative = document.getElementById('site-mobile-thumbs-native')?.checked || false;
+  siteConfig.fontSerif      = document.getElementById('site-font-serif')?.value      || '';
+  siteConfig.fontSerifScale = parseFloat(document.getElementById('site-font-serif-scale')?.value || 1);
+  siteConfig.fontSans       = document.getElementById('site-font-sans')?.value       || '';
+  siteConfig.fontSansScale  = parseFloat(document.getElementById('site-font-sans-scale')?.value  || 1);
+
+  // Home page
+  siteConfig.homePage = {
+    enabled:    document.getElementById('home-enabled')?.checked || false,
+    headline:   document.getElementById('home-headline')?.value.trim() || '',
+    subhead:    document.getElementById('home-subhead')?.value.trim()  || '',
+    body:       document.getElementById('home-body')?.value.trim()     || '',
+    bg:         document.getElementById('home-bg')?.value.trim()       || '',
+    bgVideo:    document.getElementById('home-bg-video')?.value.trim() || '',
+    slides:     (document.getElementById('home-slides')?.value || '').split('\n').map(s => s.trim()).filter(Boolean),
+    textLayout: document.getElementById('home-text-layout')?.value     || 'centered',
+    revealDelay: parseFloat(document.getElementById('home-reveal-delay')?.value) || 0,
+    showCtas:   document.getElementById('home-show-ctas')?.checked !== false,
+    ctas: [
+      { label: document.getElementById('home-cta1-label')?.value.trim() || '', target: document.getElementById('home-cta1-target')?.value.trim() || '', style: 'primary' },
+      { label: document.getElementById('home-cta2-label')?.value.trim() || '', target: document.getElementById('home-cta2-target')?.value.trim() || '', style: 'ghost'   },
+    ].filter(c => c.label),
+  };
 
   updateNavBrand();
+}
+
+function openLiveSite() {
+  // Relative — opens index.html alongside studio.html, so this works on
+  // the github.io URL, on any custom domain, or when running locally.
+  window.open('./', '_blank');
 }
 
 function openPreview() {
@@ -5346,8 +6250,26 @@ function openPreview() {
       else if (section === '404')     base = '404.html?preview=1&pk=' + pk;
       else if (section === 'contact') base = 'index.html?preview=1&pk=' + pk + '#contact';
       else if (section === 'splash')  base = 'index.html?preview=1&pk=' + pk + '&splash=1';
+      else if (section === 'pages')   base = 'index.html?preview=1&pk=' + pk + '#home';
       else                            base = 'index.html?preview=1&pk=' + pk;
     }
+    window.open(base, '_blank');
+  } catch(e) {
+    showToast('Preview failed — ' + e.message, 'error');
+  }
+}
+
+function previewPage(page) {
+  try {
+    flushSettingsForms();
+    const pk = Date.now();
+    let base;
+    if (page === 'about')        base = 'index.html?preview=1&pk=' + pk + '#about';
+    else if (page === 'contact') base = 'index.html?preview=1&pk=' + pk + '#contact';
+    else if (page === 'home')    base = 'index.html?preview=1&pk=' + pk + '#home';
+    else if (page === 'splash')  base = 'index.html?preview=1&pk=' + pk + '&splash=1';
+    else if (page === '404')     base = '404.html?preview=1&pk=' + pk;
+    else                         base = 'index.html?preview=1&pk=' + pk;
     window.open(base, '_blank');
   } catch(e) {
     showToast('Preview failed — ' + e.message, 'error');
@@ -5545,9 +6467,11 @@ function esc(s) {
 let _currentProjectMediaType = 'video';
 
 function setProjectMediaType(type) {
+  // Defensive: legacy 'none' projects (no URL) default to video on edit.
+  if (type !== 'video' && type !== 'still') type = 'video';
   _currentProjectMediaType = type;
   // Toggle button styles
-  ['video','still','none'].forEach(t => {
+  ['video','still'].forEach(t => {
     const btn = document.getElementById('f-type-' + t);
     if (!btn) return;
     btn.style.background = t === type ? 'var(--fg-dimmer)' : 'none';
@@ -5558,11 +6482,6 @@ function setProjectMediaType(type) {
   const sf = document.getElementById('f-still-field');
   if (vf) vf.style.display = type === 'video' ? '' : 'none';
   if (sf) sf.style.display = type === 'still' ? '' : 'none';
-  // When switching away from still, clear the still URL
-  if (type !== 'still') {
-    const su = document.getElementById('f-still-url');
-    if (su && !isImageUrl(su.value)) { /* keep if it's already an image url in f-url */ }
-  }
 }
 
 function syncStillUrl() {
@@ -5729,9 +6648,18 @@ async function fetchVimeoAdminPoster(vimeoUrl, imgEl, labelEl) {
 // ─── GENERAL SETTINGS ────────────────────────────────────────────────────────
 function populateGeneralSettings() {
   const navBrand = document.getElementById('nav-brand-name');
-  if (navBrand && siteConfig.ownerName) navBrand.innerHTML = siteConfig.ownerName + ' <span>/ Admin</span>';
+  if (navBrand && siteConfig.ownerName) {
+    navBrand.textContent = siteConfig.ownerName + ' ';
+    const adminSpan = document.createElement('span');
+    adminSpan.textContent = '/ Admin';
+    navBrand.appendChild(adminSpan);
+  }
   document.getElementById('site-name-input').value     = siteConfig.ownerName || '';
   document.getElementById('site-title-input').value   = siteConfig.ownerTitle || '';
+  document.getElementById('site-brand-logo').value    = siteConfig.brandLogo || '';
+  document.getElementById('site-nav-show-ig').checked = !!siteConfig.nav?.showInstagramInNav;
+  document.getElementById('site-nav-landscape-drawer-style').value = siteConfig.nav?.landscapeDrawerStyle || 'top';
+  updateBrandLogoPreview();
   document.getElementById('site-favicon-input').value = siteConfig.favicon    || '';
   document.getElementById('site-og-input').value      = siteConfig.ogImage    || '';
   document.getElementById('site-website-input').value = siteConfig.website || (siteConfig.about && siteConfig.about.website) || '';
@@ -5747,12 +6675,49 @@ function populateGeneralSettings() {
   const an = siteConfig.analytics || {};
   document.getElementById('site-analytics-provider').value = an.provider || '';
   document.getElementById('site-analytics-id').value       = an.id       || '';
-  document.getElementById('site-nav-style').value = siteConfig.navStyle || 'top';
+  setSegmentedValue('site-nav-style', siteConfig.navStyle || 'top');
   const themeMode = siteConfig.themeMode || 'auto';
   document.getElementById('site-theme-mode').value = themeMode;
   document.getElementById('site-allow-theme-toggle').checked = !!siteConfig.allowThemeToggle;
   document.getElementById('site-zoom-lock').checked = !!siteConfig.zoomLock;
   document.getElementById('site-mobile-thumbs-native').checked = !!siteConfig.mobileThumbsNative;
+  const fontSerifKey   = siteConfig.fontSerif || 'playfair';
+  const fontSerifScale = siteConfig.fontSerifScale ?? 1;
+  document.getElementById('site-font-serif').value       = fontSerifKey;
+  document.getElementById('site-font-serif-scale').value = fontSerifScale;
+  document.getElementById('font-serif-scale-pct').textContent = Math.round(fontSerifScale * 100) + '%';
+  applyFontSerif(fontSerifKey);
+  document.documentElement.style.setProperty('--font-serif-scale', fontSerifScale);
+
+  const fontSansKey   = siteConfig.fontSans || 'dm-sans';
+  const fontSansScale = siteConfig.fontSansScale ?? 1;
+  document.getElementById('site-font-sans').value       = fontSansKey;
+  document.getElementById('site-font-sans-scale').value = fontSansScale;
+  document.getElementById('font-sans-scale-pct').textContent = Math.round(fontSansScale * 100) + '%';
+  applyFontSans(fontSansKey);
+  document.documentElement.style.setProperty('--font-sans-scale', fontSansScale);
+
+  // Home page
+  const hp = siteConfig.homePage || {};
+  document.getElementById('home-enabled').checked     = !!hp.enabled;
+  document.getElementById('home-headline').value      = hp.headline  || '';
+  document.getElementById('home-subhead').value       = hp.subhead   || '';
+  document.getElementById('home-body').value          = hp.body      || '';
+  document.getElementById('home-bg').value            = hp.bg        || '';
+  document.getElementById('home-bg-video').value      = hp.bgVideo   || '';
+  document.getElementById('home-slides').value        = Array.isArray(hp.slides) ? hp.slides.join('\n') : '';
+  // Auto-open the slideshow/video disclosure if either has a value
+  if (hp.bgVideo || (Array.isArray(hp.slides) && hp.slides.length)) openDisclosure('home-bg-extras');
+  document.getElementById('home-text-layout').value   = hp.textLayout || 'centered';
+  document.getElementById('home-reveal-delay').value  = (hp.revealDelay ?? 0);
+  document.getElementById('home-show-ctas').checked   = hp.showCtas !== false;
+  updateHomeBgPreview();
+  const cta1 = (hp.ctas || [])[0] || {};
+  const cta2 = (hp.ctas || [])[1] || {};
+  document.getElementById('home-cta1-label').value  = cta1.label  || '';
+  document.getElementById('home-cta1-target').value = cta1.target || '';
+  document.getElementById('home-cta2-label').value  = cta2.label  || '';
+  document.getElementById('home-cta2-target').value = cta2.target || '';
   applyAdminTheme(themeMode);
   document.getElementById('site-viewer-bg').value = siteConfig.viewerBg || 'auto';
   // Version
@@ -5779,6 +6744,10 @@ function populateGeneralSettings() {
 async function saveGeneralSettings() {
   siteConfig.ownerName  = document.getElementById('site-name-input').value.trim();
   siteConfig.ownerTitle = document.getElementById('site-title-input').value.trim();
+  siteConfig.brandLogo  = document.getElementById('site-brand-logo')?.value.trim() || '';
+  siteConfig.nav = siteConfig.nav || {};
+  siteConfig.nav.showInstagramInNav = !!document.getElementById('site-nav-show-ig')?.checked;
+  siteConfig.nav.landscapeDrawerStyle = document.getElementById('site-nav-landscape-drawer-style')?.value || 'top';
   siteConfig.favicon    = document.getElementById('site-favicon-input').value.trim();
   siteConfig.website         = document.getElementById('site-website-input').value.trim();
   siteConfig.metaDescription = document.getElementById('site-meta-desc').value.trim() || undefined;
@@ -5884,6 +6853,41 @@ function toggleOgList() {
   );
 }
 
+function updateHomeBgPreview() {
+  const val  = document.getElementById('home-bg')?.value.trim() || '';
+  const zone = document.getElementById('home-bg-drop-zone');
+  const prev = document.getElementById('home-bg-preview');
+  if (zone) zone.classList.toggle('has-image', !!val);
+  if (prev && val) prev.src = _previewBlobUrls['home-bg'] || val;
+}
+
+function updateBrandLogoPreview() {
+  const val  = document.getElementById('site-brand-logo')?.value.trim() || '';
+  const prev = document.getElementById('site-brand-logo-preview');
+  if (!prev) return;
+  if (val) { prev.src = val; prev.style.display = ''; }
+  else     { prev.removeAttribute('src'); prev.style.display = 'none'; }
+}
+
+function toggleHomeBgList() {
+  const list = document.getElementById('home-bg-file-list');
+  const isOpen = list.classList.toggle('open');
+  if (!isOpen) return;
+  const current = document.getElementById('home-bg').value.trim();
+  const imagesGroup = thumbFiles.filter(p => p.startsWith('images/'));
+  renderFileList(
+    list,
+    imagesGroup,
+    current,
+    path => {
+      document.getElementById('home-bg').value = path;
+      updateHomeBgPreview();
+      markDirty();
+    },
+    'No files found in /images/'
+  );
+}
+
 function toggleAboutPhotoList() {
   const list = document.getElementById('about-photo-file-list');
   const isOpen = list.classList.toggle('open');
@@ -5940,11 +6944,19 @@ async function patchIndexOgTags() {
 }
 
 function switchSettingsTab(tab) {
-  // Map removed tabs to their new home
-  const tabMap = { sections: 'categories', contact: 'advanced', splash: 'advanced', '404': 'advanced' };
+  // Map removed/renamed tabs to their current home
+  const tabMap = {
+    sections: 'categories',
+    contact:  'special-pages',
+    splash:   'special-pages',
+    '404':    'special-pages',
+    advanced: 'special-pages',
+  };
   tab = tabMap[tab] || tab;
+  // 'categories' was promoted to a top-level tab — bounce out of settings
+  if (tab === 'categories') { switchTab('categories'); return; }
   document.querySelectorAll('#pane-site .settings-tab-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.textContent.trim().toLowerCase() === tab);
+    btn.classList.toggle('active', btn.dataset.stab === tab);
   });
   document.querySelectorAll('#pane-site .settings-tab-pane').forEach(pane => {
     pane.classList.toggle('active', pane.id === 'stab-' + tab);
@@ -6009,6 +7021,13 @@ function initThumbDropZone() {
       showToast('Wrong file type — please drop an image (JPG, PNG, WebP, etc.)', 'error'); return;
     }
     uploadImageFile(file, 'images', 'about-photo-input', updateAboutPhotoPreview);
+  });
+  initDropZone('home-bg-drop-zone', files => {
+    const file = files[0];
+    if (!file.type.startsWith('image/')) {
+      showToast('Wrong file type — please drop an image (JPG, PNG, WebP, etc.)', 'error'); return;
+    }
+    uploadImageFile(file, 'images', 'home-bg', updateHomeBgPreview);
   });
   initDropZone('favicon-drop-zone', files => {
     const file = files[0];
@@ -6157,7 +7176,7 @@ async function uploadImageFile(file, folder, inputId, previewFn) {
   // Don't revoke on onload — Safari re-fetches revoked blobs on repaint → "offline" indicator.
   if (inputId && _previewBlobUrls[inputId]) URL.revokeObjectURL(_previewBlobUrls[inputId]);
   if (inputId) _previewBlobUrls[inputId] = blobUrl;
-  const previewIds = { 'about-photo-input': 'about-photo-preview', 'site-og-input': 'og-preview', 'site-favicon-input': 'favicon-preview' };
+  const previewIds = { 'about-photo-input': 'about-photo-preview', 'home-bg': 'home-bg-preview', 'site-og-input': 'og-preview', 'site-favicon-input': 'favicon-preview' };
   // Call previewFn first so it handles zone state, drag transform, etc.
   // Then immediately override src with the blob URL — GitHub Pages hasn't
   // deployed yet so the path-based src would show "offline".
@@ -6202,6 +7221,8 @@ function handleFileInput(input, type) {
     uploadThumbFile(file);
   } else if (type === 'photo') {
     uploadImageFile(file, 'images', 'about-photo-input', updateAboutPhotoPreview);
+  } else if (type === 'homebg') {
+    uploadImageFile(file, 'images', 'home-bg', updateHomeBgPreview);
   } else if (type === 'favicon') {
     uploadFaviconFile(file);
   } else if (type === 'og') {

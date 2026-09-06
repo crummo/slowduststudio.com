@@ -1,0 +1,123 @@
+{
+  "categories": [
+    {
+      "id": "work",
+      "label": "Work",
+      "type": "gallery",
+      "layout": "captioned",
+      "published": true
+    },
+    {
+      "id": "test-videos",
+      "label": "Test Videos",
+      "type": "gallery",
+      "layout": "grid",
+      "published": false
+    }
+  ],
+  "about": {
+    "show": false,
+    "photo": "",
+    "photoShape": "natural",
+    "photoPlacement": "above",
+    "photoX": 50,
+    "photoY": 50,
+    "photoZoom": 1,
+    "photoScale": 1,
+    "bio": "Slow Dust Studio is a Los Angeles–based interior design studio.",
+    "bio2": "",
+    "contactEmail": "katrina@slowduststudio.com",
+    "showEmail": true,
+    "resume": "",
+    "social": {
+      "imdb": "",
+      "vimeo": "",
+      "instagram": "https://www.instagram.com/slowdust_la/",
+      "linkedin": "",
+      "youtube": "",
+      "twitter": ""
+    },
+    "clients": []
+  },
+  "ownerName": "Slow Dust Studio",
+  "ownerTitle": "",
+  "metaDescription": "Slow Dust Studio — interior design, Los Angeles.",
+  "website": "https://slowduststudio.com",
+  "contact": {
+    "enabled": false,
+    "mode": "card-only",
+    "showCard": false,
+    "endpoint": "",
+    "intro": "To enquire about a project, please get in touch.",
+    "email": "katrina@slowduststudio.com",
+    "photo": "",
+    "showEmailInDrawer": true
+  },
+  "splash": {
+    "enabled": false,
+    "video": "",
+    "duration": 6,
+    "skipReturning": true
+  },
+  "homePage": {
+    "enabled": true,
+    "headline": "",
+    "subhead": "Interior Design · Los Angeles",
+    "body": "",
+    "bg": "",
+    "bgVideo": "",
+    "slides": [
+      "images/slides/01.webp",
+      "images/slides/02.webp",
+      "images/slides/03.webp",
+      "images/slides/04.webp",
+      "images/slides/05.webp",
+      "images/slides/06.webp",
+      "images/slides/07.webp",
+      "images/slides/08.webp",
+      "images/slides/09.webp",
+      "images/slides/10.webp",
+      "images/slides/11.webp"
+    ],
+    "textLayout": "corner-bl",
+    "revealDelay": 1.5,
+    "showCtas": false,
+    "ctas": [
+      {
+        "label": "View Work",
+        "target": "work",
+        "style": "primary"
+      }
+    ]
+  },
+  "notFound": {
+    "heading": "Off the floor plan.",
+    "sub": "We can't find the page you were looking for.",
+    "back": "Back to home"
+  },
+  "favicon": "favicon-slowdust.svg",
+  "accentColor": "#7d6b5d",
+  "themeMode": "light",
+  "navStyle": "top",
+  "allowThemeToggle": false,
+  "filmGrain": 0,
+  "analytics": {
+    "provider": "",
+    "id": ""
+  },
+  "brandLogo": "images/logo.filled.svg",
+  "nav": {
+    "showInstagramInNav": true,
+    "landscapeDrawerStyle": "top"
+  },
+  "allowIndexing": true,
+  "ogImage": "",
+  "viewerBg": "auto",
+  "thumbnailFilter": 0,
+  "zoomLock": false,
+  "mobileThumbsNative": false,
+  "fontSerif": "playfair",
+  "fontSerifScale": 1,
+  "fontSans": "dm-sans",
+  "fontSansScale": 1
+}

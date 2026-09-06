@@ -1,0 +1,174 @@
+[
+  {
+    "id": 1,
+    "category": "work",
+    "title": "Maiden Lane",
+    "client": "",
+    "thumbnail": "gallery/maiden-lane/01.webp",
+    "url": "gallery/maiden-lane/01.webp",
+    "award": "",
+    "description": "",
+    "published": true,
+    "overlay": "reveal",
+    "aspect": 1.5,
+    "gallery": [
+      "gallery/maiden-lane/01.webp",
+      "gallery/maiden-lane/02.webp",
+      "gallery/maiden-lane/03.webp",
+      "gallery/maiden-lane/04.webp",
+      "gallery/maiden-lane/05.webp",
+      "gallery/maiden-lane/06.webp",
+      "gallery/maiden-lane/07.webp",
+      "gallery/maiden-lane/08.webp",
+      "gallery/maiden-lane/09.webp",
+      "gallery/maiden-lane/10.webp",
+      "gallery/maiden-lane/11.webp",
+      "gallery/maiden-lane/12.webp",
+      "gallery/maiden-lane/13.webp"
+    ]
+  },
+  {
+    "id": 2,
+    "category": "work",
+    "title": "Home Office",
+    "thumbnail": "gallery/home-office/01.webp",
+    "url": "gallery/home-office/01.webp",
+    "gallery": [
+      "gallery/home-office/01.webp",
+      "gallery/home-office/02.webp"
+    ],
+    "published": true,
+    "displayWidth": "wide"
+  },
+  {
+    "id": 3,
+    "category": "work",
+    "title": "Loma Lada",
+    "thumbnail": "gallery/loma-lada/01.webp",
+    "url": "gallery/loma-lada/01.webp",
+    "gallery": [
+      "gallery/loma-lada/01.webp",
+      "gallery/loma-lada/02.webp",
+      "gallery/loma-lada/03.webp",
+      "gallery/loma-lada/04.webp"
+    ],
+    "published": true
+  },
+  {
+    "id": 4,
+    "category": "work",
+    "title": "Aguilar Street",
+    "thumbnail": "gallery/aguilar-street/01.webp",
+    "url": "gallery/aguilar-street/01.webp",
+    "gallery": [
+      "gallery/aguilar-street/01.webp",
+      "gallery/aguilar-street/02.webp",
+      "gallery/aguilar-street/03.webp",
+      "gallery/aguilar-street/04.webp",
+      "gallery/aguilar-street/05.webp",
+      "gallery/aguilar-street/06.webp"
+    ],
+    "published": true
+  },
+  {
+    "id": 5,
+    "category": "work",
+    "title": "Topanga Bathroom",
+    "thumbnail": "gallery/topanga-bathroom/01.webp",
+    "url": "gallery/topanga-bathroom/01.webp",
+    "gallery": [
+      "gallery/topanga-bathroom/01.webp",
+      "gallery/topanga-bathroom/02.webp",
+      "gallery/topanga-bathroom/03.webp",
+      "gallery/topanga-bathroom/04.webp"
+    ],
+    "published": true
+  },
+  {
+    "id": 6,
+    "category": "work",
+    "title": "Fair Oaks Ave",
+    "thumbnail": "gallery/fair-oaks-ave/01.webp",
+    "url": "gallery/fair-oaks-ave/01.webp",
+    "gallery": [
+      "gallery/fair-oaks-ave/01.webp",
+      "gallery/fair-oaks-ave/02.webp",
+      "gallery/fair-oaks-ave/03.webp",
+      "gallery/fair-oaks-ave/04.webp",
+      "gallery/fair-oaks-ave/05.webp",
+      "gallery/fair-oaks-ave/06.webp",
+      "gallery/fair-oaks-ave/07.webp",
+      "gallery/fair-oaks-ave/08.webp",
+      "gallery/fair-oaks-ave/09.webp",
+      "gallery/fair-oaks-ave/10.webp",
+      "gallery/fair-oaks-ave/11.webp",
+      "gallery/fair-oaks-ave/12.webp",
+      "gallery/fair-oaks-ave/13.webp",
+      "gallery/fair-oaks-ave/14.webp",
+      "gallery/fair-oaks-ave/15.webp",
+      "gallery/fair-oaks-ave/16.webp",
+      "gallery/fair-oaks-ave/17.webp",
+      "gallery/fair-oaks-ave/18.webp",
+      "gallery/fair-oaks-ave/19.webp",
+      "gallery/fair-oaks-ave/20.webp",
+      "gallery/fair-oaks-ave/21.webp",
+      "gallery/fair-oaks-ave/22.webp",
+      "gallery/fair-oaks-ave/23.webp",
+      "gallery/fair-oaks-ave/24.webp",
+      "gallery/fair-oaks-ave/25.webp",
+      "gallery/fair-oaks-ave/26.webp",
+      "gallery/fair-oaks-ave/27.webp"
+    ],
+    "published": true
+  },
+  {
+    "id": 1001,
+    "category": "test-videos",
+    "url": "https://youtu.be/jNQXAC9IVRw",
+    "title": "Me at the zoo",
+    "client": "Jawed Karim",
+    "published": true,
+    "overlay": "none",
+    "vignette": 0
+  },
+  {
+    "id": 1002,
+    "category": "test-videos",
+    "url": "https://youtu.be/aqz-KE-bpKQ",
+    "title": "Big Buck Bunny",
+    "client": "Blender Foundation",
+    "published": true,
+    "overlay": "none",
+    "vignette": 0
+  },
+  {
+    "id": 1003,
+    "category": "test-videos",
+    "url": "https://youtu.be/dQw4w9WgXcQ",
+    "title": "Never Gonna Give You Up",
+    "client": "Rick Astley",
+    "published": true,
+    "overlay": "none",
+    "vignette": 0
+  },
+  {
+    "id": 1004,
+    "category": "test-videos",
+    "url": "https://youtu.be/9bZkp7q19f0",
+    "title": "Gangnam Style",
+    "client": "PSY",
+    "published": true,
+    "overlay": "none",
+    "vignette": 0
+  },
+  {
+    "id": 1005,
+    "category": "test-videos",
+    "url": "https://youtu.be/kJQP7kiw5Fk",
+    "title": "Despacito",
+    "client": "Luis Fonsi",
+    "published": true,
+    "overlay": "none",
+    "vignette": 0
+  }
+]
