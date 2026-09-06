@@ -589,49 +589,6 @@
     }
     .project-actions { display: flex; gap: 8px; flex-shrink: 0; }
 
-    /* ── PROJECT LIST · GRID VIEW (admin-only) ── */
-    .project-list.view-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 3px; padding: 4px 0 32px;
-    }
-    .project-list.view-grid .project-card {
-      display: block; position: relative;
-      aspect-ratio: 4/3;
-      padding: 0; margin: 0;
-      background: var(--bg3); cursor: pointer;
-      outline: 2px solid transparent; outline-offset: -2px;
-      transition: outline-color 0.15s, opacity 0.2s;
-      border-bottom: none;
-    }
-    .project-list.view-grid .project-card:hover { outline-color: var(--fg-dim); }
-    .project-list.view-grid .project-card.unpublished { opacity: 0.45; }
-    .project-list.view-grid .drag-handle { display: none; }
-    .project-list.view-grid .project-thumb-wrap {
-      width: 100%; height: 100%; margin: 0; flex: none;
-    }
-    .project-list.view-grid .project-thumb,
-    .project-list.view-grid .project-thumb-placeholder {
-      width: 100%; height: 100%; object-fit: cover; display: block;
-    }
-    .project-list.view-grid .project-info {
-      position: absolute; bottom: 0; left: 0; right: 0;
-      padding: 22px 8px 8px;
-      background: linear-gradient(transparent, rgba(0,0,0,0.7));
-      color: #ede8e0; pointer-events: none;
-      flex: none; min-width: 0;
-    }
-    .project-list.view-grid .project-client {
-      font-size: 9px; color: rgba(255,255,255,0.7); margin-bottom: 2px;
-    }
-    .project-list.view-grid .project-title {
-      font-size: 11px; color: #ede8e0;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
-    .project-list.view-grid .project-meta { display: none; }
-    .project-list.view-grid .project-actions { display: none; }
-    .project-list.view-grid .project-thumb-source { display: none !important; }
-
     /* ── GALLERY ADMIN GRID ── */
     .gallery-admin-grid {
       display: grid;
@@ -701,6 +658,112 @@
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
       pointer-events: none;
     }
+
+    /* ── PROJECT GRID (admin) ── */
+    .project-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 8px;
+    }
+    .project-grid-card {
+      position: relative;
+      aspect-ratio: 16/9;
+      background: var(--bg2);
+      border: 1px solid var(--fg-dimmer);
+      border-radius: 3px;
+      overflow: hidden;
+      cursor: pointer;
+      user-select: none;
+      transition: border-color 0.15s, opacity 0.2s;
+    }
+    .project-grid-card:hover { border-color: var(--fg-dim); }
+    .project-grid-card.dragging { opacity: 0.45; border-style: dashed; }
+    .project-grid-card.drag-over { border-color: var(--accent); background: var(--bg3); }
+    .project-grid-card.unpublished { background: var(--card-unpublished); }
+    .project-grid-card.unpublished .project-grid-thumb,
+    .project-grid-card.unpublished .project-grid-placeholder { opacity: 0.4; }
+    .project-grid-thumb {
+      width: 100%; height: 100%;
+      object-fit: cover; display: block;
+      pointer-events: none;
+    }
+    .project-grid-placeholder {
+      width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--fg-dim); font-size: 10px;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      pointer-events: none;
+    }
+    .project-grid-overlay {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      padding: 22px 10px 8px;
+      background: linear-gradient(transparent, rgba(0,0,0,0.78));
+      pointer-events: none;
+    }
+    .project-grid-client {
+      font-size: 8px; letter-spacing: 0.18em;
+      text-transform: uppercase; color: var(--accent);
+      font-weight: 500; margin-bottom: 2px;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .project-grid-title {
+      font-family: var(--font-serif);
+      font-size: 13px; font-style: italic; color: #ede8e0;
+      line-height: 1.2;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .project-grid-dot {
+      position: absolute; top: 6px; right: 6px;
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 0 2px rgba(0,0,0,0.45);
+      pointer-events: none;
+    }
+    .project-grid-card.unpublished .project-grid-dot { background: var(--danger); }
+    .project-grid-mediatype {
+      position: absolute; top: 6px; right: 18px;
+      font-size: 11px; color: rgba(255,255,255,0.85);
+      text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+      pointer-events: none; line-height: 1;
+    }
+    .project-grid-check {
+      position: absolute; top: 6px; left: 6px;
+      width: 16px; height: 16px; border-radius: 3px;
+      border: 1.5px solid rgba(255,255,255,0.65); background: rgba(0,0,0,0.35);
+      cursor: pointer; z-index: 2;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.12s, border-color 0.12s;
+    }
+    .project-grid-check:hover { border-color: rgba(255,255,255,0.95); }
+    .project-grid-check::after {
+      content: ''; width: 8px; height: 5px;
+      border-left: 1.5px solid #fff; border-bottom: 1.5px solid #fff;
+      transform: rotate(-45deg) translateY(-1px); opacity: 0; transition: opacity 0.1s;
+    }
+    .project-grid-card.selected { border-color: var(--accent); }
+    .project-grid-card.selected .project-grid-check {
+      background: var(--accent); border-color: var(--accent);
+    }
+    .project-grid-card.selected .project-grid-check::after { opacity: 1; }
+
+    /* Bulk-action bar for project grid (mirrors .gai-bulk-bar) */
+    .project-bulk-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 8px 10px; margin-bottom: 8px; border-radius: 4px;
+      background: var(--bg2); border: 1px solid var(--fg-dimmer);
+      font-size: 12px; color: var(--fg-mid);
+    }
+    .project-bulk-bar.hidden { display: none; }
+    .project-bulk-bar select {
+      background: var(--bg); border: 1px solid var(--fg-dimmer);
+      border-radius: 3px; padding: 4px 8px;
+      color: var(--fg); font-family: var(--font-sans);
+      font-size: 11px; cursor: pointer; outline: none;
+    }
+
+    /* View-mode toggle icons (12×12 SVG) */
+    .view-toggle svg { width: 12px; height: 12px; display: block; }
+    .view-toggle button { padding: 5px 9px; }
 
     /* ── BULK IMPORT ZONE ── */
     .bulk-drop-zone {
@@ -1100,7 +1163,7 @@
       </div>
       <div class="field">
         <label>Repository</label>
-        <input type="text" id="setup-repo" value="slowduststudio.com" />
+        <input type="text" id="setup-repo" value="folio-template" />
       </div>
     </div>
     <div style="margin-bottom:20px">
@@ -2122,15 +2185,6 @@
         </select>
         <div class="field-hint" id="overlay-hint" style="margin-top:4px">Standard overlay with play icon</div>
       </div>
-      <div class="field">
-        <label>Hover Behavior</label>
-        <div class="segmented full" data-for="f-hover-state" style="margin-top:6px">
-          <button type="button" data-value="rest-on">Hide on hover</button>
-          <button type="button" data-value="rest-off">Reveal on hover</button>
-        </div>
-        <input type="hidden" id="f-hover-state" />
-        <div class="field-hint" style="margin-top:4px">Hide on hover: overlay visible at rest, fades out on hover. Reveal on hover: overlay hidden at rest, fades in on hover.</div>
-      </div>
       <div style="margin-bottom:16px">
         <button class="add-link" id="award-toggle" data-closed="+ Award" data-open="− Award" onclick="toggleDisclosure('award')">+ Award</button>
         <div id="award-body" style="display:none;margin-top:8px">
@@ -2193,22 +2247,6 @@
         <button class="field-clear-btn" type="button" onclick="clearField('ge-video-url')" title="Clear">×</button>
       </div>
       <div class="field-hint" style="margin-top:4px">YouTube or Vimeo URL</div>
-    </div>
-
-    <!-- Photo — shown for image items only (relink) -->
-    <div class="field" id="ge-photo-field" style="display:none">
-      <label>Photo <span class="label-aside">(file path)</span></label>
-      <div class="field-clearable">
-        <input type="text" id="ge-photo-url" placeholder="gallery/category/filename.webp" oninput="updateGePhotoPreview();markDirty()" />
-        <button class="field-clear-btn" type="button" onclick="clearField('ge-photo-url');updateGePhotoPreview()" title="Clear">×</button>
-      </div>
-      <div id="ge-photo-preview-wrap" style="margin-top:8px;display:none">
-        <img id="ge-photo-preview" alt="" style="width:100%;max-height:160px;object-fit:contain;border-radius:2px;border:1px solid var(--fg-dimmer)" onerror="this.style.opacity='0.3'" />
-      </div>
-      <div style="display:flex;gap:8px;margin-top:8px">
-        <label class="btn btn-ghost btn-sm" style="cursor:pointer;flex:1;justify-content:center">Upload new image…<input type="file" id="ge-photo-file" accept="image/*" class="file-input-hidden" onchange="handleGePhotoInput(this)" /></label>
-      </div>
-      <div class="field-hint" style="margin-top:4px">Relink to a different file — useful when the original was deleted from the repo.</div>
     </div>
 
     <!-- Hover preview (any project type) — accepts MP4 or animated WebP/GIF -->
@@ -2382,7 +2420,7 @@
       <select id="cat-layout" style="width:100%" onchange="updateCatHints()">
         <option value="masonry">Masonry</option>
         <option value="grid">Grid</option>
-        <option value="captioned">Captioned (two columns)</option>
+        <option value="editorial">Editorial (two columns, captioned)</option>
       </select>
       <div class="field-hint" id="cat-layout-hint" style="margin-top:4px">Natural proportions — each image displays at its own aspect ratio</div>
     </div>
@@ -2898,19 +2936,35 @@ function buildAdminCategoryPanes() {
         <div class="toolbar">
           <span class="toolbar-label" id="count-${cat.id}"></span>
           <div style="display:flex;gap:8px;align-items:center">
-            <div class="segmented" data-view-for="${cat.id}" title="Layout">
-              <button type="button" data-view="list" onclick="setCategoryView('${cat.id}','list')">List</button>
-              <button type="button" data-view="grid" onclick="setCategoryView('${cat.id}','grid')">Grid</button>
-            </div>
             <input type="text" placeholder="Filter projects…" class="project-filter-input" id="filter-${cat.id}" oninput="filterProjects('${cat.id}', this.value)" />
+            <div class="segmented view-toggle" data-for="view-${cat.id}" data-skip-dirty="1" title="View mode">
+              <button type="button" data-value="list" title="List view" aria-label="List view"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="3" y1="4" x2="13" y2="4"/><line x1="3" y1="8" x2="13" y2="8"/><line x1="3" y1="12" x2="13" y2="12"/></svg></button>
+              <button type="button" data-value="grid" title="Grid view" aria-label="Grid view"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2.5" y="2.5" width="4.5" height="4.5"/><rect x="9" y="2.5" width="4.5" height="4.5"/><rect x="2.5" y="9" width="4.5" height="4.5"/><rect x="9" y="9" width="4.5" height="4.5"/></svg></button>
+            </div>
+            <input type="hidden" id="view-${cat.id}" onchange="onCategoryViewChange('${cat.id}', this.value)" />
             <button class="btn btn-ghost btn-sm" onclick="openAdd('${cat.id}')">+ Add Project</button>
             <button class="btn btn-ghost btn-sm" onclick="previewCategory('${cat.id}')">Preview ↗</button>
           </div>
         </div>
-        <div class="project-list" id="list-${cat.id}"></div>
+        <div class="project-bulk-bar hidden" id="bulk-bar-${cat.id}">
+          <span id="bulk-count-${cat.id}">0 selected</span>
+          <div style="display:flex;gap:8px;align-items:center">
+            <select id="bulk-move-${cat.id}" onchange="bulkMoveProjects('${cat.id}', this.value); this.value=''">
+              <option value="">Move to…</option>
+            </select>
+            <button class="btn btn-ghost btn-sm" onclick="clearProjectSelection('${cat.id}')">Deselect all</button>
+            <button class="btn btn-danger btn-sm" onclick="bulkDeleteProjects('${cat.id}')">Delete selected</button>
+          </div>
+        </div>
+        <div id="list-${cat.id}"></div>
       `;
     }
     container.appendChild(pane);
+  });
+  // Bind any newly-injected segmented controls (view toggles) and seed their initial values
+  initSegmentedControls();
+  siteConfig.categories.forEach(cat => {
+    if (cat.type !== 'carousel') setSegmentedValue('view-' + cat.id, getCategoryView(cat.id));
   });
 }
 
@@ -2923,18 +2977,20 @@ function renderCategory(cat) {
   const catDef = siteConfig.categories.find(c => c.id === cat);
   if (catDef?.type === 'carousel') { renderGalleryCategory(cat); return; }
 
+  // Sync the view-mode toggle and pick rendering path
+  const view = getCategoryView(cat);
+  setSegmentedValue('view-' + cat, view);
+  if (view === 'grid') { renderProjectGrid(cat); return; }
+
   const items = projects.filter(p => p.category === cat);
   const list  = document.getElementById('list-' + cat);
-  // Lightbox categories use a stacked list layout, not the photo grid
-  if (list) { list.classList.remove('gallery-admin-grid'); list.classList.add('project-list'); }
-  // Apply persisted view mode (list | grid) and sync the toolbar segmented state
-  const viewMode = getCategoryView(cat);
-  if (list) list.classList.toggle('view-grid', viewMode === 'grid');
-  const seg = document.querySelector(`.segmented[data-view-for="${cat}"]`);
-  if (seg) seg.querySelectorAll('button').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.view === viewMode);
-  });
+  // List view uses a stacked layout
+  if (list) { list.classList.remove('gallery-admin-grid', 'project-grid'); list.classList.add('project-list'); }
   const count = document.getElementById('count-' + cat);
+  // Hide bulk bar when leaving grid view
+  const bulkBar = document.getElementById('bulk-bar-' + cat);
+  if (bulkBar) bulkBar.classList.add('hidden');
+  if (_projectSelection) _projectSelection.delete(cat);
 
   count.textContent = `${items.length} project${items.length !== 1 ? 's' : ''}`;
 
@@ -2987,13 +3043,6 @@ function renderCategory(cat) {
     card.addEventListener('dragleave', onDragLeave);
     card.addEventListener('drop',      onDrop);
     card.addEventListener('dragend',   onDragEnd);
-    // Grid view: clicking the tile opens the edit modal (action buttons are hidden)
-    if (viewMode === 'grid') {
-      card.addEventListener('click', e => {
-        if (e.target.closest('.project-actions')) return;
-        openEdit(globalIdx);
-      });
-    }
 
     list.appendChild(card);
 
@@ -3024,21 +3073,11 @@ function renderCategory(cat) {
   if (filterEl && filterEl.value) filterProjects(cat, filterEl.value);
 }
 
-// ─── PROJECT LIST · VIEW MODE (admin-only, per-category, persisted) ──────────
-function getCategoryView(catId) {
-  return localStorage.getItem('cr_admin_view_' + catId) === 'grid' ? 'grid' : 'list';
-}
-function setCategoryView(catId, mode) {
-  if (mode !== 'list' && mode !== 'grid') return;
-  localStorage.setItem('cr_admin_view_' + catId, mode);
-  renderCategory(catId);
-}
-
 function filterProjects(catId, query) {
   const list = document.getElementById('list-' + catId);
   if (!list) return;
   const q = (query || '').trim().toLowerCase();
-  const cards = list.querySelectorAll('.project-card');
+  const cards = list.querySelectorAll('.project-card, .project-grid-card');
   let visible = 0;
   cards.forEach(card => {
     const matches = !q || (card.dataset.searchTerms || '').includes(q);
@@ -3063,6 +3102,181 @@ function filterProjects(catId, query) {
     if (q) count.textContent = `${visible} of ${cards.length} project${cards.length !== 1 ? 's' : ''}`;
     else   count.textContent = `${cards.length} project${cards.length !== 1 ? 's' : ''}`;
   }
+}
+
+// ─── PROJECT GRID (admin view-mode = "grid") ─────────────────────────────────
+const _projectSelection = new Map(); // catId → Set<globalIdx>
+
+function getCategoryView(catId) {
+  return localStorage.getItem('cr_view_' + catId) === 'grid' ? 'grid' : 'list';
+}
+function setCategoryView(catId, view) {
+  if (view === 'grid') localStorage.setItem('cr_view_' + catId, 'grid');
+  else                 localStorage.removeItem('cr_view_' + catId);
+}
+function onCategoryViewChange(catId, view) {
+  setCategoryView(catId, view);
+  renderCategory(catId);
+}
+
+function renderProjectGrid(cat) {
+  const items = projects.filter(p => p.category === cat);
+  const list  = document.getElementById('list-' + cat);
+  if (!list) return;
+  list.classList.remove('project-list', 'gallery-admin-grid');
+  list.classList.add('project-grid');
+  const count = document.getElementById('count-' + cat);
+  count.textContent = `${items.length} project${items.length !== 1 ? 's' : ''}`;
+
+  if (items.length === 0) {
+    list.innerHTML = '<div class="empty">No projects yet. Use the button above to add one.</div>';
+    updateProjectBulkBar(cat);
+    return;
+  }
+
+  const sel = _projectSelection.get(cat) || new Set();
+  list.innerHTML = '';
+  items.forEach(p => {
+    const globalIdx = projects.indexOf(p);
+    const card = document.createElement('div');
+    card.className = 'project-grid-card'
+      + (p.published === false ? ' unpublished' : '')
+      + (sel.has(globalIdx) ? ' selected' : '');
+    card.draggable = true;
+    card.dataset.idx = globalIdx;
+    card.dataset.searchTerms = ((p.title || '') + ' ' + (p.client || '') + ' ' + (p.award || '')).toLowerCase();
+
+    const isVid   = isVideoUrl(p.url);
+    const isImg   = isImageUrl(p.url);
+    const thumbSrc = p.thumbnail || (isImg ? p.url : '');
+
+    card.innerHTML = `
+      <div class="project-grid-check" data-check title="Select"></div>
+      ${thumbSrc
+        ? `<img class="project-grid-thumb" src="${esc(thumbSrc)}" alt="" loading="lazy" onerror="this.outerHTML='<div class=\\'project-grid-placeholder\\'>no image</div>'">`
+        : `<img class="project-grid-thumb" data-auto-poster data-idx="${globalIdx}" style="display:none" alt="" loading="lazy">
+           <div class="project-grid-placeholder" data-placeholder>no image</div>`}
+      ${isVid ? '<div class="project-grid-mediatype">▶</div>' : ''}
+      <div class="project-grid-dot" title="${p.published === false ? 'Unpublished' : 'Published'}"></div>
+      <div class="project-grid-overlay">
+        ${p.client ? `<div class="project-grid-client">${esc(p.client)}</div>` : ''}
+        <div class="project-grid-title">${esc(p.title || '(untitled)')}</div>
+      </div>
+    `;
+
+    // Click checkbox = toggle select; click anywhere else = open edit
+    card.addEventListener('click', (e) => {
+      if (e.target.closest('[data-check]')) {
+        toggleProjectSelection(cat, globalIdx);
+      } else {
+        openEdit(globalIdx);
+      }
+    });
+
+    card.addEventListener('dragstart', onDragStart);
+    card.addEventListener('dragover',  onDragOver);
+    card.addEventListener('dragleave', onDragLeave);
+    card.addEventListener('drop',      onDrop);
+    card.addEventListener('dragend',   onDragEnd);
+
+    list.appendChild(card);
+
+    // Auto-poster fallback when no thumb
+    if (!thumbSrc) {
+      const poster = getAdminPoster(p);
+      if (poster) {
+        const imgEl = card.querySelector('[data-auto-poster]');
+        const phEl  = card.querySelector('[data-placeholder]');
+        if (poster.url) {
+          imgEl.src = poster.url;
+          imgEl.style.display = '';
+          if (phEl) phEl.remove();
+        } else if (poster.vimeoUrl) {
+          fetchVimeoAdminPoster(poster.vimeoUrl, imgEl, null).then(() => {
+            if (imgEl.src && phEl) phEl.remove();
+          });
+        }
+      }
+    }
+  });
+
+  updateProjectBulkBar(cat);
+
+  // Re-apply any active filter
+  const filterEl = document.getElementById('filter-' + cat);
+  if (filterEl && filterEl.value) filterProjects(cat, filterEl.value);
+}
+
+function toggleProjectSelection(catId, globalIdx) {
+  if (!_projectSelection.has(catId)) _projectSelection.set(catId, new Set());
+  const set = _projectSelection.get(catId);
+  if (set.has(globalIdx)) set.delete(globalIdx);
+  else                    set.add(globalIdx);
+  // Update visual state on the affected card without re-render
+  const list = document.getElementById('list-' + catId);
+  const card = list?.querySelector(`.project-grid-card[data-idx="${globalIdx}"]`);
+  if (card) card.classList.toggle('selected', set.has(globalIdx));
+  updateProjectBulkBar(catId);
+}
+
+function clearProjectSelection(catId) {
+  _projectSelection.set(catId, new Set());
+  document.querySelectorAll('#list-' + catId + ' .project-grid-card.selected')
+    .forEach(c => c.classList.remove('selected'));
+  updateProjectBulkBar(catId);
+}
+
+function updateProjectBulkBar(catId) {
+  const bar   = document.getElementById('bulk-bar-' + catId);
+  const count = document.getElementById('bulk-count-' + catId);
+  const move  = document.getElementById('bulk-move-' + catId);
+  const set   = _projectSelection.get(catId) || new Set();
+  if (!bar) return;
+  if (set.size === 0) { bar.classList.add('hidden'); return; }
+  bar.classList.remove('hidden');
+  if (count) count.textContent = `${set.size} selected`;
+  // Refresh Move-to dropdown options (other non-carousel categories)
+  if (move) {
+    const targets = siteConfig.categories.filter(c => c.id !== catId && c.type !== 'carousel');
+    move.innerHTML = '<option value="">Move to…</option>'
+      + targets.map(c => `<option value="${esc(c.id)}">${esc(c.label)}</option>`).join('');
+  }
+}
+
+function bulkDeleteProjects(catId) {
+  const set = _projectSelection.get(catId);
+  if (!set || set.size === 0) return;
+  const n = set.size;
+  showConfirm({
+    title: `Delete ${n} project${n !== 1 ? 's' : ''}?`,
+    body:  `This will remove ${n} project${n !== 1 ? 's' : ''} from the site. This can't be undone.`,
+    confirmLabel: 'Delete',
+    danger: true,
+    onConfirm: async () => {
+      // Sort descending so splicing doesn't shift remaining indexes
+      const indexes = [...set].sort((a, b) => b - a);
+      indexes.forEach(idx => projects.splice(idx, 1));
+      _projectSelection.set(catId, new Set());
+      renderAll();
+      markDirty();
+      showToast(`${indexes.length} project${indexes.length !== 1 ? 's' : ''} deleted.`, 'success');
+      saveToGitHub();
+    }
+  });
+}
+
+function bulkMoveProjects(catId, targetCatId) {
+  if (!targetCatId) return;
+  const set = _projectSelection.get(catId);
+  if (!set || set.size === 0) return;
+  const targetCat = siteConfig.categories.find(c => c.id === targetCatId);
+  if (!targetCat) return;
+  set.forEach(idx => { if (projects[idx]) projects[idx].category = targetCatId; });
+  const moved = set.size;
+  _projectSelection.set(catId, new Set());
+  renderAll();
+  markDirty();
+  showToast(`${moved} project${moved !== 1 ? 's' : ''} moved to ${targetCat.label}.`, 'success');
 }
 
 // ─── GALLERY CATEGORY RENDER ─────────────────────────────────────────────────
@@ -3281,11 +3495,8 @@ function openGalleryEdit(globalIdx) {
 
   document.getElementById('ge-modal-title').textContent = isVid ? 'Edit Video' : (p.url ? p.url.split('/').pop() : 'Edit Image');
   document.getElementById('ge-video-field').style.display = isVid ? '' : 'none';
-  document.getElementById('ge-photo-field').style.display = isVid ? 'none' : '';
   document.getElementById('ge-thumb-field').style.display = isVid ? '' : 'none';
   document.getElementById('ge-video-url').value  = isVid ? (p.url || '') : '';
-  document.getElementById('ge-photo-url').value  = isVid ? '' : (p.url || '');
-  updateGePhotoPreview();
   document.getElementById('ge-hover-preview').value = p.hoverPreview || '';
   document.getElementById('ge-title').value      = p.title  || '';
   document.getElementById('ge-client').value     = p.client || '';
@@ -3322,14 +3533,6 @@ async function saveGalleryEdit() {
   if (isVideoUrl(p.url) || document.getElementById('ge-video-field').style.display !== 'none') {
     const newUrl = document.getElementById('ge-video-url').value.trim();
     if (newUrl) p.url = newUrl;
-  } else {
-    // Image item — relink path if changed
-    const newPhoto = document.getElementById('ge-photo-url').value.trim();
-    if (newPhoto && newPhoto !== p.url) {
-      const oldUrl = p.url;
-      p.url = newPhoto;
-      if (p.thumbnail && p.thumbnail === oldUrl) p.thumbnail = newPhoto;
-    }
   }
   p.title       = document.getElementById('ge-title').value.trim();
   p.client      = document.getElementById('ge-client').value.trim();
@@ -3696,7 +3899,7 @@ function onDragStart(e) {
 function onDragOver(e) {
   e.preventDefault();
   e.dataTransfer.dropEffect = 'move';
-  document.querySelectorAll('.project-card.drag-over').forEach(el => el.classList.remove('drag-over'));
+  document.querySelectorAll('.project-card.drag-over, .project-grid-card.drag-over').forEach(el => el.classList.remove('drag-over'));
   this.classList.add('drag-over');
 }
 function onDragLeave() {
@@ -3717,7 +3920,7 @@ function onDrop(e) {
 }
 function onDragEnd() {
   this.classList.remove('dragging');
-  document.querySelectorAll('.project-card.drag-over').forEach(el => el.classList.remove('drag-over'));
+  document.querySelectorAll('.project-card.drag-over, .project-grid-card.drag-over').forEach(el => el.classList.remove('drag-over'));
   dragSrcIdx = null;
 }
 
@@ -3765,8 +3968,11 @@ function switchModalTab(tab) {
 // Use setSegmentedValue('my-input', 'a') from populate code.
 function initSegmentedControls() {
   document.querySelectorAll('.segmented[data-for]').forEach(seg => {
+    if (seg.dataset.bound === '1') return; // idempotent — safe to call multiple times
+    seg.dataset.bound = '1';
     const name  = seg.dataset.for;
     const input = document.getElementById(name);
+    const skipDirty = seg.dataset.skipDirty === '1';
     seg.querySelectorAll('button').forEach(btn => {
       btn.addEventListener('click', () => {
         if (input && input.value === btn.dataset.value) return;
@@ -3775,7 +3981,7 @@ function initSegmentedControls() {
           input.dispatchEvent(new Event('change', { bubbles: true }));
           input.dispatchEvent(new Event('input',  { bubbles: true }));
         }
-        markDirty();
+        if (!skipDirty) markDirty();
       });
     });
   });
@@ -3804,16 +4010,15 @@ function thumbDisplay(path) {
 function thumbStore(val) {
   const v = (val || '').trim();
   if (!v) return '';
-  // Preserve explicit folder prefixes and absolute / external URLs;
-  // plain filenames are treated as living in /thumbs/.
-  if (/^(thumbs\/|images\/|gallery\/|https?:\/\/|\/)/i.test(v)) return v;
+  // Preserve explicit folder prefix; plain filenames go into thumbs/
+  if (v.startsWith('thumbs/') || v.startsWith('images/')) return v;
   return 'thumbs/' + v;
 }
 
 function updateOverlayHint() {
   const hints = {
     '':          'Standard overlay with play icon',
-    'editorial': 'Cream scrim with centered title — fades on hover',
+    'editorial': 'Slightly heavier weight on the lower text',
     'centered':  'Single line, centered, no play icon',
     'reveal':    'Overlay hidden at rest, appears on hover',
     'none':      'Overlay hidden — consider setting vignette to 0.',
@@ -3845,7 +4050,6 @@ function clearModalForm() {
   });
   ['award','description'].forEach(closeDisclosure);
   document.getElementById('f-overlay').value = '';
-  setSegmentedValue('f-hover-state', 'rest-on');
   updateOverlayHint();
   document.getElementById('f-published').checked = true;
   document.getElementById('thumb-preview').style.display = 'none';
@@ -3895,13 +4099,6 @@ function openEdit(globalIdx) {
   if (p.award)                   openDisclosure('award');
   if (p.description)             openDisclosure('description');
   document.getElementById('f-published').checked = p.published !== false;
-  // Hover state: explicit p.hoverState wins; otherwise infer from overlay
-  // so the toggle reflects what the live site is doing today.
-  const inferredHover = p.hoverState
-    || (overlayVal === 'editorial' ? 'rest-on'
-        : overlayVal === 'reveal'   ? 'rest-off'
-        : 'rest-on');
-  setSegmentedValue('f-hover-state', inferredHover);
   updateOverlayHint();
   updateThumbPreview();
   // Detect media type and set toggle (legacy 'none' projects fall back to video)
@@ -3952,13 +4149,6 @@ async function saveProject() {
 
   if (overlay)            proj.overlay  = overlay;
   if (vignetteRaw !== '') proj.vignette = parseFloat(vignetteRaw) / 100;
-  // Only persist hoverState if it differs from the default the live site
-  // would infer from the overlay, so we don't bloat projects.json.
-  const hoverState = document.getElementById('f-hover-state').value;
-  const inferred = overlay === 'editorial' ? 'rest-on'
-                 : overlay === 'reveal'    ? 'rest-off'
-                 : 'rest-on';
-  if (hoverState && hoverState !== inferred) proj.hoverState = hoverState;
   const aspectRaw = document.getElementById('f-aspect').value;
   if (aspectRaw !== '')   proj.aspect   = parseFloat(aspectRaw);
   const galleryRaw = document.getElementById('f-gallery').value;
@@ -4070,9 +4260,7 @@ function openEditCategory(idx) {
   document.getElementById('cat-label').value = cat.label;
   document.getElementById('cat-id').value = cat.id;
   document.getElementById('cat-type').value   = ['gallery','scroll','carousel'].includes(cat.type) ? cat.type : 'lightbox';
-  // Backward compat: legacy 'editorial' layout value is the same shape as the renamed 'captioned'
-  const _layout = cat.layout === 'editorial' ? 'captioned' : cat.layout;
-  document.getElementById('cat-layout').value = ['grid','captioned'].includes(_layout) ? _layout : 'masonry';
+  document.getElementById('cat-layout').value = ['grid','editorial'].includes(cat.layout) ? cat.layout : 'masonry';
   document.getElementById('cat-id-field').style.display = 'none'; // ID is set on create only
   document.getElementById('cat-delete-btn').style.display = '';
   document.getElementById('cat-label').oninput = null;
@@ -4100,7 +4288,7 @@ function updateCatHints() {
   const layoutHints = {
     masonry:   'Natural proportions — each image displays at its own aspect ratio',
     grid:      'Uniform 16:9 grid — consistent crops, good for mixed content',
-    captioned: 'Two-column gallery with title captioned over each tile — defaults to the editorial cream-scrim overlay'
+    editorial: 'Two-column gallery with title captioned below each tile — for considered, smaller portfolios'
   };
   const th = document.getElementById('cat-type-hint');
   const lh = document.getElementById('cat-layout-hint');
@@ -6338,49 +6526,6 @@ async function handleStillFileInput(input) {
 function isImageUrl(url) {
   if (!url) return false;
   return /\.(jpg|jpeg|png|gif|webp|avif|svg)(\?|#|$)/i.test(url);
-}
-
-// ─── GALLERY EDIT — PHOTO (RELINK) ───────────────────────────────────────────
-function updateGePhotoPreview() {
-  const val  = document.getElementById('ge-photo-url').value.trim();
-  const wrap = document.getElementById('ge-photo-preview-wrap');
-  const img  = document.getElementById('ge-photo-preview');
-  if (!wrap || !img) return;
-  if (val) {
-    img.style.opacity = '1';
-    img.src = val;
-    wrap.style.display = '';
-  } else {
-    wrap.style.display = 'none';
-    img.removeAttribute('src');
-  }
-}
-
-async function handleGePhotoInput(input) {
-  const file = input.files[0];
-  if (!file) return;
-  input.value = '';
-  if (editingGalleryIdx === null) return;
-  const p = projects[editingGalleryIdx];
-  const catId = p.category || 'gallery';
-  const safeName = sanitizeName(file.name);
-  const filePath = 'gallery/' + catId + '/' + safeName;
-  const blobUrl  = URL.createObjectURL(file);
-  const ok = await uploadToGitHub(file, filePath);
-  if (!ok) { URL.revokeObjectURL(blobUrl); return; }
-  document.getElementById('ge-photo-url').value = filePath;
-  // Preview from blob (path-based src may 404 until Pages redeploys)
-  const wrap = document.getElementById('ge-photo-preview-wrap');
-  const img  = document.getElementById('ge-photo-preview');
-  if (wrap && img) {
-    img.onload  = () => URL.revokeObjectURL(blobUrl);
-    img.onerror = () => URL.revokeObjectURL(blobUrl);
-    img.style.opacity = '1';
-    img.src = blobUrl;
-    wrap.style.display = '';
-  }
-  markDirty();
-  showToast('"' + file.name + '" uploaded — relinked.', 'success');
 }
 
 // ─── GALLERY EDIT — THUMBNAIL ────────────────────────────────────────────────
