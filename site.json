@@ -24,7 +24,7 @@
     "photoY": 50,
     "photoZoom": 1,
     "photoScale": 1,
-    "bio": "Slow Dust Studio is a Los Angeles–based interior design studio.",
+    "bio": "Slow Dust Studio is a Los Angeles\u2013based interior design studio.",
     "bio2": "",
     "contactEmail": "katrina@slowduststudio.com",
     "showEmail": true,
@@ -41,7 +41,7 @@
   },
   "ownerName": "Slow Dust Studio",
   "ownerTitle": "",
-  "metaDescription": "Slow Dust Studio — interior design, Los Angeles.",
+  "metaDescription": "Slow Dust Studio \u2014 interior design, Los Angeles.",
   "website": "https://slowduststudio.com",
   "contact": {
     "enabled": false,
@@ -62,7 +62,7 @@
   "homePage": {
     "enabled": true,
     "headline": "",
-    "subhead": "Interior Design · Los Angeles",
+    "subhead": "Interior Design \u00b7 Los Angeles",
     "body": "",
     "bg": "",
     "bgVideo": "",
@@ -88,7 +88,8 @@
         "target": "work",
         "style": "primary"
       }
-    ]
+    ],
+    "overlayOpacity": 0
   },
   "notFound": {
     "heading": "Off the floor plan.",
