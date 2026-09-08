@@ -2619,8 +2619,8 @@
       resolveVimeoThumbs(grid);
 
       // Masonry layout (JS-positioned, left-to-right order). Skipped for
-      // both 'grid' and 'editorial' which use CSS Grid for positioning.
-      if (catDef?.layout !== 'grid' && catDef?.layout !== 'editorial') {
+      // 'grid' and 'captioned' (legacy 'editorial') which use CSS Grid for positioning.
+      if (catDef?.layout !== 'grid' && catDef?.layout !== 'captioned' && catDef?.layout !== 'editorial') {
         layoutMasonry(grid);
         grid.querySelectorAll('img.grid-thumb').forEach(img => {
           if (!img.complete) img.addEventListener('load', () => layoutMasonry(grid), { once: true });
