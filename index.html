@@ -131,12 +131,13 @@
     .nav-brand { display: flex; align-items: center; gap: 14px; cursor: pointer; text-decoration: none; flex-shrink: 0; }
     .nav-brand-logo { display: block; height: 68px; max-height: calc(var(--nav-h) + 6px); width: auto; object-fit: contain; margin: -10px 0 0 -16px; }
     @media (min-width: 768px) {
-      .nav-brand-logo { height: 112px; max-height: none; }
-      /* Home page: the logo is centered in the white band between the very
-         top of the viewport and the top of the framed hero image (nav
-         height + the image's top inset), rather than just within the nav
-         bar. Logo height (112px) exactly matches that band's height. */
+      /* Home page only: the logo is enlarged to 2x and centered in the
+         white band between the very top of the viewport and the top of
+         the framed hero image (nav height + the image's top inset).
+         Work/Contact/etc. keep the base (68px) size so the nav stays
+         consistent — and uncropped — across every non-home page. */
       body:has(#page-home.visible) .nav-brand-logo {
+        height: 112px; max-height: none;
         position: fixed; top: 0; left: 28px; margin: 0; z-index: 201;
       }
     }
