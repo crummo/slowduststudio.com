@@ -230,6 +230,12 @@
 
     /* ── MAIN ── */
     main { padding-top: calc(var(--nav-h) + env(safe-area-inset-top, 0px)); }
+    /* Extra breathing room below the enlarged desktop logo, which floats
+       above the nav bar and would otherwise overlap the first row of
+       grid tiles on the Work page. */
+    @media (min-width: 768px) {
+      #page-work { padding-top: 40px; }
+    }
     /* Page isolation rules — !important + explicit bg to prevent any
        previously-active page section from leaking content through behind
        the active page (was causing 'Home Office' descenders to peek
