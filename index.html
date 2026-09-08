@@ -94,7 +94,7 @@
       --gv-bg: #131110; --gv-fg: #ede8e0; --gv-fg-dim: #5a5248; --gv-fg-dimmer: #2a2623; --gv-bg2: #1c1917;
     }
 
-    html { background: var(--bg); color: var(--fg); font-family: var(--font-sans); font-weight: 300; -webkit-font-smoothing: antialiased; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; overscroll-behavior-y: none; touch-action: pan-y pinch-zoom; }
+    html { background: var(--bg); color: var(--fg); font-family: var(--font-sans); font-weight: 300; -webkit-font-smoothing: antialiased; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; overscroll-behavior-y: none; touch-action: pan-y pinch-zoom; scrollbar-gutter: stable; }
     body { min-height: 100vh; background: var(--bg); overscroll-behavior-y: none; touch-action: pan-y pinch-zoom; }
 
     /* film grain */
@@ -230,11 +230,11 @@
 
     /* ── MAIN ── */
     main { padding-top: calc(var(--nav-h) + env(safe-area-inset-top, 0px)); }
-    /* Extra breathing room below the enlarged desktop logo, which floats
-       above the nav bar and would otherwise overlap the first row of
-       grid tiles on the Work page. */
+    /* Small breathing room below the enlarged desktop logo (72px nav +
+       12px = 84px, plus the grid's own 28px top padding = 112px, matching
+       the logo's bottom edge — same flush spacing as the home page). */
     @media (min-width: 768px) {
-      #page-work { padding-top: 40px; }
+      #page-work { padding-top: 12px; }
     }
     /* Page isolation rules — !important + explicit bg to prevent any
        previously-active page section from leaking content through behind
