@@ -424,7 +424,7 @@
     .grid-item:hover .grid-center.overlay-label .grid-title { opacity: 1; font-size: 10px !important; transform: none !important; }
 
     /* cover — white wash over image, title centered, both clear on hover to reveal photo. */
-    .grid-item.overlay-cover-item .grid-scrim { background: rgba(242,239,235,0.84) !important; transition: opacity 0.4s var(--ease); }
+    .grid-item.overlay-cover-item .grid-scrim { background: rgba(242,239,235,0.68) !important; transition: opacity 0.4s var(--ease); }
     .grid-item.overlay-cover-item:hover .grid-scrim { opacity: 0; }
     .grid-item.overlay-cover-item:hover .grid-thumb { filter: var(--thumb-filter, none) !important; transform: none !important; }
     .grid-center.overlay-cover { align-items: center; justify-content: center; text-align: center; padding: 16px; transition: opacity 0.4s var(--ease); }
@@ -432,8 +432,11 @@
     .grid-center.overlay-cover .grid-play,
     .grid-center.overlay-cover .grid-award { display: none !important; }
     .grid-center.overlay-cover .grid-title {
-      font-family: var(--font-serif); font-size: clamp(11px, 1.4vw, 15px); font-weight: 400; font-style: italic;
+      font-family: var(--font-sans); font-weight: 400;
       color: var(--fg); letter-spacing: 0.04em; transform: none !important; font-size: 13px !important;
+    }
+    @media (min-width: 768px) {
+      .grid-center.overlay-cover .grid-title { font-size: 20px !important; }
     }
     .grid-item.overlay-cover-item:hover .grid-center.overlay-cover { opacity: 0; }
 
