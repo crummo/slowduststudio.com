@@ -127,6 +127,21 @@
       -webkit-transform: translate3d(0, 0, 0);
       will-change: transform;
     }
+    /* The logo overflows below nav's own box (its outline-only letterforms
+       are taller than the nav bar and have a transparent fill), so without
+       this, scrolled page content becomes visible through/around the
+       bottom of the logo as it passes underneath. This pseudo-element
+       extends the opaque nav background down past the logo's full
+       footprint so content disappears behind a solid bar first. Desktop:
+       logo top 0 + 112px tall = bottom 112px. */
+    nav::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0;
+      height: 116px; background: var(--bg); pointer-events: none;
+    }
+    @media (max-width: 767px) {
+      /* Mobile: logo top 10px + 68px tall = bottom 78px. */
+      nav::before { height: 82px; }
+    }
 
     .nav-brand { display: flex; align-items: center; gap: 14px; cursor: pointer; text-decoration: none; flex-shrink: 0; }
     .nav-brand-logo { display: block; height: 68px; max-height: calc(var(--nav-h) + 6px); width: auto; object-fit: contain; margin: -10px 0 0 -16px; }
