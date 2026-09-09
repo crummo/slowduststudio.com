@@ -248,6 +248,12 @@
     @media (min-width: 768px) {
       #page-work { padding-top: 12px; }
     }
+    /* Mobile: match the same 24px clearance used below the fixed logo on
+       the home page (nav-h 64px + 24px = 88px before content starts), so
+       the first grid image / features image doesn't sit behind the logo. */
+    @media (max-width: 767px) {
+      #page-work, #page-features { padding-top: 24px; }
+    }
     /* Page isolation rules — !important + explicit bg to prevent any
        previously-active page section from leaking content through behind
        the active page (was causing 'Home Office' descenders to peek
