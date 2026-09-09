@@ -818,7 +818,7 @@
        chevrons + paired diptychs are inherited from the >=480 rules. */
     @media (min-width: 769px) and (max-width: 1023px) {
       .ps-wrap { padding: 24px 36px 80px; }
-      .ps-title { font-size: clamp(36px, 4.5vw, 52px); }
+      .ps-title { font-size: clamp(22px, 3.5vw, 40px); }
       .ps-grid { gap: 18px; }
     }
 
@@ -841,6 +841,12 @@
 
     /* ── SCROLL PROJECT PAGE ── */
     .ps-wrap { max-width: 1240px; margin: 0 auto; padding: 12px 28px 40px; position: relative; }
+    /* Extra clearance below the enlarged desktop logo (72px nav + 12px own
+       padding + 28px extra = 112px, matching the logo's bottom edge —
+       same flush spacing as home/work) so the back link never overlaps it. */
+    @media (min-width: 768px) {
+      .ps-wrap { padding-top: 40px; }
+    }
     /* Per-project width overrides — set on a project via projects.json's
        displayWidth field ('wide' | 'narrow'). Useful for short projects
        (like a 2-photo diptych) that benefit from more horizontal space,
@@ -898,7 +904,7 @@
     .ps-back::before { content: ''; display: inline-block; width: 10px; height: 10px; border-top: 1.5px solid currentColor; border-left: 1.5px solid currentColor; transform: rotate(-45deg) translate(1px,1px); flex-shrink: 0; }
     .ps-header { margin-bottom: 16px; }
     .ps-client { font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
-    .ps-title { font-family: var(--font-sans); font-size: clamp(calc(28px * var(--font-serif-scale,1)), 5vw, calc(60px * var(--font-serif-scale,1))); font-weight: 400; font-style: normal; color: var(--fg); margin: 0; line-height: 1.1; }
+    .ps-title { font-family: var(--font-sans); font-size: clamp(calc(20px * var(--font-serif-scale,1)), 3.2vw, calc(38px * var(--font-serif-scale,1))); font-weight: 200; font-style: normal; color: var(--fg); margin: 0; line-height: 1.15; }
     /* Single-column gallery: each photograph gets full width and breathes
        on its own, mirroring an editorial print layout. Aspect ratios are
        preserved — no awkward empty gutters between mismatched pairs. */
@@ -2902,7 +2908,7 @@
         ${f.image ? `<div class="features-image-frame"><img src="${x(f.image)}" alt="${x(f.title || '')}"></div>` : ''}
         ${f.title ? `<h1 class="features-title">${x(f.title)}</h1>` : ''}
         ${f.description ? `<p class="features-desc">${x(f.description)}</p>` : ''}
-        ${f.url ? `<a class="features-link" href="${x(f.url)}" target="_blank" rel="noopener">Read the Full Story ↗</a>` : ''}
+        ${f.url ? `<a class="features-link" href="${x(f.url)}" target="_blank" rel="noopener">Read the Full Story ↗︎</a>` : ''}
       `;
     }
 
@@ -3380,6 +3386,12 @@
       document.getElementById('main-content').appendChild(pg);
       showPage(pageId);
       _pairAfterMount();
+      // Position side chevrons for the freshly-built page; re-run after
+      // layout settles (image pairing / decode can change grid height).
+      updatePsSideNav();
+      setTimeout(updatePsSideNav, 50);
+      setTimeout(updatePsSideNav, 300);
+      setTimeout(updatePsSideNav, 1000);
     }
 
     /* Group consecutive portrait images into 2-up pairs while leaving
@@ -3597,6 +3609,27 @@
     document.addEventListener('scroll', function() {
       closeDrawer();
     }, { passive: true });
+
+    // Side chevrons on project pages track the visible portion of the
+    // image grid (not the whole viewport) — so before scrolling, while
+    // the header still occupies the top of the screen, they center on
+    // whatever part of the image is actually on screen instead of
+    // floating too high above it.
+    function updatePsSideNav() {
+      const grid = document.querySelector('.page.visible .ps-grid');
+      const navs = document.querySelectorAll('.page.visible .ps-side-nav');
+      if (!grid || !navs.length) return;
+      const rect = grid.getBoundingClientRect();
+      const vh = window.innerHeight;
+      const visibleTop = Math.max(rect.top, 0);
+      const visibleBottom = Math.min(rect.bottom, vh);
+      if (visibleBottom <= visibleTop) return;
+      const center = (visibleTop + visibleBottom) / 2;
+      navs.forEach(btn => { btn.style.top = center + 'px'; });
+    }
+    window.addEventListener('scroll', updatePsSideNav, { passive: true });
+    window.addEventListener('resize', updatePsSideNav);
+    document.getElementById('main-content')?.addEventListener('scroll', updatePsSideNav, { passive: true });
 
     /* ── TOUCH SWIPE — gallery viewer ──
        Horizontal swipe → galleryNav(prev/next).
