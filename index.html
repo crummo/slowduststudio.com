@@ -130,6 +130,15 @@
 
     .nav-brand { display: flex; align-items: center; gap: 14px; cursor: pointer; text-decoration: none; flex-shrink: 0; }
     .nav-brand-logo { display: block; height: 68px; max-height: calc(var(--nav-h) + 6px); width: auto; object-fit: contain; margin: -10px 0 0 -16px; }
+    /* Home page, mobile: center the logo in the white band between the top
+       of the screen and the top of the framed hero image (nav-h 64px +
+       the image's 24px top inset = 88px band; 68px logo centered within
+       it = 10px clearance top and bottom). */
+    @media (max-width: 767px) {
+      body:has(#page-home.visible) .nav-brand-logo {
+        position: fixed; top: 10px; left: 4px; margin: 0; z-index: 201;
+      }
+    }
     @media (min-width: 768px) {
       /* Same larger size and same flush-to-top position on every desktop
          page (home, work, contact, etc.) — intentionally identical, not
