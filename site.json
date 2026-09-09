@@ -120,5 +120,15 @@
   "fontSerif": "playfair",
   "fontSerifScale": 1,
   "fontSans": "dm-sans",
-  "fontSansScale": 1
+  "fontSansScale": 1,
+  "features": {
+    "enabled": true,
+    "navLabel": "Features",
+    "eyebrow": "Featured In",
+    "publication": "Remodelista",
+    "title": "Color Connection: A Warm and Whimsical Remodel in Altadena, Los Angeles",
+    "description": "Join us on a tour of a newly-renovated midcentury house in Altadena, Los Angeles from designer Katrina Rumford of Slow Dust Studio.",
+    "image": "images/press/remodelista-altadena.webp",
+    "url": "https://www.remodelista.com/posts/renovated-midcentury-house-altadena-los-angeles-katrina-rumford-slow-dust-studio/"
+  }
 }

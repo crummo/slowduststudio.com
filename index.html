@@ -560,6 +560,21 @@
     .lb-image-wrap.lb-image-mode img { width: 100%; height: 100%; object-fit: contain; display: block; }
     .lb-lowres { margin-top: 8px; font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--lb-fg-dimmer); display: none; }
 
+    /* ── FEATURES (press) ── */
+    .features-wrap { max-width: 640px; margin: 0 auto; padding: 72px 44px 100px; text-align: center; }
+    .features-eyebrow { font-size: 9px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--fg-dim); margin-bottom: 20px; }
+    .features-image-frame { border: 1px solid var(--fg-dimmer); overflow: hidden; margin: 0 auto 36px; max-width: 420px; }
+    .features-image-frame img { width: 100%; height: auto; display: block; }
+    .features-title { font-family: var(--font-serif); font-size: clamp(24px, 3.2vw, 34px); font-weight: 400; font-style: italic; color: var(--fg); line-height: 1.25; margin: 0 0 18px; }
+    .features-desc { font-family: var(--font-serif); font-size: calc(17px * var(--font-serif-scale, 1)); font-weight: 400; line-height: 1.75; color: var(--fg-mid); margin: 0 auto 28px; max-width: 520px; }
+    .features-credit { font-size: 11px; letter-spacing: 0.08em; color: var(--fg-dim); margin-bottom: 36px; }
+    .features-link { display: inline-block; text-decoration: none; background: none; border: 1px solid var(--fg-dim); color: var(--fg-mid); font-family: var(--font-sans); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; padding: 12px 32px; cursor: pointer; transition: border-color 0.2s, color 0.2s; }
+    .features-link:hover { border-color: var(--accent); color: var(--fg); }
+    @media (max-width: 767px) {
+      .features-wrap { padding: 52px 22px 80px; }
+      .features-image-frame { max-width: 100%; }
+    }
+
     /* ── ABOUT ── */
     .about-wrap { max-width: 680px; margin: 0 auto; padding: 72px 44px 100px; }
     body.nav-left .about-wrap { position: relative; left: calc(-1 * var(--nav-w) / 2); }
@@ -1866,6 +1881,7 @@
     let gvItems  = [];
     let _currentThemeSetting = 'auto';
     let _aboutRendered = false;
+    let _featuresRendered = false;
 
     /* ── XSS HELPER ── */
     function x(str) {
@@ -2162,6 +2178,7 @@
 
       if (siteConfig.homePage?.enabled) addLink('home', 'Home');
       cats.forEach(cat => addLink(cat.id, cat.label));
+      if (siteConfig.features?.enabled) addLink('features', siteConfig.features.navLabel || 'Features');
       if (siteConfig.about?.show !== false) addLink('about', 'About');
       const _ctMode = siteConfig.contact?.mode;
       // 'card-only' and 'form' put a Contact link in BOTH desktop nav and drawer
@@ -2250,6 +2267,15 @@
         ].join('');
         main.appendChild(sec);
       });
+
+      // Features (press mention) — inserted between categories and About
+      if (siteConfig.features?.enabled) {
+        const feat = document.createElement('section');
+        feat.id = 'page-features';
+        feat.className = 'page';
+        feat.innerHTML = '<div class="features-wrap" id="features-container"></div>';
+        main.appendChild(feat);
+      }
 
       // About
       const abt = document.createElement('section');
@@ -2386,6 +2412,7 @@
       if (id === 'home')  { renderHome(); resumeHomeSlideshow(); }
       else                { pauseHomeSlideshow(); }
       if (id === 'about') renderAbout();
+      if (id === 'features') renderFeatures();
     }
 
     function goHome() {
@@ -2401,9 +2428,10 @@
 
     function showFirst() {
       const hash = location.hash.slice(1);
-      if (hash === 'about')   { showPage('about');   return; }
-      if (hash === 'contact') { showPage('contact'); return; }
-      if (hash === 'home')    { showPage('home');    return; }
+      if (hash === 'about')    { showPage('about');    return; }
+      if (hash === 'contact')  { showPage('contact');  return; }
+      if (hash === 'home')     { showPage('home');     return; }
+      if (hash === 'features' && siteConfig.features?.enabled) { showPage('features'); return; }
       // Deep link to scroll project page: #ps-{catId}-{idx}
       const psMatch = hash.match(/^ps-(.+)-(\d+)$/);
       if (psMatch) {
@@ -2861,6 +2889,22 @@
       }
 
       if (multiSlide) startHomeSlideshow();
+    }
+
+    function renderFeatures() {
+      if (_featuresRendered) return;
+      _featuresRendered = true;
+      const container = document.getElementById('features-container');
+      if (!container) return;
+      const f = siteConfig.features || {};
+      container.innerHTML = `
+        ${f.eyebrow ? `<div class="features-eyebrow">${x(f.eyebrow)}</div>` : ''}
+        ${f.image ? `<div class="features-image-frame"><img src="${x(f.image)}" alt="${x(f.title || '')}"></div>` : ''}
+        ${f.title ? `<h1 class="features-title">${x(f.title)}</h1>` : ''}
+        ${f.description ? `<p class="features-desc">${x(f.description)}</p>` : ''}
+        ${f.publication ? `<div class="features-credit">${x(f.publication)}</div>` : ''}
+        ${f.url ? `<a class="features-link" href="${x(f.url)}" target="_blank" rel="noopener">Read the Full Story ↗</a>` : ''}
+      `;
     }
 
     function renderAbout() {
