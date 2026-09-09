@@ -3419,12 +3419,11 @@
       document.getElementById('main-content').appendChild(pg);
       showPage(pageId);
       _pairAfterMount();
-      // Position side chevrons for the freshly-built page; re-run after
-      // layout settles (image pairing / decode can change grid height).
+      // Position side chevrons for the freshly-built page, then keep them
+      // glued to the grid via ResizeObserver as images load in and
+      // portrait pairs reflow (see observePsGridResize above).
       updatePsSideNav();
-      setTimeout(updatePsSideNav, 50);
-      setTimeout(updatePsSideNav, 300);
-      setTimeout(updatePsSideNav, 1000);
+      observePsGridResize(pageId);
     }
 
     /* Group consecutive portrait images into 2-up pairs while leaving
@@ -3663,6 +3662,23 @@
     window.addEventListener('scroll', updatePsSideNav, { passive: true });
     window.addEventListener('resize', updatePsSideNav);
     document.getElementById('main-content')?.addEventListener('scroll', updatePsSideNav, { passive: true });
+
+    // Keep the side chevrons glued to the image grid's actual size as it
+    // changes — images loading in, portrait pairs reflowing, orientation
+    // changes — instead of guessing with fixed setTimeout delays (which
+    // caused a visible jump: chevrons would sit at the old position for a
+    // beat, then snap once a timeout finally fired after the image had
+    // already switched). ResizeObserver fires the moment the grid's
+    // height actually changes, so the chevrons move in the same frame.
+    let _psGridResizeObserver = null;
+    function observePsGridResize(pageId) {
+      if (_psGridResizeObserver) _psGridResizeObserver.disconnect();
+      if (typeof ResizeObserver === 'undefined') return;
+      const grid = document.querySelector('#page-' + pageId + ' .ps-grid');
+      if (!grid) return;
+      _psGridResizeObserver = new ResizeObserver(() => updatePsSideNav());
+      _psGridResizeObserver.observe(grid);
+    }
 
     /* ── TOUCH SWIPE — gallery viewer ──
        Horizontal swipe → galleryNav(prev/next).
