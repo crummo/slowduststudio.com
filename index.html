@@ -256,7 +256,7 @@
     body.is-preview.nav-left nav { top: 28px; height: calc(100vh - 28px); }
 
     /* ── MAIN ── */
-    main { padding-top: calc(var(--nav-h) + env(safe-area-inset-top, 0px)); }
+    main { padding-top: calc(var(--nav-h) + env(safe-area-inset-top, 0px)); position: relative; }
     /* Small breathing room below the enlarged desktop logo (72px nav +
        12px = 84px, plus the grid's own 28px top padding = 112px, matching
        the logo's bottom edge — same flush spacing as the home page). */
@@ -281,11 +281,18 @@
       z-index: 1;
       background: var(--bg);
     }
+    /* Taken out of normal flow (absolute, not relative) while it fades out —
+       otherwise the outgoing page's full height still occupies space in
+       #main-content for the ~200-300ms it lingers, pushing the incoming
+       page's content down and throwing off anything that measures the
+       incoming page's position during that window (e.g. the project side
+       chevrons, which would end up parked at the wrong height). */
     .page.leaving {
       display: block !important;
       animation: pageOut 0.2s var(--ease) both;
       pointer-events: none;
-      position: relative;
+      position: absolute;
+      top: 0; left: 0; right: 0;
       z-index: 0;
       background: var(--bg);
     }
