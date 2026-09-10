@@ -137,6 +137,15 @@
     nav::before {
       content: ''; position: absolute; top: 0; left: 0; right: 0;
       height: 116px; background: var(--bg); pointer-events: none;
+      /* z-index -1 keeps this backdrop behind nav's own children. Without
+         it, an absolutely-positioned pseudo (z-index auto) paints ABOVE
+         nav's in-flow content per CSS paint order, and this opaque bar
+         covered the hamburger completely — invisible but still tappable,
+         since pointer-events are off. The logo escaped only because it
+         carries an explicit z-index. Negative z-index still paints above
+         nav's own background, and nav's whole stacking context sits at
+         z-index 200, so the bar remains above all scrolled page content. */
+      z-index: -1;
     }
     @media (max-width: 767px) {
       /* Mobile: logo top 10px + 68px tall = bottom 78px. */
