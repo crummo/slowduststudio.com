@@ -301,7 +301,12 @@
       animation: pageOut 0.2s var(--ease) both;
       pointer-events: none;
       position: absolute;
-      top: 0; left: 0; right: 0;
+      /* top:auto (not 0) so the box keeps its STATIC position — where it
+         already sat in normal flow. An absolutely positioned box resolves
+         top:0 against the containing block's PADDING box, which skips
+         main's nav-height padding-top and made the whole outgoing page
+         jump up ~64-72px for the duration of its fade. */
+      top: auto; left: 0; right: 0;
       z-index: 0;
       background: var(--bg);
     }
